@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# wrapper bash script for running the musicorpus CLI
+#
+# make this executable by:
+#   chmod +x ./musicorpus
+
+# path to the venv, irrespective of where this CLI is called from
+VENV_PATH=`dirname $0`/.venv
+
+# check that the venv exists
+if [ ! -d "$VENV_PATH" ]; then
+    echo "ERROR: .venv does not exist, set it up before using the CLI"
+    exit 1
+fi
+
+# run the app.musicorpus module, pass arguments
+$VENV_PATH/bin/python3 -m app $@
