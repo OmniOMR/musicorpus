@@ -6,6 +6,8 @@ MusiCorpus is a set of guidelines for structuring an OMR dataset. This repositor
 ## Documentation
 
 - [MusiCorpus Specification 1.0](docs/musicorpus-specification/musicorpus-specification.md)
+- CLI commands
+    - [Exporting OmniOMR dataset to MusiCorpus](docs/exporting-omniomr-dataset.md)
 
 
 ## CLI
