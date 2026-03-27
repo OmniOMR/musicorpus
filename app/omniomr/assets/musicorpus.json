@@ -1,0 +1,15 @@
+{
+    "musicorpus_version": "1.0",
+    "full_institution_name": "Institute of Formal and Applied Linguistics, Charles University",
+    "short_institution_name": "UFAL",
+    "institution_url": "https://ufal.mff.cuni.cz/",
+    "full_dataset_name": "OmniOMR",
+    "short_dataset_name": "OmniOMR",
+    "dataset_url": "https://ufal.mff.cuni.cz/grants/omniomr",
+    "dataset_version": "1.0",
+    "created_at": "2000-01-01T00:00:00Z",
+    "author_emails": [
+        "mayer@ufal.mff.cuni.cz",
+        "hajicj@ufal.mff.cuni.cz"
+    ]
+}

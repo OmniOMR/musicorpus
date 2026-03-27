@@ -1,5 +1,6 @@
 from pathlib import Path
 from ..ErrorBag import ErrorBag
+from ..MusicorpusManifest import MusicorpusManifest
 from .InputLayoutFile import InputLayoutFile
 from .InputDpiFile import InputDpiFile
 from .create_page_folders import create_page_folders
@@ -27,19 +28,22 @@ def export_omniomr(
         output_folder: Path,
 ):
     """Run the dataset export process (builds the dataset from our soruces)"""
-    
-    errors = ErrorBag()
 
+    errors = ErrorBag()
     now = datetime.now()
+    assets_folder = Path(__file__).parent / "assets"
 
     # === root ===
 
     # create the output folder
     output_folder.mkdir(parents=True)
-    
-    mung_dataset_name = "OmniOMR"
 
-    # TODO: musicorpus.json
+    # musicorpus.json
+    manifest = MusicorpusManifest.load_from_file(
+        assets_folder / "musicorpus.json"
+    )
+    manifest.created_at = now
+    manifest.write_to_file(output_folder / "musicorpus.json")
 
     # TODO: README.md
 
@@ -88,7 +92,7 @@ def export_omniomr(
         dpi_file=dpi_file,
         output_folder=output_folder,
         errors=errors,
-        mung_dataset_name=mung_dataset_name
+        mung_dataset_name=manifest.full_dataset_name
     )
 
     # subdivisions.image.json
@@ -119,7 +123,7 @@ def export_omniomr(
         page_names=page_names,
         output_folder=output_folder,
         errors=errors,
-        mung_dataset_name=mung_dataset_name
+        mung_dataset_name=manifest.full_dataset_name
     )
 
     # transcription.musicxml
@@ -140,10 +144,11 @@ def export_omniomr(
         output_folder=output_folder,
         errors=errors,
         dataset_metadata=CocoDatasetMetadata(
-            version="?", # TODO: fill this out
-            description="?",
-            contributor="?",
-            url="?",
+            version=manifest.dataset_version,
+            description=manifest.short_institution_name + \
+                "." + manifest.short_dataset_name,
+            contributor=manifest.full_institution_name,
+            url=manifest.dataset_url,
             date_created=now
         ),
         image_license=CocoLicense(
