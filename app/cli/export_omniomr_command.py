@@ -5,6 +5,7 @@ import csv
 from ..omniomr.export_omniomr import export_omniomr
 from ..omniomr.InputLayoutFile import InputLayoutFile
 from ..omniomr.InputDpiFile import InputDpiFile
+from ..omniomr.load_page_metadatas import load_page_metadatas
 
 
 def define_parser(parser: argparse.ArgumentParser):
@@ -89,24 +90,24 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
     if output_folder.exists() and force:
         shutil.rmtree(output_folder)
 
+    # read DPIs
+    dpi_file = InputDpiFile.load(dpi_file_path)
+
     # read metadata
-    # TODO: make this nicer
-    with open(metadata_file_path) as f:
-        reader = csv.DictReader(f)
-        metadata = list(reader)
+    page_metadatas = load_page_metadatas(
+        metadata_file_path=metadata_file_path,
+        dpi_file=dpi_file
+    )
     
     # read layout
     layout_file = InputLayoutFile.load(layout_file_path)
-
-    # read DPIs
-    dpi_file = InputDpiFile.load(dpi_file_path)
 
     # run the extraction process
     export_omniomr(
         page_names=page_names,
         mung_studio_folder=mung_studio_folder,
         editions_folder=editions_folder,
-        metadata=metadata,
+        page_metadatas=page_metadatas,
         layout_file=layout_file,
         dpi_file=dpi_file,
         output_folder=output_folder,

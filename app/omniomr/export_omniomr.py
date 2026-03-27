@@ -1,5 +1,6 @@
 from pathlib import Path
 from ..ErrorBag import ErrorBag
+from ..PageMetadata import PageMetadata
 from ..MusicorpusManifest import MusicorpusManifest
 from .InputLayoutFile import InputLayoutFile
 from .InputDpiFile import InputDpiFile
@@ -7,6 +8,7 @@ from .create_page_folders import create_page_folders
 from .distribute_page_images import distribute_page_images
 from .distribute_page_mscz_files import distribute_page_mscz_files
 from .distribute_page_mung_files import distribute_page_mung_files
+from .distribute_page_metadata import distribute_page_metadata
 from .convert_page_mscz_files_to_musicxml import convert_page_mscz_files_to_musicxml
 from .compute_image_subdivisions_from_mung import compute_image_subdivisions_from_mung
 from .create_subdivisions_folders import create_subdivisions_folders
@@ -22,7 +24,7 @@ def export_omniomr(
         page_names: list[str],
         mung_studio_folder: Path,
         editions_folder: Path,
-        metadata: list[dict[str, str]],
+        page_metadatas: dict[str, PageMetadata],
         layout_file: InputLayoutFile,
         dpi_file: InputDpiFile,
         output_folder: Path,
@@ -66,7 +68,13 @@ def export_omniomr(
         errors=errors
     )
 
-    # TODO: metadata.json
+    # metadata.json
+    distribute_page_metadata(
+        page_names=page_names,
+        page_metadatas=page_metadatas,
+        output_folder=output_folder,
+        errors=errors
+    )
 
     # TODO: layout.json
 

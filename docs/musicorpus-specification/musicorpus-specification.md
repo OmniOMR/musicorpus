@@ -474,7 +474,7 @@ This is an example record:
     // source document metadata
     "institution_name": "Moravian State Library",
     "institution_rism_siglum": "CZ-Bu",
-    "instituion_local_siglum": "MZK",
+    "institution_local_siglum": "MZK",
     "shelfmark": null,
     "rism_id_number": "sources/1001086460",
     "date": 1804,
@@ -514,7 +514,7 @@ Then come fields related to the source:
 - **`rism_id_number`**: If the source is catalogued in RISM, then this should be given. This field acts as a fallback if `shelfmark` does not exist. Should be `false` if not catalogued or `null` if unknown.
 - **`date`**: The year when was the source created. This can be very different from when the music therein was composed (e.g. 20th century editions of Renaissance music). Should be `null` if unknown.
 - **`page_number`**: Some identification of the image within the source. Can be just a number, or foliation (e.g. f55v). Intended to be human-readable. Should be `null` if unknown.
-- **`page_size`**: Size of the physical page/book in millimeters, `[width, height]`. It may be used to estimate DPI if DPI is not explicitly provided (with estimation error given by the margin around the page in the page scan image). Should be `null` if unknown.
+- **`page_size`**: Size of the physical page/book in millimeters, `[width, height]`. It may be used to estimate DPI if DPI is not explicitly provided (with estimation error given by the margin around the page in the page scan image). Should be `null` if unknown. Also, individual dimensions may be `null` if only one dimension is known.
 - **`dpi`**: Actual DPI at which the image was scanned. Ideally as precise as possible - estimated via color calibration tables or rulers. Should be `null` if unknown.
 - **`scribal_data`**: Identifier of a handwriting/typesetting style (string or integer). May be used by a dataset intended for writer identification. Should be `null` if unknown or if not provided. Identifiers should be unique within the dataset.
 - **`link`**: URL to page image, if available. Prefer URL from holding institution, if not available, then other digitised version in RISM. Should be `null` if unknown or if such a link does not exist.
