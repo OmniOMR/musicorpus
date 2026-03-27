@@ -24,8 +24,8 @@ root_command_handlers: dict[
 
 # === export OmniOMR ===
 
-import app.cli.export_command
-app.cli.export_command.define_parser(
+import app.cli.export_omniomr_command
+app.cli.export_omniomr_command.define_parser(
     subparsers.add_parser(
         "export-omniomr",
         aliases=[],
@@ -33,7 +33,7 @@ app.cli.export_command.define_parser(
             "Exports OmniOMR data to the MusiCorpus format"
     )
 )
-root_command_handlers["export-omniomr"] = app.cli.export_command.execute
+root_command_handlers["export-omniomr"] = app.cli.export_omniomr_command.execute
 
 
 ######################

@@ -2,7 +2,9 @@ import argparse
 from pathlib import Path
 import shutil
 import csv
-from ..perform_dataset_export import perform_dataset_export
+from ..omniomr.export_omniomr import export_omniomr
+from ..omniomr.InputLayoutFile import InputLayoutFile
+from ..omniomr.InputDpiFile import InputDpiFile
 
 
 def define_parser(parser: argparse.ArgumentParser):
@@ -23,6 +25,18 @@ def define_parser(parser: argparse.ArgumentParser):
         type=Path,
         required=True,
         help="Path to the input metadata .csv file"
+    )
+    parser.add_argument(
+        "--layout",
+        type=Path,
+        required=True,
+        help="Path to the input page-layout data .csv file"
+    )
+    parser.add_argument(
+        "--dpi",
+        type=Path,
+        required=True,
+        help="Path to the input page-DPI data .csv file"
     )
     parser.add_argument(
         "--page_names",
@@ -46,15 +60,17 @@ def define_parser(parser: argparse.ArgumentParser):
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
-    mung_studio_documents = Path(args.ms_documents)
-    muse_score_editions = Path(args.ms_editions)
-    metadata_file = Path(args.metadata)
-    page_names_file = Path(args.page_names)
-    output_directory = Path(args.output)
+    mung_studio_folder = Path(args.ms_documents)
+    editions_folder = Path(args.ms_editions)
+    metadata_file_path = Path(args.metadata)
+    layout_file_path = Path(args.layout)
+    dpi_file_path = Path(args.dpi)
+    page_names_file_path = Path(args.page_names)
+    output_folder = Path(args.output)
     force = bool(args.force)
 
     # read page names
-    with open(page_names_file) as f:
+    with open(page_names_file_path) as f:
         page_names = [
             l.strip() for l in f.readlines()
             if l.strip() != "" and not l.startswith("#")
@@ -62,27 +78,36 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
         assert len(set(page_names)) == len(page_names), "Page names contain duplicates"
 
     # check output folder name
-    if output_directory.name != "UFAL.OmniOMR":
+    if output_folder.name != "UFAL.OmniOMR":
         print("The output folder must be called 'UFAL.OmniOMR'.")
         exit()
 
     # clear the output folder
-    if output_directory.exists() and not force:
+    if output_folder.exists() and not force:
         print("The output folder already exists. Use --force to overwrite it.")
         exit()
-    if output_directory.exists() and force:
-        shutil.rmtree(output_directory)
+    if output_folder.exists() and force:
+        shutil.rmtree(output_folder)
 
     # read metadata
-    with open(metadata_file) as f:
+    # TODO: make this nicer
+    with open(metadata_file_path) as f:
         reader = csv.DictReader(f)
         metadata = list(reader)
+    
+    # read layout
+    layout_file = InputLayoutFile.load(layout_file_path)
+
+    # read DPIs
+    dpi_file = InputDpiFile.load(dpi_file_path)
 
     # run the extraction process
-    perform_dataset_export(
+    export_omniomr(
         page_names=page_names,
-        mung_studio_folder=mung_studio_documents,
-        editions_folder=muse_score_editions,
+        mung_studio_folder=mung_studio_folder,
+        editions_folder=editions_folder,
         metadata=metadata,
-        output_folder=output_directory,
+        layout_file=layout_file,
+        dpi_file=dpi_file,
+        output_folder=output_folder,
     )

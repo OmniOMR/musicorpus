@@ -323,7 +323,7 @@ Each page folder contains files that hold data for that page, such as:
 
 Until recently, there were no page-level end-to-end deep learning models. Only one-staff and then one-grandstaff models were available. Because the research on one-staff models is still not done and because training page-level models is complicated, MusiCorpus provides subdivisions - a narrowed view at a page at the staff level. These subdivisions are stored in a page folder in the following fashion.
 
-Each page folder optionally contains some these three folders:
+Each page folder optionally contains some of these three folders:
 
 - `Staves` (for solo-staff models)
     - `1/`, `2/`, `3/`, ...
@@ -972,3 +972,23 @@ For more info about the format see https://music-encoding.org/
 Each page, staff, grandstaff or system may contain a `transcription.mung` file. MuNG file is a high-precision instance-segmentation format enhanced with semantic and precedence links between objects. This makes it suitable for object-detection, instance-segmentation and notation reconstruction. It can be used to train graph-based recognition models.
 
 MusiCorpus datasets should use the [MuNG 2.0](https://github.com/OmniOMR/mung/blob/7bddc87d61e19b62ac46834a66c88239dbfebdc5/docs/annotation-instructions/annotation-instructions.md) standard. And mention in their `README.md` how closely they follow the standard.
+
+
+### `mung-to-coco-ids-map.json` 🔗
+
+*(this file is **optional**, it is not required in a MusiCorpus dataset)*
+
+Each page, staff, grandstaff or system may contain a `mung-to-coco-ids-map.json` file when it contains both the `transcription.mung` and `coco-object-detection.json` files. It is a mapping file that converts between COCO object IDs (annotation ID) and MuNG object IDs (node ID). It has the following structure:
+
+```json
+{
+    "mung_to_coco": {
+        "13": 1,
+        "20": 2,
+        "21": 3,
+        ...
+    }
+}
+```
+
+Notice that this is a mapping within one subdivision level, it has nothing to do with `subdivision.*.json` files which map across different subdivision levels. For one `image.jpg` it maps onto each other its corresponding COCO and MuNG files.

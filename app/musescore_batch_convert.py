@@ -12,35 +12,33 @@ MSCORE: str = str((Path(__file__).parent.parent / "musescore" / "MuseScore-Studi
 "Absolute path to the MuseScore linux AppImage executable"
 
 
-def musescore_to_mxl_conversion(
-        mscz_paths: list[Path],
-        target_format=".musicxml",
-        replace_existing_files=True,
+def musescore_batch_convert(
+        conversion_map: dict[Path, Path],
+        force_replace_existing_files=True,
 ):
     """Executes MuseScore 4.6.5 to perform batch conversion
-    of mscz files to MusicXML files."""
+    of files from one format to another depending on file suffixes."""
 
     download_musescore_if_missing()
     
     # create the conversion json file
     conversion = []
-    for input_filepath in mscz_paths:
-        assert input_filepath.exists(), \
-            f"Input file {input_filepath} does not exist."
-        output_filepath = input_filepath.with_suffix(target_format)
+    for source_path, target_path in conversion_map.items():
+        assert source_path.exists(), \
+            f"Input file {source_path} does not exist."
 
         # delete files to be replaced
-        if output_filepath.exists() and replace_existing_files:
-            output_filepath.unlink()
+        if target_path.exists() and force_replace_existing_files:
+            target_path.unlink()
         
         # skip files that are already converted
-        if output_filepath.exists():
+        if target_path.exists():
             continue
 
         # make a record in the batch instruction for the file
         conversion.append({
-            "in": str(input_filepath),
-            "out": str(output_filepath)
+            "in": str(source_path),
+            "out": str(target_path)
         })
     
     # no conversions to be run, do nothing

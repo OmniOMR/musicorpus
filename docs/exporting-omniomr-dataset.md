@@ -27,7 +27,21 @@ Google Sheets: File > Download > Comma-separated values (.csv)
 Rename the file to "2026-03-02.csv" and move it to "~/datasets/OmniOMR-Metadata"
 ```
 
-4. Prepare the list of page UUIDs to be exported into a text file at `~/datasets/OmniOMR-MusiCorpus/2026-03-02/page-names.txt`, one `{UUID}_{UUID}` per line, no suffixes. Get them from the Master Table with <kbd>Ctrl+C</kbd> from Google Sheets and <kbd>Ctrl+V</kbd> into VS Code. Lines can be commented out with the hash `#` symbol.
+4. Download the page layout data from Google Drive to `~/datasets/OmniOMR-Layout/2026-03-02.csv`.
+
+```
+Google Sheets: File > Download > Comma-separated values (.csv)
+Rename the file to "2026-03-02.csv" and move it to "~/datasets/OmniOMR-Layout"
+```
+
+5. Download the page DPIs from Google Drive to `~/datasets/OmniOMR-DPI/2026-03-02.csv`.
+
+```
+Google Sheets: File > Download > Comma-separated values (.csv)
+Rename the file to "2026-03-02.csv" and move it to "~/datasets/OmniOMR-DPI"
+```
+
+6. Prepare the list of page UUIDs to be exported into a text file at `~/datasets/OmniOMR-MusiCorpus/2026-03-02/page-names.txt`, one `{UUID}_{UUID}` per line, no suffixes. Get them from the Master Table with <kbd>Ctrl+C</kbd> from Google Sheets and <kbd>Ctrl+V</kbd> into VS Code. Lines can be commented out with the hash `#` symbol.
 
 ```
 # example page-names.txt file:
@@ -48,6 +62,8 @@ DATE="2026-03-02"
   --ms_documents ~/datasets/MuNG-Studio-Backups/$DATE \
   --ms_editions ~/datasets/OmniOMR-Editions/$DATE \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \
+  --layout ~/datasets/OmniOMR-Layout/$DATE.csv \
+  --dpi ~/datasets/OmniOMR-DPI/$DATE.csv \
   --page_names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
   --output ~/datasets/OmniOMR-MusiCorpus/$DATE/UFAL.OmniOMR
 ```
