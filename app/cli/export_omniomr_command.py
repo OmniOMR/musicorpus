@@ -1,7 +1,6 @@
 import argparse
 from pathlib import Path
 import shutil
-import csv
 from ..omniomr.export_omniomr import export_omniomr
 from ..omniomr.InputLayoutFile import InputLayoutFile
 from ..omniomr.InputDpiFile import InputDpiFile
