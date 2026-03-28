@@ -1,5 +1,6 @@
 from typing import Iterable
 from pathlib import Path
+import random
 import json
 
 
@@ -38,6 +39,32 @@ class Splits:
         """Creates an empty splits file"""
         return Splits(train=[], validation=[], test=[])
     
+    @staticmethod
+    def make_random(
+        page_names: list[str],
+        validation_fraction=0.1,
+        test_fraction=0.1,
+        seed=42
+    ) -> "Splits":
+        """
+        Creates random splits from given page names with
+        split size fractions specified via arguments.
+        """
+        rng = random.Random(seed)
+
+        shuffled_pages = list(page_names)
+        rng.shuffle(shuffled_pages)
+
+        total_size = len(shuffled_pages)
+        validation_size = int(total_size * validation_fraction)
+        test_size = int(total_size * test_fraction)
+
+        return Splits(
+            test=shuffled_pages[:test_size],
+            validation=shuffled_pages[test_size:test_size+validation_size],
+            train=shuffled_pages[test_size+validation_size:]
+        )
+
     def split_names(self) -> Iterable[str]:
         """Iterable for all defined split names in these splits"""
         return self._splits.keys()
@@ -67,6 +94,13 @@ class Splits:
     def __delitem__(self, split_name: str):
         """Deletes the given split"""
         del self._splits[split_name]
+    
+    def get_all_page_names(self) -> list[str]:
+        """Returns all page names tracked in all the splits"""
+        page_names = list()
+        for split_name in self.split_names():
+            page_names.extend(self[split_name])
+        return page_names
 
     # === quick accessors for common splits ===
 
@@ -147,9 +181,7 @@ class Splits:
             "Given page names contain duplicates"
         
         page_set = set(page_names)
-        splits_page_set = set()
-        for split_name in self.split_names():
-            splits_page_set.update(self[split_name])
+        splits_page_set = set(self.get_all_page_names())
         
         extra_pages = page_set.difference(splits_page_set)
         extra_split_pages = splits_page_set.difference(page_set)

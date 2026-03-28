@@ -3,6 +3,7 @@ from pathlib import Path
 from ..read_page_names import read_page_names
 from ..omniomr.load_page_metadatas import load_page_metadatas
 from ..Splits import Splits
+from ..omniomr.calculate_splits import calculate_splits
 
 
 def define_parser(parser: argparse.ArgumentParser):
@@ -94,5 +95,11 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
     )
 
     # run the splits defining process
-    # TODO
-    print("Hello world!")
+    calculate_splits(
+        page_names=page_names,
+        page_metadatas=page_metadatas,
+        existing_splits=existing_splits,
+        output_file=output_file,
+        n_attempts=n_attempts,
+        book_consistent=book_consistent,
+    )
