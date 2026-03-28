@@ -7,7 +7,8 @@ MusiCorpus is a set of guidelines for structuring an OMR dataset. This repositor
 
 - [MusiCorpus Specification 1.0](docs/musicorpus-specification/musicorpus-specification.md)
 - CLI commands
-    - [Exporting OmniOMR dataset to MusiCorpus](docs/exporting-omniomr-dataset.md)
+    - [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md)
+    - [Computing OmniOMR Splits](docs/computing-omniomr-splits.md)
 
 
 ## CLI
@@ -24,3 +25,11 @@ Now use the CLI:
 ```bash
 ./musicorpus --help
 ```
+
+These are the commands available in the CLI:
+
+- `./musicorpus` **`validate`** `--help`: To be added...
+- `./musicorpus` **`inspect`** `--help`: To be added...
+- `./musicorpus` **`statistics`** `--help`: To be added...
+- `./musicorpus` **`export-omniomr`** `--help`: Used to build the OmniOMR dataset from its sources into the MusiCorpus structure. See [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md) for more.
+- `./musicorpus` **`omniomr-splits`** `--help`: Utility for defining the `splits.json` files for the OmniOMR dataset. See [Computing OmniOMR Splits](docs/computing-omniomr-splits.md) for more.

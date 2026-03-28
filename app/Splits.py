@@ -33,6 +33,11 @@ class Splits:
         for split_name, additional_split in kwargs.items():
             self[split_name] = additional_split
     
+    @staticmethod
+    def make_empty() -> "Splits":
+        """Creates an empty splits file"""
+        return Splits(train=[], validation=[], test=[])
+    
     def split_names(self) -> Iterable[str]:
         """Iterable for all defined split names in these splits"""
         return self._splits.keys()

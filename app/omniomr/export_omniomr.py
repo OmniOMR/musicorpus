@@ -52,6 +52,8 @@ def export_omniomr(
     # TODO: LICENSE.txt
 
     # TODO: splits.json
+    # TODO: splits.book-consistent.json
+    # (check that pages in both splits match page names exactly)
 
     # === pages ===
 

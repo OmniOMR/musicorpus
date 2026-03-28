@@ -33,7 +33,7 @@ CSV_TO_MUSICORPUS_FIELD_MAP: dict[str, str] = {
 
 def load_page_metadatas(
         metadata_file_path: Path,
-        dpi_file: InputDpiFile
+        dpi_file: InputDpiFile | None
 ) -> dict[str, PageMetadata]:
     """
     Loads page metadatas for OmniOMR from its CSV file.
@@ -94,7 +94,10 @@ def load_page_metadatas(
             json_data["date"] = None
 
         # set DPI
-        json_data["dpi"] = dpi_file.dpis.get(page_name, None)
+        if dpi_file is not None:
+            json_data["dpi"] = dpi_file.dpis.get(page_name, None)
+        else:
+            json_data["dpi"] = None
 
         # parse the JSON
         page_metadatas[page_name] = PageMetadata \

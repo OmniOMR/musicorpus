@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 import shutil
+from ..read_page_names import read_page_names
 from ..omniomr.export_omniomr import export_omniomr
 from ..omniomr.InputLayoutFile import InputLayoutFile
 from ..omniomr.InputDpiFile import InputDpiFile
@@ -70,12 +71,7 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
     force = bool(args.force)
 
     # read page names
-    with open(page_names_file_path) as f:
-        page_names = [
-            l.strip() for l in f.readlines()
-            if l.strip() != "" and not l.startswith("#")
-        ]
-        assert len(set(page_names)) == len(page_names), "Page names contain duplicates"
+    page_names = read_page_names(page_names_file_path)
 
     # check output folder name
     if output_folder.name != "UFAL.OmniOMR":

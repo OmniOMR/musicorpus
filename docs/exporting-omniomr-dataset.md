@@ -1,4 +1,4 @@
-# Exporting OmniOMR dataset to MusiCorpus
+# Exporting OmniOMR Dataset to MusiCorpus
 
 Today is `2026-03-02`, we'll make an export with this date. I will have all the data in my home directory in `~/datasets` folder. You can adjust this as you wish.
 
@@ -53,6 +53,12 @@ ca625f33-b4e1-49a9-bbc4-63130ba0fe70_b611e394-9858-4732-a14c-648f11497bb9
 30d6c780-c8fe-11e7-9c14-005056827e51_36058ae0-f593-11e7-b30f-5ef3fc9ae867
 ```
 
+7. Update the `splits.json 🪓` and `splits.book-consistent.json 🪓` files if necessary. For more, see [Computing OmniOMR splits](computing-omniomr-splits.md).
+
+8. Check files in `app/omniomr/assets` that they contain proper values. These include: `README.md`, `musicorpus.json` and `LICENSE.txt`.
+
+---
+
 Now with all the data ready, you can run the export with this command:
 
 ```bash
@@ -69,5 +75,3 @@ DATE="2026-03-02"
 ```
 
 It will create this folder `~/datasets/OmniOMR-MusiCorpus/2026-03-02/UFAL.OmniOMR`, which is the final, exported dataset. If you want to re-run the export and overwrite the output folder, add the `--force` flag.
-
-> **Note:** The export process will also create one `.musicxml` file for each `.mscz` file in the `OmniOMR-Editions` folder.
