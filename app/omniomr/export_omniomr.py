@@ -18,6 +18,7 @@ from .subdivide_musicxml_files import subdivide_musicxml_files
 from .convert_mung_to_coco_with_maps import convert_mung_to_coco_with_maps
 from ..mung_to_coco import CocoDatasetMetadata, CocoLicense
 from datetime import datetime
+from ..Splits import Splits
 
 
 def export_omniomr(
@@ -51,9 +52,15 @@ def export_omniomr(
 
     # TODO: LICENSE.txt
 
-    # TODO: splits.json
-    # TODO: splits.book-consistent.json
-    # (check that pages in both splits match page names exactly)
+    # splits.json
+    splits = Splits.read_from_file(assets_folder / "splits.json")
+    splits.check_that_it_covers_page_names_exactly(page_names)
+    splits.write_to_file(output_folder / "splits.json")
+    
+    # splits.book-consistent.json
+    splits_bc = Splits.read_from_file(assets_folder / "splits.book-consistent.json")
+    splits_bc.check_that_it_covers_page_names_exactly(page_names)
+    splits_bc.write_to_file(output_folder / "splits.book-consistent.json")
 
     # === pages ===
 
