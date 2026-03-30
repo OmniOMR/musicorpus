@@ -18,6 +18,13 @@ The computation works by repeatedly generating random splits and then seeing how
 
 If the output file already exists, the `--force` flag forces its overwriting.
 
+The size of the resulting validation and test splits is currently hard-coded inside the split generation code in `calculate_splits.py`. For small dataset, it's better when these splits are larger to get stable evaluation numbers (say 20%) and it can decrease to 15% or 10% when the total number of pages in the dataset grows.
+
+```py
+VALIDATION_FRACTION = 0.2
+TEST_FRACTION = 0.2
+```
+
 ---
 
 Now with all the data ready, you can extend the existing `splits.json 🪓` file with this command:
