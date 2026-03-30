@@ -20,11 +20,11 @@ TEST_FRACTION = 0.2
 
 
 BALANCED_METADATA: dict[str, list[str]] = OrderedDict([
-    ("notation", get_args(NotationType)),
-    ("notation_complexity", get_args(NotationComplexity)),
-    ("production", get_args(ProductionType)),
-    ("clarity", get_args(NotationClarity)),
-    ("systems", get_args(SystemsComposition)),
+    ("notation", [str(v) for v in get_args(NotationType)]),
+    ("notation_complexity", [str(v) for v in get_args(NotationComplexity)]),
+    ("production", [str(v) for v in get_args(ProductionType)]),
+    ("clarity", [str(v) for v in get_args(NotationClarity)]),
+    ("systems", [str(v) for v in get_args(SystemsComposition)]),
 ])
 """Which PageMetadata fields are being balanced when generating
 the splits. This is an ordered dictionary mapping field names
