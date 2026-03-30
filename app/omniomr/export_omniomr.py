@@ -9,6 +9,7 @@ from .distribute_page_images import distribute_page_images
 from .distribute_page_mscz_files import distribute_page_mscz_files
 from .distribute_page_mung_files import distribute_page_mung_files
 from .distribute_page_metadata import distribute_page_metadata
+from .create_layout_files import create_layout_files
 from .convert_page_mscz_files_to_musicxml import convert_page_mscz_files_to_musicxml
 from .compute_image_subdivisions_from_mung import compute_image_subdivisions_from_mung
 from .create_subdivisions_folders import create_subdivisions_folders
@@ -85,8 +86,6 @@ def export_omniomr(
         errors=errors
     )
 
-    # TODO: layout.json
-
     # transcription.mscz
     distribute_page_mscz_files(
         page_names=page_names,
@@ -118,6 +117,26 @@ def export_omniomr(
         layout_file=layout_file,
         output_folder=output_folder,
         errors=errors
+    )
+
+    # layout.json
+    create_layout_files(
+        page_names=page_names,
+        omniomr_layout_file=layout_file,
+        output_folder=output_folder,
+        errors=errors,
+        dataset_metadata=CocoDatasetMetadata(
+            version=manifest.dataset_version,
+            description=manifest.short_institution_name + \
+                "." + manifest.short_dataset_name,
+            contributor=manifest.full_institution_name,
+            url=manifest.dataset_url,
+            date_created=now
+        ),
+        image_license=CocoLicense(
+            name="OmniOMR.UFAL/LICENSE.txt",
+            url="musicorpus://OmniOMR.UFAL/LICENSE.txt"
+        )
     )
 
     # === all subdivisions at once ===

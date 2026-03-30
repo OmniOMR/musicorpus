@@ -6,10 +6,12 @@ from ..ImageSubdivisions import ImageSubdivisions
 from ..get_image_size import get_image_size
 from ..HiddenPrints import HiddenPrints
 from .InputLayoutFile import InputLayoutFile
-from mung.graph import NotationGraph, group_staffs_into_systems
+from mung.graph import NotationGraph
 from mung.io import read_nodes_from_file
 from functools import reduce
 from itertools import chain
+from ..get_ordered_mung_staves import get_ordered_mung_staves
+from ..get_ordered_mung_systems import get_ordered_mung_systems
 
 
 def compute_image_subdivisions_from_mung(
@@ -41,13 +43,8 @@ def compute_image_subdivisions_from_mung(
             continue
         layout_record = layout_file.records[page_name]
 
-        # get all mung staves, sorted top-down (and slightly left-to-right)
-        SORT_KEY = lambda node: node.top + node.left * 0.1
-        mung_staves = [
-            node for node in mung_graph.vertices
-            if node.class_name == "staff"
-        ]
-        mung_staves.sort(key=SORT_KEY)
+        # get all mung staves, sorted top-down
+        mung_staves = get_ordered_mung_staves(mung_graph)
 
         # verify that the staff count matches
         if len(mung_staves) != layout_record.staff_count:
@@ -55,6 +52,17 @@ def compute_image_subdivisions_from_mung(
                 page_name,
                 f"Mung staff count ({len(mung_staves)}) does not match " + \
                 f"layout data staff count ({layout_record.staff_count})."
+            )
+            continue
+
+        # get all mung systems, sorted top-down
+        mung_systems = get_ordered_mung_systems(mung_graph)
+
+        # verify all systems are of the same size
+        if len(set(len(system) for system in mung_systems)) != 1:
+            errors.add_error(
+                page_name,
+                f"MuNG-detected systems do not have equal number of staves."
             )
             continue
 
@@ -101,19 +109,7 @@ def compute_image_subdivisions_from_mung(
             subdivisions.grandstaves[str(i) + "-" + str(j)] = cropbox
 
         # build all systems
-        with HiddenPrints():
-            systems = group_staffs_into_systems(mung_graph.vertices)
-        systems = list(filter(lambda g: len(g) != 0, systems))
-        systems.sort(key=lambda system: SORT_KEY(system[0])) # sort like staves
-
-        if len(set(len(system) for system in systems)) != 1:
-            errors.add_error(
-                page_name,
-                f"MuNG-detected systems do not have equal number of staves."
-            )
-            continue
-
-        for system in systems:
+        for system in mung_systems:
             staff_numbers = [
                 mung_staves.index(staff) + 1
                 for staff in system

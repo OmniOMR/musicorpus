@@ -18,6 +18,23 @@ class CocoBbox:
     def bottom(self) -> int:
         return self.top + self.height
     
+    @property
+    def area(self) -> int:
+        """Rectangular area of the bbox"""
+        return self.width * self.height
+    
+    def coco_quadrangle(self) -> list[int]:
+        """
+        Returns a polygon that encapsulated this bbox
+        (as a naive segmentation mask)
+        """
+        return [
+            self.left, self.top,
+            self.left, self.top + self.height,
+            self.left + self.width, self.top + self.height,
+            self.left + self.width, self.top,
+        ]
+    
     def __iter__(self):
         yield self.left
         yield self.top
@@ -77,4 +94,3 @@ class CocoBbox:
             width=right - left,
             height=bottom - top
         )
-
