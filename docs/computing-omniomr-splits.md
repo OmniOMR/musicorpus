@@ -28,9 +28,9 @@ DATE="2026-03-02"
 ./musicorpus omniomr-splits \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \
   --page_names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
-  --extend_splits app/omniomr/asset/splits.json \
+  --extend_splits app/omniomr/assets/splits.json \
   --n_attempts 1_000_000 \
-  --output app/omniomr/asset/splits.json \
+  --output app/omniomr/assets/splits.json \
   --force
 ```
 
@@ -42,9 +42,9 @@ DATE="2026-03-02"
 ./musicorpus omniomr-splits \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \
   --page_names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
-  --extend_splits app/omniomr/asset/splits.book-consistent.json \
+  --extend_splits app/omniomr/assets/splits.book-consistent.json \
   --n_attempts 1_000_000 \
-  --output app/omniomr/asset/splits.book-consistent.json \
+  --output app/omniomr/assets/splits.book-consistent.json \
   --book_consistent \
   --force
 ```

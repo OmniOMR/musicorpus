@@ -3,7 +3,8 @@ from pathlib import Path
 from ..read_page_names import read_page_names
 from ..omniomr.load_page_metadatas import load_page_metadatas
 from ..Splits import Splits
-from ..omniomr.calculate_splits import calculate_splits
+from ..omniomr.calculate_splits import calculate_splits, \
+    assert_splits_are_book_consistent
 
 
 def define_parser(parser: argparse.ArgumentParser):
@@ -78,8 +79,7 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
             run_assertions=True
         )
         if book_consistent:
-            # TODO: check that the loaded splits are book consistent
-            raise NotImplementedError()
+            assert_splits_are_book_consistent(existing_splits)
 
     # clear the output file
     if output_file.exists() and not force:
