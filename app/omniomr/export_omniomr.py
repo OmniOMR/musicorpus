@@ -179,26 +179,3 @@ def export_omniomr(
     errors.write_report_if_any_errors(
         file_path=output_folder / "ERRORS.txt"
     )
-
-    return
-
-    # prepare metadata mapping from page name to metadata dict for page-wise export
-    # metadata_per_page = prepare_metadata_per_page(
-    #     metadata=metadata,
-    #     page_names=page_names
-    # )
-
-    # Run optimally stratified split finding (brute-force, takes a few minutes for 100 pages with 10^6 iterations)
-    # N_RANDOM_SPLITS = 10000  # 10^4 for testing, but use 10^6 samples for live run. It takes approx. 5 mins on M2 CPU.
-    # SPLIT_FILE = output_folder / "dataset_splits.json"
-    # STRICT_SPLIT_FILE = output_folder / "dataset_splits_STRICT.json"
-    # best_split, best_stratification = find_best_random_split(metadata_per_page,
-    #                                                          page_names,
-    #                                                          allow_book_overlap=True,  # Permissive: books can repeat across splits
-    #                                                          n_splits=N_RANDOM_SPLITS)
-    # strict_best_split, strict_best_stratification = find_best_random_split(metadata_per_page,
-    #                                                                        page_names,
-    #                                                                        allow_book_overlap=False,  # Strict
-    #                                                                        n_splits=N_RANDOM_SPLITS)
-    # output_split_to_json(best_split, SPLIT_FILE)
-    # output_split_to_json(strict_best_split, STRICT_SPLIT_FILE)
