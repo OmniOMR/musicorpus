@@ -70,7 +70,7 @@ class PageMetadata:
     20th century editions of Renaissance music). A specific year
     is usually very hard to pinpoint so instead this field is
     a string which allows for best-effort description of the year
-    range if a singular year may not be pinned down.
+    range if a singular year cannot be pinned down.
     Should be null if unknown."""
 
     page_number: int | str | None
