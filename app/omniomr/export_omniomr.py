@@ -50,7 +50,11 @@ def export_omniomr(
     manifest.created_at = now
     manifest.write_to_file(output_folder / "musicorpus.json")
 
-    # TODO: README.md
+    # README.md
+    shutil.copy(
+        assets_folder / "README.md",
+        output_folder / "README.md"
+    )
 
     # LICENSE.txt
     shutil.copy(
