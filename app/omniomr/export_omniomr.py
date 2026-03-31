@@ -4,6 +4,7 @@ from ..PageMetadata import PageMetadata
 from ..MusicorpusManifest import MusicorpusManifest
 from .InputLayoutFile import InputLayoutFile
 from .InputDpiFile import InputDpiFile
+from .download_specification_pdf import download_specification_pdf
 from .create_page_folders import create_page_folders
 from .distribute_page_images import distribute_page_images
 from .distribute_page_mscz_files import distribute_page_mscz_files
@@ -42,6 +43,11 @@ def export_omniomr(
 
     # create the output folder
     output_folder.mkdir(parents=True)
+
+    # musicorpus-specification.pdf
+    download_specification_pdf(
+        output_folder / "musicorpus-specification.pdf"
+    )
 
     # musicorpus.json
     manifest = MusicorpusManifest.load_from_file(
