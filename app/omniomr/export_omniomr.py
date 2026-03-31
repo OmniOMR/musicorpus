@@ -20,6 +20,7 @@ from .convert_mung_to_coco_with_maps import convert_mung_to_coco_with_maps
 from ..mung_to_coco import CocoDatasetMetadata, CocoLicense
 from datetime import datetime
 from ..Splits import Splits
+import shutil
 
 
 def export_omniomr(
@@ -51,7 +52,11 @@ def export_omniomr(
 
     # TODO: README.md
 
-    # TODO: LICENSE.txt
+    # LICENSE.txt
+    shutil.copy(
+        assets_folder / "LICENSE.txt",
+        output_folder / "LICENSE.txt"
+    )
 
     # splits.json
     splits = Splits.read_from_file(assets_folder / "splits.json")
