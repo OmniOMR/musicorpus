@@ -98,6 +98,16 @@ def load_page_metadatas(
             json_data["dpi"] = dpi_file.dpis.get(page_name, None)
         else:
             json_data["dpi"] = None
+        
+        # set link
+        # (and verify its value in the metadata CSV table)
+        book_uuid, page_uuid = page_name.split("_")
+        computed_link = f"https://www.digitalniknihovna.cz/mzk/view/uuid:{book_uuid}?page=uuid:{page_uuid}"
+        computed_permalink = f"https://www.digitalniknihovna.cz/mzk/uuid/uuid:{page_uuid}"
+        if json_data["link"] is not None:
+            assert json_data["link"] in [computed_link, computed_permalink], \
+                f"Metadata row {page_name} has incorrect URL link"
+        json_data["link"] = computed_permalink
 
         # parse the JSON
         page_metadatas[page_name] = PageMetadata \
