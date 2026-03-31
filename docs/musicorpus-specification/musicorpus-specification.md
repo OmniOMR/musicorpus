@@ -477,7 +477,7 @@ This is an example record:
     "institution_local_siglum": "MZK",
     "shelfmark": null,
     "rism_id_number": "sources/1001086460",
-    "date": 1804,
+    "date": "1804",
     "page_number": 14,
     "page_size": [235, 285],
     "dpi": 275,
@@ -512,7 +512,7 @@ Then come fields related to the source:
 - **`institution_local_siglum`**: The abbreviation by which the institution refers to itself. Should be `false` if the source document is not held in an institution.
 - **`shelfmark`**: Identifies the source (manuscript, print, ...) within the institution's collection. Same as RISM shelfmark. Should be `null` if unknown. Should be `false` if the source document is not held in an institution.
 - **`rism_id_number`**: If the source is catalogued in RISM, then this should be given. This field acts as a fallback if `shelfmark` does not exist. Should be `false` if not catalogued or `null` if unknown.
-- **`date`**: The year when was the source created. This can be very different from when the music therein was composed (e.g. 20th century editions of Renaissance music). Should be `null` if unknown.
+- **`date`**: The year when was the source created. This can be very different from when the music therein was composed (e.g. 20th century editions of Renaissance music). A specific year is usually very hard to pinpoint so instead this field is a string which allows for best-effort description of the year range if a singular year may not be pinned down. Should be `null` if unknown.
 - **`page_number`**: Some identification of the image within the source. Can be just a number, or foliation (e.g. f55v). Intended to be human-readable. Should be `null` if unknown.
 - **`page_size`**: Size of the physical page/book in millimeters, `[width, height]`. It may be used to estimate DPI if DPI is not explicitly provided (with estimation error given by the margin around the page in the page scan image). Should be `null` if unknown. Also, individual dimensions may be `null` if only one dimension is known.
 - **`dpi`**: Actual DPI at which the image was scanned. Ideally as precise as possible - estimated via color calibration tables or rulers. Should be `null` if unknown.

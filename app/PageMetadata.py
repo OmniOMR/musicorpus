@@ -64,10 +64,13 @@ class PageMetadata:
     given. This field acts as a fallback if shelfmark does not
     exist. Should be false if not catalogued or null if unknown."""
 
-    date: int | None
+    date: str | None
     """The year when was the source created. This can be very
     different from when the music therein was composed (e.g.
-    20th century editions of Renaissance music).
+    20th century editions of Renaissance music). A specific year
+    is usually very hard to pinpoint so instead this field is
+    a string which allows for best-effort description of the year
+    range if a singular year may not be pinned down.
     Should be null if unknown."""
 
     page_number: int | str | None
@@ -235,7 +238,7 @@ class PageMetadata:
             institution_local_siglum=str_f(data["institution_local_siglum"]),
             shelfmark=str_nf(data["shelfmark"]),
             rism_id_number=str_nf(data["rism_id_number"]),
-            date=int_n(data["date"]),
+            date=str_n(data["date"]),
             page_number=int_str_n(data["page_number"]),
             page_size=page_size,
             dpi=int_n(data["dpi"]),
