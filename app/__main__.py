@@ -22,6 +22,20 @@ root_command_handlers: dict[
 ############################
 
 
+# === statistics ===
+
+import app.cli.statistics_command
+app.cli.statistics_command.define_parser(
+    subparsers.add_parser(
+        "statistics",
+        aliases=[],
+        description=
+            "Computes statistics for a MusiCorpus dataset"
+    )
+)
+root_command_handlers["statistics"] = app.cli.statistics_command.execute
+
+
 # === export OmniOMR ===
 
 import app.cli.export_omniomr_command

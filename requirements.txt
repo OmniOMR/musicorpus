@@ -4,3 +4,5 @@ tqdm
 mung==1.2.1
 linearized-musicxml==1.0.0
 pycocotools
+pyyaml
+imagesize==2.0.0
