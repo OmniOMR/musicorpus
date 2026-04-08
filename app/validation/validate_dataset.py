@@ -5,6 +5,7 @@ from ..Splits import Splits
 import traceback
 from .check_folders_contain_files import check_folders_contain_files
 from .validate_musicxml_file import validate_musicxml_file
+from .validate_mung_file import validate_mung_file
 import tqdm
 
 
@@ -205,8 +206,10 @@ def validate_dataset(
     # TODO: validate image subdivisions files
 
     # TODO: validate metadata files
-
+    
     # TODO: validate coco files
+
+    # TODO: validate layout files
 
     # transcription.musicxml
     for musicxml_file in tqdm.tqdm(
@@ -216,5 +219,16 @@ def validate_dataset(
         validate_musicxml_file(
             dataset_path=dataset_path,
             musicxml_file=musicxml_file,
+            errors=errors
+        )
+
+    # transcription.mung
+    for mung_file in tqdm.tqdm(
+        list(dataset_path.glob("**/transcription.mung")),
+        "Validating transcription.mung files"
+    ):
+        validate_mung_file(
+            dataset_path=dataset_path,
+            mung_file=mung_file,
             errors=errors
         )
