@@ -3,6 +3,9 @@ from ..ErrorBag import ErrorBag
 from ..MusicorpusManifest import MusicorpusManifest
 from ..Splits import Splits
 import traceback
+from .check_folders_contain_files import check_folders_contain_files
+from .validate_musicxml_file import validate_musicxml_file
+import tqdm
 
 
 def validate_dataset(
@@ -16,7 +19,10 @@ def validate_dataset(
     
     # === root ===
 
+    print("Checking dataset root files...")
+
     # musicorpus-specification.pdf
+    print("Checking musicorpus-specification.pdf file...")
     if not (dataset_path / "musicorpus-specification.pdf").exists():
         errors.add_error(
             page_name="root",
@@ -25,6 +31,7 @@ def validate_dataset(
         )
     
     # musicorpus.json
+    print("Checking musicorpus.json file...")
     if not (dataset_path / "musicorpus.json").exists():
         errors.add_error(
             page_name="root",
@@ -39,6 +46,7 @@ def validate_dataset(
     # only parsing is done, which will crash if fields are missing
 
     # dataset folder name
+    print("Checking dataset folder name...")
     expected_dataset_folder_name = (
         manifest.short_institution_name +
         "." + manifest.short_dataset_name
@@ -52,6 +60,7 @@ def validate_dataset(
         )
     
     # README.md
+    print("Checking README.md file...")
     if not (dataset_path / "README.md").exists():
         errors.add_error(
             page_name="root",
@@ -60,6 +69,7 @@ def validate_dataset(
         )
 
     # LICENSE.txt
+    print("Checking LICENSE.txt file...")
     if not (dataset_path / "LICENSE.txt").exists():
         errors.add_error(
             page_name="root",
@@ -67,12 +77,11 @@ def validate_dataset(
                 "must be present in the dataset root."
         )
     
-    print(list(dataset_path.glob("splits.*.json")))
-
     # splits.json and splits.*.json
     splits_files = [dataset_path / "splits.json"] + \
         list(dataset_path.glob("splits.*.json"))
     for splits_file_path in splits_files:
+        print("Checking", splits_file_path.name, "file...")
         if not splits_file_path.exists():
             errors.add_error(
                 page_name="root",
@@ -97,6 +106,115 @@ def validate_dataset(
                         traceback.format_exc()
                 )
 
-    # === pages ===
+    # === folder homogeneity ===
 
-    # TODO: validate individual pages
+    print("Checking that folders are homogenous...")
+
+    page_folders = [f for f in dataset_path.iterdir() if f.is_dir()]
+    staff_folders = list(dataset_path.glob("*/Staves/*"))
+    grandstaff_folders = list(dataset_path.glob("*/Grandstaves/*"))
+    system_folders = list(dataset_path.glob("*/Systems/*"))
+
+    page_files: set[str] = set(
+        file.name for page in page_folders
+        for file in page.iterdir() if file.is_file()
+    )
+    staff_files: set[str] = set(
+        file.name for staff in staff_folders
+        for file in staff.iterdir() if file.is_file()
+    )
+    grandstaff_files: set[str] = set(
+        file.name for grandstaff in grandstaff_folders
+        for file in grandstaff.iterdir() if file.is_file()
+    )
+    system_files: set[str] = set(
+        file.name for system in system_folders
+        for file in system.iterdir() if file.is_file()
+    )
+    subdivisions_files = staff_files.union(grandstaff_files).union(system_files)
+    all_files = page_files.union(subdivisions_files)
+
+    print("Page files:", page_files)
+    print("Staff files:", staff_files)
+    print("Grandstaff files:", grandstaff_files)
+    print("System files:", system_files)
+
+    check_folders_contain_files(
+        folders=page_folders,
+        files=page_files,
+        errors=errors,
+        page_name_resolver=lambda folder: folder.name
+    )
+    check_folders_contain_files(
+        folders=staff_folders,
+        files=staff_files,
+        errors=errors,
+        page_name_resolver=lambda folder: folder.parent.parent.name
+    )
+    check_folders_contain_files(
+        folders=grandstaff_folders,
+        files=grandstaff_files,
+        errors=errors,
+        page_name_resolver=lambda folder: folder.parent.parent.name
+    )
+    check_folders_contain_files(
+        folders=system_folders,
+        files=system_files,
+        errors=errors,
+        page_name_resolver=lambda folder: folder.parent.parent.name
+    )
+    
+    # === blacklisted files ===
+
+    print("Checking blacklisted files...")
+
+    if "image.jpeg" in all_files:
+        errors.add_error(
+            page_name="unknown",
+            message="Dataset contains 'image.jpeg' files, " +
+            "but they should really be called 'image.jpg' " +
+            "instead (jpg != jpEg)."
+        )
+    
+    if "transcription.mxl" in all_files:
+        errors.add_error(
+            page_name="unknown",
+            message="Dataset contains 'transcription.mxl' files, " +
+            "but they should really be 'transcription.musicxml' " +
+            "instead. MusiCorpus requires uncompressed MusicXML files."
+        )
+    
+    if "transcription.xml" in all_files:
+        errors.add_error(
+            page_name="unknown",
+            message="Dataset contains 'transcription.xml' files, " +
+            "but they should really be 'transcription.musicxml' " +
+            "instead."
+        )
+    
+    if "metadata.json" in subdivisions_files:
+        errors.add_error(
+            page_name="unknown",
+            message="Dataset contains 'metadata.json' files in subdivision " +
+            "folders. These represent page-level data and should only be " +
+            "present in page folders."
+        )
+
+    # === validating individual file types ===
+
+    # TODO: validate image subdivisions files
+
+    # TODO: validate metadata files
+
+    # TODO: validate coco files
+
+    # transcription.musicxml
+    for musicxml_file in tqdm.tqdm(
+        list(dataset_path.glob("**/transcription.musicxml")),
+        "Validating transcription.musicxml files"
+    ):
+        validate_musicxml_file(
+            dataset_path=dataset_path,
+            musicxml_file=musicxml_file,
+            errors=errors
+        )
