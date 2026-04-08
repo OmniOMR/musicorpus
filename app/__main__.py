@@ -22,6 +22,19 @@ root_command_handlers: dict[
 ############################
 
 
+# === validate ===
+
+import app.cli.validate_command
+app.cli.validate_command.define_parser(
+    subparsers.add_parser(
+        "validate",
+        aliases=[],
+        description=
+            "Validates a MusiCorpus dataset, checks that it has proper structure"
+    )
+)
+root_command_handlers["validate"] = app.cli.validate_command.execute
+
 # === statistics ===
 
 import app.cli.statistics_command
