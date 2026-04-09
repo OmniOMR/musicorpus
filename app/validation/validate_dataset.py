@@ -6,6 +6,7 @@ import traceback
 from .check_folders_contain_files import check_folders_contain_files
 from .validate_musicxml_file import validate_musicxml_file
 from .validate_mung_file import validate_mung_file
+from .validate_metadata_file import validate_metadata_file
 import tqdm
 
 
@@ -103,7 +104,7 @@ def validate_dataset(
             except:
                 errors.add_error(
                     page_name="root",
-                    message="The splits.json file has an issue:\n" +
+                    message=f"The {splits_file_path.name} file has an issue:\n" +
                         traceback.format_exc()
                 )
 
@@ -205,11 +206,21 @@ def validate_dataset(
 
     # TODO: validate image subdivisions files
 
-    # TODO: validate metadata files
+    # metadata.json
+    for metadata_file in tqdm.tqdm(
+        list(dataset_path.glob("**/metadata.json")),
+        "Validating metadata.json files"
+    ):
+        validate_metadata_file(
+            dataset_path=dataset_path,
+            metadata_file=metadata_file,
+            errors=errors
+        )
     
     # TODO: validate coco files
 
     # TODO: validate layout files
+    # (just like coco files)
 
     # transcription.musicxml
     for musicxml_file in tqdm.tqdm(
