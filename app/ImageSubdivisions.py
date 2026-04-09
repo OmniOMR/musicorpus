@@ -26,18 +26,15 @@ class ImageSubdivisions:
             data = json.load(file)
         assert type(data) is dict
 
-        assert "Staves" in data
-        staves = data["Staves"]
+        staves = data.get("Staves", {})
         assert type(staves) is dict
         assert all(type(value) is dict for value in staves.values())
 
-        assert "Grandstaves" in data
-        grandstaves = data["Grandstaves"]
+        grandstaves = data.get("Grandstaves", {})
         assert type(grandstaves) is dict
         assert all(type(value) is dict for value in grandstaves.values())
 
-        assert "Systems" in data
-        systems = data["Systems"]
+        systems = data.get("Systems", {})
         assert type(systems) is dict
         assert all(type(value) is dict for value in systems.values())
 

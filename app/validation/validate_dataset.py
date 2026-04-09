@@ -7,6 +7,7 @@ from .check_folders_contain_files import check_folders_contain_files
 from .validate_musicxml_file import validate_musicxml_file
 from .validate_mung_file import validate_mung_file
 from .validate_metadata_file import validate_metadata_file
+from .validate_image_subdivisions_file import validate_image_subdivisions_file
 import tqdm
 
 
@@ -204,7 +205,16 @@ def validate_dataset(
 
     # === validating individual file types ===
 
-    # TODO: validate image subdivisions files
+    # subdivisions.image.json
+    for image_subdivisions_file in tqdm.tqdm(
+        list(dataset_path.glob("**/subdivisions.image.json")),
+        "Validating subdivisions.image.json files"
+    ):
+        validate_image_subdivisions_file(
+            dataset_path=dataset_path,
+            image_subdivisions_file=image_subdivisions_file,
+            errors=errors
+        )
 
     # metadata.json
     for metadata_file in tqdm.tqdm(
