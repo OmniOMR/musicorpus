@@ -83,7 +83,7 @@ def validate_metadata_file(
     
     _check_field_value("file_name", [
         (metadata_file.parent / "image.jpg")
-            .relative_to(dataset_path)
+            .relative_to(dataset_path.parent)
             .as_posix()
     ])
     _check_field_value("notation", get_args(NotationType))
