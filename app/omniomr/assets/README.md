@@ -33,6 +33,22 @@ Staff, grandstaff and system names consist of ranges of staff numbers on the pag
 The dataset is homogenous across pages, meaning each page provides the same set of annotation files.
 
 
+## Splits
+
+The OmniOMR dataset comes with two splits files:
+
+- `splits.json`
+- `splits.book-consistent.json`
+
+Both define the splitting of the dataset into train/validation/test portions in ratios 60:20:20 pages respectively.
+
+The first splits file was computed randomly and different pages from one book may end up in multiple splits (e.g. train and test). This is default split you should use when running your experiments. When reporting test performance of models on the OmniOMR dataset, evaluate on the `splits.json/test` split.
+
+If you are concerned about generalization to unseed books and domain adaptation, use the second splits file. It is guaranteed to have all pages from a given book always land within only one of the splits.
+
+If you are unsure about which splits file to use, run your experiments on both and report both results.
+
+
 ## Various
 
 All the images behind the dataset are accessible online via the Moravian Library website. The URL above uses both the book UUID and the page UUID, however, only the page UUID is needed to uniquely identify a page globally. The following URL acts as a permalink to a page with the given UUID:
