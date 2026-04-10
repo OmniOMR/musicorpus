@@ -32,6 +32,7 @@ def export_omniomr(
         layout_file: InputLayoutFile,
         dpi_file: InputDpiFile,
         output_folder: Path,
+        ignore_splits_validation: bool
 ):
     """Run the dataset export process (builds the dataset from our soruces)"""
 
@@ -70,12 +71,16 @@ def export_omniomr(
 
     # splits.json
     splits = Splits.read_from_file(assets_folder / "splits.json")
-    splits.check_that_it_covers_page_names_exactly(page_names)
+    if not ignore_splits_validation:
+        splits.check_that_it_covers_page_names_exactly(page_names)
+    else:
+        print("WARNING: IGNORING SPLITS VALIDATION!")
     splits.write_to_file(output_folder / "splits.json")
     
     # splits.book-consistent.json
     splits_bc = Splits.read_from_file(assets_folder / "splits.book-consistent.json")
-    splits_bc.check_that_it_covers_page_names_exactly(page_names)
+    if not ignore_splits_validation:
+        splits_bc.check_that_it_covers_page_names_exactly(page_names)
     splits_bc.write_to_file(output_folder / "splits.book-consistent.json")
 
     # === pages ===

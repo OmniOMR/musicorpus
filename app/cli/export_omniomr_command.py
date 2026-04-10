@@ -58,6 +58,11 @@ def define_parser(parser: argparse.ArgumentParser):
         action="store_true",
         help="Forces an overwrite of the output folder"
     )
+    parser.add_argument(
+        "--ignore_splits_validation",
+        action="store_true",
+        help="Ignores validation of splits page names covering exported pages"
+    )
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
@@ -69,6 +74,7 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
     page_names_file_path = Path(args.page_names)
     output_folder = Path(args.output)
     force = bool(args.force)
+    ignore_splits_validation = bool(args.ignore_splits_validation)
 
     # read page names
     page_names = read_page_names(page_names_file_path)
@@ -106,4 +112,5 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
         layout_file=layout_file,
         dpi_file=dpi_file,
         output_folder=output_folder,
+        ignore_splits_validation=ignore_splits_validation,
     )
