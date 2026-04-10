@@ -19,6 +19,8 @@ from .subdivide_mung_files import subdivide_mung_files
 from .subdivide_musicxml_files import subdivide_musicxml_files
 from .convert_mung_to_coco_with_maps import convert_mung_to_coco_with_maps
 from ..mung_to_coco import CocoDatasetMetadata, CocoLicense
+from .convert_musicxml_to_kern import convert_musicxml_to_kern
+from .convert_musicxml_to_lilypond import convert_musicxml_to_lilypond
 from datetime import datetime
 from ..Splits import Splits
 import shutil
@@ -211,6 +213,20 @@ def export_omniomr(
             name="UFAL.OmniOMR/LICENSE.txt",
             url="musicorpus://UFAL.OmniOMR/LICENSE.txt"
         )
+    )
+
+    # === Alternatives to MusicXML ===
+
+    # transcription.krn
+    convert_musicxml_to_kern(
+        output_folder=output_folder,
+        errors=errors
+    )
+
+    # transcription.ly
+    convert_musicxml_to_lilypond(
+        output_folder=output_folder,
+        errors=errors
     )
     
     # === finalize ===

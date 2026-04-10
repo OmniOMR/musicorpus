@@ -6,3 +6,5 @@ linearized-musicxml==1.0.0
 pycocotools
 pyyaml
 imagesize==2.0.0
+music21
+converter21
