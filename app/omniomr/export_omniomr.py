@@ -149,8 +149,8 @@ def export_omniomr(
             date_created=now
         ),
         image_license=CocoLicense(
-            name="OmniOMR.UFAL/LICENSE.txt",
-            url="musicorpus://OmniOMR.UFAL/LICENSE.txt"
+            name="UFAL.OmniOMR/LICENSE.txt",
+            url="musicorpus://UFAL.OmniOMR/LICENSE.txt"
         )
     )
 
@@ -203,8 +203,8 @@ def export_omniomr(
             date_created=now
         ),
         image_license=CocoLicense(
-            name="OmniOMR.UFAL/LICENSE.txt",
-            url="musicorpus://OmniOMR.UFAL/LICENSE.txt"
+            name="UFAL.OmniOMR/LICENSE.txt",
+            url="musicorpus://UFAL.OmniOMR/LICENSE.txt"
         )
     )
     
