@@ -28,7 +28,7 @@ Now use the CLI:
 
 These are the commands available in the CLI:
 
-- `./musicorpus` **`validate`** `--help`: To be added...
+- `./musicorpus` **`validate`** `--help`: Validates that the given dataset conforms to the MusiCorpus structure and produces a list of errors if not.
 - `./musicorpus` **`inspect`** `--help`: To be added...
 - `./musicorpus` **`statistics`** `--help`: Aggregates dataset statistics across splits, subdivisions, and transcription file formats.
 - `./musicorpus` **`export-omniomr`** `--help`: Used to build the OmniOMR dataset from its sources into the MusiCorpus structure. See [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md) for more.

@@ -56,7 +56,3 @@ def validate_musicxml_file(
             f"must be single-system. The file has " +
             f"{layout_map.system_count} systems. File: {musicxml_file}"
         )
-
-    # === page systems subdivisions ===
-
-    # TODO: check that the number of systems matches systems subdivision
