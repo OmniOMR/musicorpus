@@ -197,6 +197,14 @@ def validate_dataset(
             "instead."
         )
     
+    if "transcription.kern" in all_files:
+        errors.add_error(
+            page_name="unknown",
+            message="Dataset contains 'transcription.kern' files, " +
+            "but they should really be 'transcription.krn' " +
+            "instead."
+        )
+    
     if "metadata.json" in subdivisions_files:
         errors.add_error(
             page_name="unknown",
