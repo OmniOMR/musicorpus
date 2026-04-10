@@ -8,6 +8,8 @@ from .validate_musicxml_file import validate_musicxml_file
 from .validate_mung_file import validate_mung_file
 from .validate_metadata_file import validate_metadata_file
 from .validate_image_subdivisions_file import validate_image_subdivisions_file
+from .validate_coco_object_detection_file import validate_coco_object_detection_file
+from .validate_layout_files import validate_layout_file
 import tqdm
 
 
@@ -227,10 +229,29 @@ def validate_dataset(
             errors=errors
         )
     
-    # TODO: validate coco files
+    # coco-object-detection.json
+    for coco_file in tqdm.tqdm(
+        list(dataset_path.glob("**/coco-object-detection.json")),
+        "Validating coco-object-detection.json files"
+    ):
+        validate_coco_object_detection_file(
+            dataset_path=dataset_path,
+            coco_file=coco_file,
+            manifest=manifest,
+            errors=errors
+        )
 
-    # TODO: validate layout files
-    # (just like coco files)
+    # layout.json
+    for layout_file in tqdm.tqdm(
+        list(dataset_path.glob("**/layout.json")),
+        "Validating layout.json files"
+    ):
+        validate_layout_file(
+            dataset_path=dataset_path,
+            layout_file=layout_file,
+            manifest=manifest,
+            errors=errors
+        )
 
     # transcription.musicxml
     for musicxml_file in tqdm.tqdm(
