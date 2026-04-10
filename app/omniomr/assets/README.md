@@ -15,6 +15,8 @@ The `transcription.mscz` files were batch-converted using MuseScore 4.6.5 to Mus
 
 The `coco-object-detection.json` and `layout.json` files are automatically generated from MuNG transcriptions using a script and so may contain systematic conversion errors.
 
+The `transcription.krn` and `transcription.ly` files are automatically converted from MusicXML files using `music21` and `converter21` libraries.
+
 The `metadata.json` files were filled out manually based on the information tracked by the Moravian Libary. Special attention was given to determining DPI values. These were manually extracted using scanned color-calibration tables with rulers on the last page of each book. The DPI is important to convert from pixel-sizes to physical-sizes of objects, when harmonizing data across pages scanned with different resolution.
 
 
