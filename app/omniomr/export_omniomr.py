@@ -218,16 +218,18 @@ def export_omniomr(
     # === Alternatives to MusicXML ===
 
     # transcription.krn
-    convert_musicxml_to_kern(
-        output_folder=output_folder,
-        errors=errors
-    )
+    # NOTE: Conversion disabled due to hard-to-resolve errors in some pages
+    # convert_musicxml_to_kern(
+    #     output_folder=output_folder,
+    #     errors=errors
+    # )
 
     # transcription.ly
-    convert_musicxml_to_lilypond(
-        output_folder=output_folder,
-        errors=errors
-    )
+    # NOTE: Conversion disabled due to hard-to-resolve errors in some pages
+    # convert_musicxml_to_lilypond(
+    #     output_folder=output_folder,
+    #     errors=errors
+    # )
     
     # === finalize ===
 
