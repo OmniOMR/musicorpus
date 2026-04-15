@@ -6,11 +6,16 @@ from .InputLayoutFile import InputLayoutFile
 from mung.graph import NotationGraph
 from mung.io import read_nodes_from_file
 import xml.etree.ElementTree as ET
-from ..musicxml.MusicXmlLayoutMap import MusicXmlLayoutMap
-from ..musicxml.write_musicxml_tree_to_file import write_musicxml_tree_to_file
-from ..musicxml.crop_mxl_solo_staff import crop_mxl_solo_staff
-from ..musicxml.crop_mxl_piano_staff import crop_mxl_piano_staff
-from ..musicxml.crop_mxl_system import crop_mxl_system
+from lmx.musicxml.layout.MusicXmlLayoutMap \
+    import MusicXmlLayoutMap
+from lmx.musicxml.io.write_musicxml_tree_to_file \
+    import write_musicxml_tree_to_file
+from lmx.musicxml.layout.extract_staff \
+    import extract_staff
+from lmx.musicxml.layout.extract_grandstaff \
+    import extract_grandstaff
+from lmx.musicxml.layout.extract_system \
+    import extract_system
 import traceback
 
 
@@ -99,7 +104,7 @@ def subdivide_musicxml_files(
                 write_musicxml_tree_to_file(
                     (output_folder / page_name / "Staves"
                         / staff_name / "transcription.musicxml"),
-                    crop_mxl_solo_staff(
+                    extract_staff(
                         layout_map=layout_map,
                         staff_location=layout_map.locate_staff_from_page_staff_index(
                             page_index=0,
@@ -120,7 +125,7 @@ def subdivide_musicxml_files(
                 write_musicxml_tree_to_file(
                     (output_folder / page_name / "Grandstaves"
                         / grandstaff_name / "transcription.musicxml"),
-                    crop_mxl_piano_staff(
+                    extract_grandstaff(
                         layout_map=layout_map,
                         upper_staff_location=layout_map.locate_staff_from_page_staff_index(
                             page_index=0,
@@ -144,7 +149,7 @@ def subdivide_musicxml_files(
                 write_musicxml_tree_to_file(
                     (output_folder / page_name / "Systems"
                         / system_name / "transcription.musicxml"),
-                    crop_mxl_system(
+                    extract_system(
                         layout_map=layout_map,
                         page_index=0,
                         page_system_index=page_system_index

@@ -2,7 +2,11 @@ requests
 opencv-python
 tqdm
 mung==1.2.1
-linearized-musicxml==1.0.0
+
+# linearized-musicxml==1.0.0
+# Instead, we use the in-development 2.0.0 version:
+linearized-musicxml @ git+https://github.com/OMR-Research/lmx.git@8648514f5bfa08c594277b2d7821a156c75dd299
+
 pycocotools
 pyyaml
 imagesize==2.0.0

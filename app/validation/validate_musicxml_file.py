@@ -2,7 +2,8 @@ from pathlib import Path
 from ..ErrorBag import ErrorBag
 import xml.etree.ElementTree as ET
 import traceback
-from ..musicxml.MusicXmlLayoutMap import MusicXmlLayoutMap
+from lmx.musicxml.layout.MusicXmlLayoutMap \
+    import MusicXmlLayoutMap
 
 
 def validate_musicxml_file(
