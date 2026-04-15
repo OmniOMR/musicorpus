@@ -49,6 +49,20 @@ app.cli.statistics_command.define_parser(
 root_command_handlers["statistics"] = app.cli.statistics_command.execute
 
 
+# === export GrandStaff ===
+
+import app.cli.export_grandstaff_command
+app.cli.export_grandstaff_command.define_parser(
+    subparsers.add_parser(
+        "export-grandstaff",
+        aliases=[],
+        description=
+            "Exports GrandStaff dataset to the MusiCorpus format"
+    )
+)
+root_command_handlers["export-grandstaff"] = app.cli.export_grandstaff_command.execute
+
+
 # === export OmniOMR ===
 
 import app.cli.export_omniomr_command
