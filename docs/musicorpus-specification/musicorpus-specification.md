@@ -412,6 +412,17 @@ In each page, staff, grandstaff or system, there may be the `image.jpg` file whi
 
 If an image is to be made available, it must be provided in the `.jpg` suffix. The `.jpeg` suffix is not recommended. In addition, you may provide `.png` or `.tif` images if your image is born-digital and you want to preserve its quality.
 
+If you want to provide multiple alternative images for the same sample, you can do so with this naming convention:
+
+```
+image.distorted.jpg
+image.synthetic.jpg
+image.binarized.jpg
+image.{variant}.jpg
+```
+
+An example would be the GrandStaff dataset, which provides synthetic plain images and synthetic distorted images for the sample `.krn` samples. Note that these alternative variants interfere with the semantics of the `subdivisions.image.json` file (see below). Use image variants either when you don't support this subdivisions mapping, or make sure that the mapping matches the default `image.jpg` variant and then optionally provide alternative mappings, such as `subdivisions.image.{variant}.json` when it makes sense.
+
 
 ### `subdivisions.image.json` ✂️
 
@@ -455,6 +466,15 @@ All pixel coordinates are the parent page-level `image.jpg` pixel coordinates (i
 These coordinates locate the subdivided image in the page-level image, they do NOT locate the bounding box of a staff, grandstaff or system. For precise locations of layout-features see the `layout.json` 📏 file.
 
 Because object-detection and semantic-segmentation (COCO) annotations depend directly on the small subdivision image, these mapping bboxes can also be used to translate between subdivision COCO anotations and page-level COCO annotations (position-wise).
+
+If you provide images in multiple variants (the `image.{variant}.jpg` files), then you can optionally provide subdivision mapping for these variants as well via this naming scheme:
+
+```
+subdivisions.image.distorted.json
+subdivisions.image.synthetic.json
+subdivisions.image.binarized.json
+subdivisions.image.{variant}.json
+```
 
 
 ## `metadata.json` 🏛️
