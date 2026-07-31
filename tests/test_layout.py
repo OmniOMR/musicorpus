@@ -91,7 +91,7 @@ def test_the_fixture_layout_reads() -> None:
     layout = Layout.load_from_file(path)
 
     assert len(layout.staves) == 2
-    assert layout.image_metadata.file_name == "TEST.Fixture/page-full/image.jpg"
+    assert layout.image_metadata.file_name == "page-full/image.jpg"
 
 
 def test_coco_bboxes_compare_by_value() -> None:

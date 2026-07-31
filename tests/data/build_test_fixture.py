@@ -32,16 +32,26 @@ from musicorpus.splits import Splits
 
 HERE = Path(__file__).parent
 DATASET = HERE / "TEST.Fixture"
+VALID = HERE / "TEST.Valid"
 
 CREATED_AT = datetime(2026, 3, 5, 10, 16, 37)
 
-MUSICXML = """<?xml version="1.0" encoding="UTF-8"?>
-<score-partwise version="4.0">
-  <part-list>
-    <score-part id="P1"><part-name>Music</part-name></score-part>
-  </part-list>
-  <part id="P1">
-    <measure number="1">
+
+def musicxml(systems: int = 1) -> str:
+    """A minimal but conformant MusicXML document with the given system count.
+
+    The specification asks for line breaks to be encoded explicitly with
+    `<print new-system="yes">`, and lmx refuses a document whose
+    `<identification><encoding><supports>` does not say so. The marker means
+    "a break happens *before* this measure", so the first measure carries none
+    — lmx counts the opening system implicitly, and a break there would claim
+    an empty system before it.
+    """
+    measures = []
+    for index in range(systems):
+        measures.append(
+            f"""    <measure number="{index + 1}">
+      {'<print new-system="yes"/>' if index > 0 else ""}
       <attributes>
         <divisions>1</divisions>
         <key><fifths>0</fifths></key>
@@ -52,10 +62,27 @@ MUSICXML = """<?xml version="1.0" encoding="UTF-8"?>
         <pitch><step>C</step><octave>4</octave></pitch>
         <duration>4</duration><type>whole</type>
       </note>
-    </measure>
+    </measure>"""
+        )
+    body = "\n".join(measures)
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<score-partwise version="4.0">
+  <identification>
+    <encoding>
+      <software>tests/data/build_test_fixture.py</software>
+      <supports element="print" attribute="new-system" type="yes" value="yes"/>
+      <supports element="print" attribute="new-page" type="yes" value="yes"/>
+    </encoding>
+  </identification>
+  <part-list>
+    <score-part id="P1"><part-name>Music</part-name></score-part>
+  </part-list>
+  <part id="P1">
+{body}
   </part>
 </score-partwise>
 """
+
 
 KERN = """**kern
 *clefG2
@@ -74,18 +101,23 @@ def write_image(path: Path, width: int, height: int) -> None:
     assert cv2.imwrite(str(path), image), f"could not write {path}"
 
 
-def write_sample(folder: Path, width: int, height: int, kern: bool = False) -> None:
+def write_sample(
+    folder: Path, width: int, height: int, kern: bool = False, systems: int = 1
+) -> None:
     """The files a page or a subdivision carries."""
     folder.mkdir(parents=True, exist_ok=True)
     write_image(folder / "image.jpg", width, height)
-    (folder / "transcription.musicxml").write_text(MUSICXML)
+    (folder / "transcription.musicxml").write_text(musicxml(systems))
     if kern:
         (folder / "transcription.krn").write_text(KERN)
 
 
-def page_metadata(page_name: str) -> PageMetadata:
+def page_metadata(page_name: str, dataset: str = "TEST.Fixture") -> PageMetadata:
+    """`metadata.json`'s `file_name` is relative to the root/ folder, so it
+    carries the dataset folder name — unlike COCO's, which is relative to the
+    dataset folder. The specification states both, in different sections."""
     return PageMetadata(
-        file_name=Path("TEST.Fixture") / page_name / "image.jpg",
+        file_name=Path(dataset) / page_name / "image.jpg",
         institution_name="Test Library",
         institution_rism_siglum="CZ-Tl",
         institution_local_siglum="TL",
@@ -111,7 +143,7 @@ def page_metadata(page_name: str) -> PageMetadata:
     )
 
 
-def build() -> None:
+def build_reader_fixture() -> None:
     if DATASET.exists():
         shutil.rmtree(DATASET)
     DATASET.mkdir(parents=True)
@@ -172,7 +204,7 @@ def build() -> None:
     # === page-full: every optional file, both subdivision kinds ===
 
     page = DATASET / "page-full"
-    write_sample(page, width=64, height=96, kern=True)
+    write_sample(page, width=64, height=96, kern=True, systems=2)
     write_image(page / "image.distorted.jpg", 64, 96)
     page_metadata("page-full").write_to_file(page / "metadata.json")
 
@@ -195,7 +227,7 @@ def build() -> None:
         image_metadata=CocoImageMetadata(
             width=64,
             height=96,
-            file_name="TEST.Fixture/page-full/image.jpg",
+            file_name="page-full/image.jpg",
             date_captured=CREATED_AT,
         ),
         image_license=CocoLicense(name="CC BY 4.0", url="https://example.org/license"),
@@ -227,8 +259,129 @@ def build() -> None:
 
     write_sample(DATASET / "page-outside-splits", width=64, height=96)
 
-    # === a folder in the root that is not a dataset at all ===
+    print(f"wrote {DATASET}")
+    print(f"  {sum(1 for _ in DATASET.rglob('*') if _.is_file())} files")
 
+
+def minimal_pdf() -> bytes:
+    """A real, openable one-page PDF, so the fixture ships no fake file.
+
+    `musicorpus validate` only checks that the specification PDF is present,
+    but a file called `.pdf` that no reader can open would be a lie sitting in
+    a fixture other people are invited to copy. The cross-reference offsets
+    are computed rather than guessed, which is the only fiddly part.
+    """
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] >>",
+    ]
+
+    out = bytearray(b"%PDF-1.4\n")
+    offsets = []
+    for number, body in enumerate(objects, start=1):
+        offsets.append(len(out))
+        out += b"%d 0 obj\n" % number + body + b"\nendobj\n"
+
+    xref_offset = len(out)
+    out += b"xref\n0 %d\n" % (len(objects) + 1)
+    out += b"0000000000 65535 f \n"
+    for offset in offsets:
+        out += b"%010d 00000 n \n" % offset
+    out += b"trailer\n<< /Size %d /Root 1 0 R >>\n" % (len(objects) + 1)
+    out += b"startxref\n%d\n%%%%EOF\n" % xref_offset
+    return bytes(out)
+
+
+def build_valid_fixture() -> None:
+    """A strictly conformant dataset: `musicorpus validate` must find nothing.
+
+    Everything the reader fixture bends on purpose is straight here — the
+    splits cover the pages exactly, every page carries the same files, every
+    staff folder carries the same files, and the specification PDF is present.
+    It is the baseline the validator tests mutate.
+    """
+    if VALID.exists():
+        shutil.rmtree(VALID)
+    VALID.mkdir(parents=True)
+
+    page_names = ["page-one", "page-two"]
+
+    MusicorpusManifest(
+        musicorpus_version="1.0",
+        full_institution_name="Test Institution",
+        short_institution_name="TEST",
+        institution_url="https://example.org",
+        full_dataset_name="MusiCorpus Valid Fixture",
+        short_dataset_name="Valid",
+        dataset_url="https://example.org/valid",
+        dataset_version="1.0",
+        created_at=CREATED_AT,
+        author_emails=["someone@example.org"],
+    ).write_to_file(VALID / "musicorpus.json")
+
+    (VALID / "README.md").write_text(
+        "# MusiCorpus Valid Fixture\n"
+        "\n"
+        "A tiny synthetic dataset that conforms to the MusiCorpus specification\n"
+        "in every respect the validator checks, so that `musicorpus validate`\n"
+        "reports no errors on it. The validator tests copy it and break one\n"
+        "thing at a time.\n"
+        "\n"
+        "It is generated by `tests/data/build_test_fixture.py`.\n"
+    )
+    (VALID / "LICENSE.txt").write_text(
+        "This fixture contains no real data and is released under the same terms\n"
+        "as the repository that holds it.\n"
+    )
+    (VALID / "musicorpus-specification.pdf").write_bytes(minimal_pdf())
+
+    Splits(
+        train=["page-one"],
+        validation=["page-two"],
+        test=[],
+    ).write_to_file(VALID / "splits.json", run_assertions=False)
+
+    for page_name in page_names:
+        page = VALID / page_name
+        write_sample(page, width=64, height=96, systems=2)
+        page_metadata(page_name, dataset="TEST.Valid").write_to_file(page / "metadata.json")
+
+        staff_bboxes = {"1": CocoBbox(4, 8, 56, 16), "2": CocoBbox(4, 40, 56, 16)}
+        ImageSubdivisions(staves=staff_bboxes).write_to(page / "subdivisions.image.json")
+
+        Layout(
+            dataset_metadata=CocoDatasetMetadata(
+                version="1.0",
+                description="TEST.Valid",
+                contributor="Test Institution",
+                url="https://example.org/valid",
+                date_created=CREATED_AT,
+            ),
+            image_metadata=CocoImageMetadata(
+                width=64,
+                height=96,
+                file_name=f"{page_name}/image.jpg",
+                date_captured=CREATED_AT,
+            ),
+            image_license=CocoLicense(name="CC BY 4.0", url="https://example.org/license"),
+            staves=list(staff_bboxes.values()),
+            empty_staves=[],
+            grandstaves=[],
+            systems=[],
+            staff_measures=[],
+            grandstaff_measures=[],
+            system_measures=[],
+        ).write_to_file(page / "layout.json")
+
+        for name in staff_bboxes:
+            write_sample(page / "Staves" / name, width=56, height=16)
+
+    print(f"wrote {VALID}")
+    print(f"  {sum(1 for _ in VALID.rglob('*') if _.is_file())} files")
+
+
+def build_non_dataset() -> None:
     other = HERE / "not-a-dataset"
     other.mkdir(exist_ok=True)
     (other / "README.md").write_text(
@@ -236,12 +389,11 @@ def build() -> None:
         "so `Dataset.find_all` must skip it.\n"
     )
 
-    print(f"wrote {DATASET}")
-    print(f"  {sum(1 for _ in DATASET.rglob('*') if _.is_file())} files")
-
 
 if __name__ == "__main__":
-    build()
+    build_reader_fixture()
+    build_valid_fixture()
+    build_non_dataset()
     # a sanity check that what was written reads back
     from musicorpus import Dataset
 

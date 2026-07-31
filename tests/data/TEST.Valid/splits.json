@@ -1,0 +1,9 @@
+{
+    "train": [
+        "page-one"
+    ],
+    "validation": [
+        "page-two"
+    ],
+    "test": []
+}

@@ -58,9 +58,10 @@ def test_load_rejects_a_folder_that_does_not_exist() -> None:
 
 
 def test_find_all_skips_folders_that_are_not_datasets() -> None:
+    """`tests/data` holds two datasets and one folder that is not one."""
     found = Dataset.find_all(DATA)
 
-    assert [d.name for d in found] == ["TEST.Fixture"]
+    assert [d.name for d in found] == ["TEST.Fixture", "TEST.Valid"]
 
 
 def test_find_all_on_a_missing_root_is_empty() -> None:

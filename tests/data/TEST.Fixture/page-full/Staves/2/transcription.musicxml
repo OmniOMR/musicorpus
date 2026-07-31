@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <score-partwise version="4.0">
+  <identification>
+    <encoding>
+      <software>tests/data/build_test_fixture.py</software>
+      <supports element="print" attribute="new-system" type="yes" value="yes"/>
+      <supports element="print" attribute="new-page" type="yes" value="yes"/>
+    </encoding>
+  </identification>
   <part-list>
     <score-part id="P1"><part-name>Music</part-name></score-part>
   </part-list>
   <part id="P1">
     <measure number="1">
+      
       <attributes>
         <divisions>1</divisions>
         <key><fifths>0</fifths></key>
