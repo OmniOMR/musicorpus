@@ -26,10 +26,11 @@ The development environment is `.venv`, created with **python 3.10** — the flo
 ```bash
 .venv/bin/python -m pytest
 .venv/bin/python -m ruff check .
+.venv/bin/python -m ruff format --check .
 .venv/bin/python -m mypy
 ```
 
-`ruff format` is deliberately **not** part of the toolchain. This codebase has a hand-maintained wrapping style — arguments one per line, `+`-concatenated message strings — that the formatter would rewrite wholesale across 5000 lines. Match the surrounding style instead.
+The formatter owns the layout of the code — do not hand-wrap around it, and do not argue with it in review. Its one-time application across the codebase is commit `5d954e3`, listed in [.git-blame-ignore-revs](.git-blame-ignore-revs) so that `git blame` looks through it. That file matters more for the next such commit than for this one: `ruff format` mostly joined lines here, and git's own matching already traces most of them back on its own.
 
 mypy is not `strict`. mung, pycocotools, music21, converter21 and cv2 ship no type information, so strict mode would report hundreds of errors that say nothing about correctness. The configuration in `pyproject.toml` is the contract; tighten it as annotations arrive rather than adding `# type: ignore`.
 

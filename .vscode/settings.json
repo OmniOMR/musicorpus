@@ -9,10 +9,12 @@
 
     "python.testing.pytestEnabled": true,
 
-    // Deliberately no format-on-save: `ruff format` is not part of this
-    // repository's toolchain, and turning it on here would rewrite the
-    // hand-maintained wrapping style of whatever file you happen to open.
-    // See CLAUDE.md.
+    // The formatter owns the layout of the code and CI checks it, so saving a
+    // file should produce what CI expects rather than something to fix later.
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.formatOnSave": true
+    },
 
     "search.exclude": {
         "**/.venv": true,
