@@ -1,11 +1,11 @@
 # Computing OmniOMR splits
 
-OmniOMR dataset contains the `splits.json 🪓` and `splits.book-consistent.json 🪓` files. These are frozen in the folder `app/omniomr/assets` and tracked by git. This documentation page describes how you can generate them from scratch, or extend them with new pages when the dataset grows.
+OmniOMR dataset contains the `splits.json 🪓` and `splits.book-consistent.json 🪓` files. These are frozen in the folder `src/musicorpus/exporters/omniomr/assets` and tracked by git. This documentation page describes how you can generate them from scratch, or extend them with new pages when the dataset grows.
 
 The split generation is done using this CLI command:
 
 ```bash
-./musicorpus omniomr-splits --help
+musicorpus omniomr-splits --help
 ```
 
 It requires the same page metadata CSV file that is necessary for the OmniOMR export (see [Exporting OmniOMR Dataset to MusiCorpus](exporting-omniomr-dataset.md)).
@@ -32,12 +32,12 @@ Now with all the data ready, you can extend the existing `splits.json 🪓` file
 ```bash
 DATE="2026-03-02"
 
-./musicorpus omniomr-splits \
+musicorpus omniomr-splits \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \
   --page_names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
-  --extend_splits app/omniomr/assets/splits.json \
+  --extend_splits src/musicorpus/exporters/omniomr/assets/splits.json \
   --n_attempts 1_000_000 \
-  --output app/omniomr/assets/splits.json \
+  --output src/musicorpus/exporters/omniomr/assets/splits.json \
   --force
 ```
 
@@ -46,12 +46,12 @@ And you can extend the `splits.book-consistent.json 🪓` file with this command
 ```bash
 DATE="2026-03-02"
 
-./musicorpus omniomr-splits \
+musicorpus omniomr-splits \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \
   --page_names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
-  --extend_splits app/omniomr/assets/splits.book-consistent.json \
+  --extend_splits src/musicorpus/exporters/omniomr/assets/splits.book-consistent.json \
   --n_attempts 1_000_000 \
-  --output app/omniomr/assets/splits.book-consistent.json \
+  --output src/musicorpus/exporters/omniomr/assets/splits.book-consistent.json \
   --book_consistent \
   --force
 ```

@@ -55,7 +55,7 @@ ca625f33-b4e1-49a9-bbc4-63130ba0fe70_b611e394-9858-4732-a14c-648f11497bb9
 
 7. Update the `splits.json 🪓` and `splits.book-consistent.json 🪓` files if necessary. For more, see [Computing OmniOMR splits](computing-omniomr-splits.md).
 
-8. Check files in `app/omniomr/assets` that they contain proper values. These include: `README.md`, `musicorpus.json` and `LICENSE.txt`.
+8. Check files in `src/musicorpus/exporters/omniomr/assets` that they contain proper values. These include: `README.md`, `musicorpus.json` and `LICENSE.txt`.
 
 ---
 
@@ -64,7 +64,7 @@ Now with all the data ready, you can run the export with this command:
 ```bash
 DATE="2026-03-02"
 
-./musicorpus export-omniomr \
+musicorpus export-omniomr \
   --ms_documents ~/datasets/MuNG-Studio-Backups/$DATE \
   --ms_editions ~/datasets/OmniOMR-Editions/$DATE \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \

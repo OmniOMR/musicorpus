@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/musicorpus"]
+
+# The lmx dependency is a git URL rather than a PyPI release, which a build
+# refuses to accept unless this says otherwise. It is also what will have to go
+# before this package can be published to PyPI, which rejects direct
+# references outright — see docs/versioning-and-releases.md.
+[tool.hatch.metadata]
+allow-direct-references = true
+
+# The version is read from the git tags rather than written down here, so that
+# every commit builds as a distinct version — see docs/versioning-and-releases.md.
+#
+# `--match v[0-9]*` is not the default and is load-bearing: this repository
+# publishes the *specification* under tags of its own, and a tag like
+# `specification-1.1` would otherwise be matched by setuptools-scm's default
+# `--match *[0-9]*` and read as the version of the code. The two release
+# streams share a tag namespace, so the code has to say which tags are its own.
+[tool.hatch.version]
+source = "vcs"
+raw-options = { git_describe_command = "git describe --dirty --tags --long --match v[0-9]* --abbrev=8" }
+
+[project]
+name = "musicorpus"
+dynamic = ["version"]
+authors = [
+  { name="Jiří Mayer", email="mayer@ufal.mff.cuni.cz" },
+]
+# TODO: these are the requirements.txt dependencies carried over verbatim. Most
+# of them belong to the validator or to the dataset exporters, not to reading a
+# dataset, and they are split into extras in a commit of their own.
+dependencies = [
+    "requests",
+    "opencv-python",
+    "tqdm",
+    "mung==1.2.1",
+    # "linearized-musicxml==1.0.0"
+    # Instead, we use the in-development 2.0.0 version:
+    "linearized-musicxml @ git+https://github.com/OMR-Research/lmx.git@8648514f5bfa08c594277b2d7821a156c75dd299",
+    "pycocotools",
+    "pyyaml",
+    "imagesize==2.0.0",
+    "music21",
+    "converter21",
+]
+description = "Tools for building and consuming datasets in the MusiCorpus format"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+# No upper bound, unlike Zeus: nothing here is tied to a python release, so the
+# package should install on whatever the user already has. The floor is 3.10
+# because the codebase writes `X | None` in annotations that are evaluated at
+# runtime, and because 3.9 has been end-of-life since October 2025.
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Natural Language :: English",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+]
+
+[project.urls]
+Homepage = "https://github.com/OmniOMR/musicorpus"
+Issues = "https://github.com/OmniOMR/musicorpus/issues"
+
+# `scripts`, not `gui-scripts`. The two behave alike on Linux, but a gui-script
+# is built as a no-console executable on Windows, where a CLI would then print
+# nowhere at all.
+[project.scripts]
+musicorpus = "musicorpus.cli.run:run"
