@@ -1,7 +1,8 @@
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
+
 from .coco_bbox import CocoBbox
-import json
 
 
 @dataclass
@@ -22,7 +23,7 @@ class ImageSubdivisions:
 
     @staticmethod
     def load_from(file_path: Path) -> "ImageSubdivisions":
-        with open(file_path, "r") as file:
+        with open(file_path) as file:
             data = json.load(file)
         assert type(data) is dict
 

@@ -1,8 +1,10 @@
-import tqdm
 from pathlib import Path
-from ...image_subdivisions import ImageSubdivisions
-from ...error_bag import ErrorBag
+
 import cv2
+import tqdm
+
+from ...error_bag import ErrorBag
+from ...image_subdivisions import ImageSubdivisions
 
 
 def subdivide_images(

@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from .coco_statistics import CocoStatistics
 from .image_statistics import ImageStatistics
 from .metadata_statistics import MetadataStatistics
-from .coco_statistics import CocoStatistics
-from .musicxml_statistics import MusicXmlStatistics
 from .mung_statistics import MungStatistics
+from .musicxml_statistics import MusicXmlStatistics
 
 
 @dataclass

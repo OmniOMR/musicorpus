@@ -1,6 +1,8 @@
-import tqdm
 import shutil
 from pathlib import Path
+
+import tqdm
+
 from ...error_bag import ErrorBag
 
 

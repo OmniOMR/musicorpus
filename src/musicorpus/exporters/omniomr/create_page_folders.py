@@ -1,5 +1,6 @@
-import tqdm
 from pathlib import Path
+
+import tqdm
 
 
 def create_page_folders(page_names: list[str], output_folder: Path):

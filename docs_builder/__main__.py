@@ -6,8 +6,8 @@
 # Run from the repo root like this:
 #   python3 -m docs_builder
 
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 
 def markdown_to_html(markdown: str) -> str:
@@ -62,7 +62,10 @@ def build_pdf_file(path_html: Path, path_pdf: Path):
 
 
 def main():
-    markdown_file_path = Path(__file__).parent.parent / "docs" / "musicorpus-specification" / "musicorpus-specification.md"
+    markdown_file_path = (
+        Path(__file__).parent.parent
+        / "docs" / "musicorpus-specification" / "musicorpus-specification.md"
+    )
     html_file_path = Path(__file__).parent / "musicorpus-specification.html"
     pdf_file_path = Path(__file__).parent / "musicorpus-specification.pdf"
     

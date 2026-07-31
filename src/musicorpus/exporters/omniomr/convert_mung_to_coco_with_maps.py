@@ -1,14 +1,21 @@
-import tqdm
+import json
+import traceback
 from pathlib import Path
-from ...image_subdivisions import ImageSubdivisions
-from ...error_bag import ErrorBag
+
+import tqdm
 from mung.graph import NotationGraph
 from mung.io import read_nodes_from_file
-from ...mung_to_coco import mung_to_coco, CocoDatasetMetadata, \
-    CocoLicense, CocoImageMetadata, CocoFromMung
+
+from ...error_bag import ErrorBag
 from ...get_image_size import get_image_size
-import traceback
-import json
+from ...image_subdivisions import ImageSubdivisions
+from ...mung_to_coco import (
+    CocoDatasetMetadata,
+    CocoFromMung,
+    CocoImageMetadata,
+    CocoLicense,
+    mung_to_coco,
+)
 
 
 def convert_mung_to_coco_with_maps(
@@ -38,13 +45,13 @@ def convert_mung_to_coco_with_maps(
             output_folder / page_name
         ] + [
             output_folder / page_name / "Staves" / staff_name
-            for staff_name in subdivisions.staves.keys()
+            for staff_name in subdivisions.staves
         ] + [
             output_folder / page_name / "Grandstaves" / grandstaff_name
-            for grandstaff_name in subdivisions.grandstaves.keys()
+            for grandstaff_name in subdivisions.grandstaves
         ] + [
             output_folder / page_name / "Systems" / system_name
-            for system_name in subdivisions.systems.keys()
+            for system_name in subdivisions.systems
         ]
 
         page_coco: CocoFromMung | None = None

@@ -1,9 +1,10 @@
-from pathlib import Path
-from ..error_bag import ErrorBag
-import xml.etree.ElementTree as ET
 import traceback
-from lmx.musicxml.layout.MusicXmlLayoutMap \
-    import MusicXmlLayoutMap
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+from lmx.musicxml.layout.MusicXmlLayoutMap import MusicXmlLayoutMap
+
+from ..error_bag import ErrorBag
 
 
 def validate_musicxml_file(
@@ -20,9 +21,11 @@ def validate_musicxml_file(
         musicxml_tree: ET.ElementTree = ET.ElementTree(ET.fromstring(
             musicxml_file.read_text("utf-8")
         ))
-        assert musicxml_tree.getroot().tag == "score-partwise", \
+        musicxml_root = musicxml_tree.getroot()
+        assert musicxml_root is not None and \
+            musicxml_root.tag == "score-partwise", \
             "The MusicXML file must have <score-partwise> in the root."
-    except:
+    except Exception:
         errors.add_error(
             page_name=page_name,
             message=f"The file {musicxml_file} cannot be loaded:\n" +
@@ -35,7 +38,7 @@ def validate_musicxml_file(
     # parse musicxml layout (pages, systems, parts, staves)
     try:
         layout_map = MusicXmlLayoutMap(musicxml_tree)
-    except:
+    except Exception:
         errors.add_error(
             page_name=page_name,
             message=f"Failed to load MusicXML layout for file {musicxml_file}:\n" +
@@ -46,14 +49,14 @@ def validate_musicxml_file(
     if layout_map.page_count != 1:
         errors.add_error(
             page_name=page_name,
-            message=f"MusicXML files must be single-page. " +
+            message="MusicXML files must be single-page. " +
             f"File: {musicxml_file}"
         )
     
     if is_subdivision and layout_map.system_count != 1:
         errors.add_error(
             page_name=page_name,
-            message=f"MusicXML files for page subdivisions " +
-            f"must be single-system. The file has " +
+            message="MusicXML files for page subdivisions " +
+            "must be single-system. The file has " +
             f"{layout_map.system_count} systems. File: {musicxml_file}"
         )

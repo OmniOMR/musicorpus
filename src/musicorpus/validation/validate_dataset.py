@@ -1,16 +1,18 @@
+import traceback
 from pathlib import Path
+
+import tqdm
+
 from ..error_bag import ErrorBag
 from ..manifest import MusicorpusManifest
 from ..splits import Splits
-import traceback
 from .check_folders_contain_files import check_folders_contain_files
-from .validate_musicxml_file import validate_musicxml_file
-from .validate_mung_file import validate_mung_file
-from .validate_metadata_file import validate_metadata_file
-from .validate_image_subdivisions_file import validate_image_subdivisions_file
 from .validate_coco_object_detection_file import validate_coco_object_detection_file
+from .validate_image_subdivisions_file import validate_image_subdivisions_file
 from .validate_layout_files import validate_layout_file
-import tqdm
+from .validate_metadata_file import validate_metadata_file
+from .validate_mung_file import validate_mung_file
+from .validate_musicxml_file import validate_musicxml_file
 
 
 def validate_dataset(
@@ -59,7 +61,7 @@ def validate_dataset(
     if dataset_path.name != expected_dataset_folder_name:
         errors.add_error(
             page_name="root",
-            message=f"The dataset folder should be " +
+            message="The dataset folder should be " +
             f"called {expected_dataset_folder_name} but instead " + 
             f"is called {dataset_path.name}"
         )
@@ -104,7 +106,7 @@ def validate_dataset(
                     page_names_by_folders,
                     raise_on_failure=True
                 )
-            except:
+            except Exception:
                 errors.add_error(
                     page_name="root",
                     message=f"The {splits_file_path.name} file has an issue:\n" +
@@ -120,22 +122,22 @@ def validate_dataset(
     grandstaff_folders = list(dataset_path.glob("*/Grandstaves/*"))
     system_folders = list(dataset_path.glob("*/Systems/*"))
 
-    page_files: set[str] = set(
+    page_files: set[str] = {
         file.name for page in page_folders
         for file in page.iterdir() if file.is_file()
-    )
-    staff_files: set[str] = set(
+    }
+    staff_files: set[str] = {
         file.name for staff in staff_folders
         for file in staff.iterdir() if file.is_file()
-    )
-    grandstaff_files: set[str] = set(
+    }
+    grandstaff_files: set[str] = {
         file.name for grandstaff in grandstaff_folders
         for file in grandstaff.iterdir() if file.is_file()
-    )
-    system_files: set[str] = set(
+    }
+    system_files: set[str] = {
         file.name for system in system_folders
         for file in system.iterdir() if file.is_file()
-    )
+    }
     subdivisions_files = staff_files.union(grandstaff_files).union(system_files)
     all_files = page_files.union(subdivisions_files)
 

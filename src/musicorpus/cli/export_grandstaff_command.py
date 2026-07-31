@@ -1,6 +1,8 @@
 import argparse
-from pathlib import Path
 import shutil
+import sys
+from pathlib import Path
+
 from ..exporters.grandstaff.export_grandstaff import export_grandstaff
 
 
@@ -33,12 +35,12 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
     # check output folder name
     if output_folder.name != "PRAIG.GrandStaff":
         print("The output folder must be called 'PRAIG.GrandStaff'.")
-        exit()
+        sys.exit(1)
 
     # clear the output folder
     if output_folder.exists() and not force:
         print("The output folder already exists. Use --force to overwrite it.")
-        exit()
+        sys.exit(1)
     if output_folder.exists() and force:
         shutil.rmtree(output_folder)
 

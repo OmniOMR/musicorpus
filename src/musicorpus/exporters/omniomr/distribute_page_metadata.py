@@ -1,8 +1,9 @@
-import tqdm
-import shutil
 from pathlib import Path
-from ...page_metadata import PageMetadata
+
+import tqdm
+
 from ...error_bag import ErrorBag
+from ...page_metadata import PageMetadata
 
 
 def distribute_page_metadata(

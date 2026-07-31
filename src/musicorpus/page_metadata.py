@@ -1,8 +1,7 @@
+import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, Any, get_args
-import json
-
+from typing import Any, Literal, get_args
 
 NotationType = Literal[
     "CWMN", "mensural", "square",
@@ -187,38 +186,47 @@ class PageMetadata:
 
     @staticmethod
     def load_from_file(file_path: Path) -> "PageMetadata":
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             data = json.load(f)
         return PageMetadata.parse_from_json(data)
 
     @staticmethod
     def parse_from_json(data: dict) -> "PageMetadata":
         def str_n(v) -> str | None:
-            if v is None: return None
+            if v is None:
+                return None
             return str(v)
         
         def str_f(v) -> str | Literal[False]:
-            if v is False: return False
+            if v is False:
+                return False
             return str(v)
         
         def str_nf(v) -> str | None | Literal[False]:
-            if v is None: return None
-            if v is False: return False
+            if v is None:
+                return None
+            if v is False:
+                return False
             return str(v)
         
         def int_n(v) -> int | None:
-            if v is None: return None
+            if v is None:
+                return None
             return int(v)
         
         def int_str_n(v) -> int | str | None:
-            if v is None: return None
-            if type(v) is int: return v
+            if v is None:
+                return None
+            if type(v) is int:
+                return v
             return str(v)
         
         def lit(t, v) -> Any | None:
             values: tuple[str] = get_args(t) # args to Literal[...]
-            if v in values: return v
-            if v is None: return None
+            if v in values:
+                return v
+            if v is None:
+                return None
             raise Exception(f"Value {repr(v)} must be one of {repr(values)}")
         
         if data["page_size"] is not None:

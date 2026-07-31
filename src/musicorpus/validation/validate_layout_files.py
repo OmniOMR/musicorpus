@@ -1,9 +1,15 @@
+import json
 from pathlib import Path
+
 from ..error_bag import ErrorBag
 from ..manifest import MusicorpusManifest
-import json
-from .validate_coco_object_detection_file import validate_info_block, \
-    validate_licenses, validate_images, validate_categories, validate_annotations
+from .validate_coco_object_detection_file import (
+    validate_annotations,
+    validate_categories,
+    validate_images,
+    validate_info_block,
+    validate_licenses,
+)
 
 
 def validate_layout_file(
@@ -16,7 +22,7 @@ def validate_layout_file(
     page_name = relative_path.parts[0]
 
     # load the raw JSON data
-    with open(layout_file, "r") as f:
+    with open(layout_file) as f:
         data: dict = json.load(f)
 
     # get data parts
@@ -77,7 +83,7 @@ def validate_layout_file(
         if category not in whitelist:
             errors.add_error(
                 page_name=page_name,
-                message=f"The layout.json file contains the category " +
+                message="The layout.json file contains the category " +
                 f"'{category}' which is not one of the allowed " +
                 f"categories in this file {whitelist}. In: {layout_file}"
             )

@@ -1,10 +1,11 @@
 import argparse
+import sys
 from pathlib import Path
-from ..read_page_names import read_page_names
+
+from ..exporters.omniomr.calculate_splits import assert_splits_are_book_consistent, calculate_splits
 from ..exporters.omniomr.load_page_metadatas import load_page_metadatas
+from ..read_page_names import read_page_names
 from ..splits import Splits
-from ..exporters.omniomr.calculate_splits import calculate_splits, \
-    assert_splits_are_book_consistent
 
 
 def define_parser(parser: argparse.ArgumentParser):
@@ -84,7 +85,7 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
     # clear the output file
     if output_file.exists() and not force:
         print("The output file already exists. Use --force to overwrite it.")
-        exit()
+        sys.exit(1)
     if output_file.exists() and force:
         output_file.unlink()
 

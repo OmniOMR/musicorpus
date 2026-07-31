@@ -1,7 +1,7 @@
-from typing import Iterable
-from pathlib import Path
-import random
 import json
+import random
+from collections.abc import Iterable
+from pathlib import Path
 
 
 class Splits:
@@ -97,7 +97,7 @@ class Splits:
     
     def get_all_page_names(self) -> list[str]:
         """Returns all page names tracked in all the splits"""
-        page_names = list()
+        page_names = []
         for split_name in self.split_names():
             page_names.extend(self[split_name])
         return page_names
@@ -139,7 +139,7 @@ class Splits:
 
     @staticmethod
     def read_from_file(file_path: Path, run_assertions=True) -> "Splits":
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             _splits = json.load(f)
             splits = Splits(**_splits)
             if run_assertions:
@@ -159,8 +159,10 @@ class Splits:
         Verifies that the two given splits have disjoint page names.
         If one of the splits does not exist, it does nothing.
         """
-        if first_split not in self: return
-        if second_split not in self: return
+        if first_split not in self:
+            return
+        if second_split not in self:
+            return
         overlap = set(self[first_split]) \
             .intersection(set(self[second_split]))
         assert len(overlap) == 0, \
@@ -188,10 +190,10 @@ class Splits:
         
         if raise_on_failure:
             assert len(extra_pages) == 0, \
-                f"These page names are not covered by " + \
+                "These page names are not covered by " + \
                 f"these splits: {repr(extra_pages)}"
             assert len(extra_split_pages) == 0, \
-                f"These page names are present in these splits " + \
+                "These page names are present in these splits " + \
                 f"but missing from the given pages: {repr(extra_split_pages)}"
         
         return len(extra_pages) == 0 and len(extra_split_pages) == 0

@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from pathlib import Path
+from statistics import mean, median, stdev
+
 from ..get_image_size import get_image_size
-from statistics import median, mean, stdev
 
 
 @dataclass

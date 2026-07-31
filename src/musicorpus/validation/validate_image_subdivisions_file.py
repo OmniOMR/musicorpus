@@ -1,9 +1,10 @@
-from pathlib import Path
-from ..error_bag import ErrorBag
-from ..image_subdivisions import ImageSubdivisions
 import traceback
-from ..get_image_size import get_image_size
+from pathlib import Path
+
 from ..coco_bbox import CocoBbox
+from ..error_bag import ErrorBag
+from ..get_image_size import get_image_size
+from ..image_subdivisions import ImageSubdivisions
 
 
 def validate_image_subdivisions_file(
@@ -17,7 +18,7 @@ def validate_image_subdivisions_file(
     # load the subdivisions file
     try:
         subdivisions = ImageSubdivisions.load_from(image_subdivisions_file)
-    except:
+    except Exception:
         errors.add_error(
             page_name=page_name,
             message=f"The file {image_subdivisions_file} cannot be loaded:\n" +
@@ -44,7 +45,7 @@ def validate_image_subdivisions_file(
             if bbox.area != bbox.intersect_with(page_bbox).area:
                 errors.add_error(
                     page_name=page_name,
-                    message=f"In subdivisions.image.json, the " +
+                    message="In subdivisions.image.json, the " +
                     f"{subdivision_message} {name} {repr(bbox)} is not contained " +
                     f"within the page boundaries {repr(page_bbox)}."
                 )
@@ -56,7 +57,7 @@ def validate_image_subdivisions_file(
             if sub_width != bbox.width or sub_height != bbox.height:
                 errors.add_error(
                     page_name=page_name,
-                    message=f"In subdivisions.image.json, the " +
+                    message="In subdivisions.image.json, the " +
                     f"{subdivision_message} {name} bbox size {repr(bbox)} does not match " +
                     f"the subdivision image size ({sub_width}, {sub_height})."
                 )

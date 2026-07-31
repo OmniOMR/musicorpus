@@ -1,7 +1,9 @@
-import tqdm
 from pathlib import Path
-from ...image_subdivisions import ImageSubdivisions
+
+import tqdm
+
 from ...error_bag import ErrorBag
+from ...image_subdivisions import ImageSubdivisions
 
 
 def create_subdivisions_folders(
@@ -23,13 +25,13 @@ def create_subdivisions_folders(
         subdivisions = ImageSubdivisions.load_from(source_path)
         
         # staves
-        for staff_name in subdivisions.staves.keys():
+        for staff_name in subdivisions.staves:
             (output_folder / page_name / "Staves" / staff_name).mkdir(parents=True)
         
         # grandstaves
-        for grandstaff_name in subdivisions.grandstaves.keys():
+        for grandstaff_name in subdivisions.grandstaves:
             (output_folder / page_name / "Grandstaves" / grandstaff_name).mkdir(parents=True)
 
         # systems
-        for system_name in subdivisions.systems.keys():
+        for system_name in subdivisions.systems:
             (output_folder / page_name / "Systems" / system_name).mkdir(parents=True)

@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
-from .split_statistics import SplitStatistics
 from pathlib import Path
+
 from ..splits import Splits
+from .split_statistics import SplitStatistics
 
 
 @dataclass

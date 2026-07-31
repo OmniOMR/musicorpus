@@ -1,0 +1,116 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+    # Release tags too, so that what gets published is what was checked. Only
+    # the code's tags — `specification*` tags release the document and build
+    # nothing.
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # `requires-python` is `>=3.10` with no upper bound, so both ends are
+        # worth checking: the floor is what the annotations require, and a
+        # recent release is where a dependency without wheels would show up
+        # first.
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The version comes from `git describe`, so the build needs the
+          # history *and* the tags. The default checkout is shallow and
+          # fetches neither, which would install this as some `0.1.devN` with
+          # no tag in sight — and on a release tag would silently not produce
+          # the released version. See docs/versioning-and-releases.md.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install
+        run: pip install -e '.[dev]'
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Types
+        run: mypy
+
+      - name: Tests
+        run: pytest -q
+
+  # The package sits in src/ so that an import can only resolve to the
+  # installed distribution — which is worth nothing unless something actually
+  # builds the distribution and looks inside it. The OmniOMR exporter ships
+  # assets that it loads relative to __file__, and a wheel that lost them would
+  # pass every check above while failing for anyone installing it.
+  wheel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Build a wheel
+        run: |
+          pip install build
+          python -m build --wheel --outdir dist
+
+      - name: The wheel carries its data files and its entry point
+        run: |
+          python - <<'PY'
+          import zipfile
+          from pathlib import Path
+
+          wheel = next(Path("dist").glob("*.whl"))
+          names = zipfile.ZipFile(wheel).namelist()
+          print(f"{wheel.name}: {len(names)} files")
+
+          required = [
+              "musicorpus/py.typed",
+              "musicorpus/exporters/omniomr/assets/musicorpus.json",
+              "musicorpus/exporters/omniomr/assets/splits.json",
+              "musicorpus/exporters/omniomr/assets/splits.book-consistent.json",
+              "musicorpus/exporters/omniomr/assets/README.md",
+              "musicorpus/exporters/omniomr/assets/LICENSE.txt",
+          ]
+          missing = [name for name in required if name not in names]
+          if missing:
+              raise SystemExit(f"the wheel is missing: {', '.join(missing)}")
+
+          entry_points = next(name for name in names if name.endswith("entry_points.txt"))
+          text = zipfile.ZipFile(wheel).read(entry_points).decode()
+          if "musicorpus = musicorpus.cli.run:run" not in text:
+              raise SystemExit(f"the console script is not declared:\n{text}")
+
+          print("data files and entry point present")
+          PY
+
+      # The version is derived from the tags, and `--match v[0-9]*` keeps the
+      # specification's tags out of it. A release tag must therefore build a
+      # clean version with no `.dev` suffix — if this ever fails, the tag
+      # namespaces have collided.
+      - name: A release tag builds a clean version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          wheel=$(ls dist/*.whl)
+          echo "built: $wheel"
+          case "$wheel" in
+            *.dev*|*+g*) echo "a release tag must not build a dev version"; exit 1 ;;
+          esac

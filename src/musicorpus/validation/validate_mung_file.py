@@ -1,8 +1,10 @@
-from pathlib import Path
-from ..error_bag import ErrorBag
-from mung.io import read_nodes_from_file
-from mung.graph import NotationGraph
 import traceback
+from pathlib import Path
+
+from mung.graph import NotationGraph
+from mung.io import read_nodes_from_file
+
+from ..error_bag import ErrorBag
 
 
 def validate_mung_file(
@@ -12,12 +14,11 @@ def validate_mung_file(
 ):
     relative_path = mung_file.relative_to(dataset_path)
     page_name = relative_path.parts[0]
-    is_subdivision = len(relative_path.parts) > 2
 
     # load mung file
     try:
-        mung_graph = NotationGraph(read_nodes_from_file(mung_file))
-    except:
+        NotationGraph(read_nodes_from_file(mung_file))
+    except Exception:
         errors.add_error(
             page_name=page_name,
             message=f"The file {mung_file} cannot be loaded:\n" +

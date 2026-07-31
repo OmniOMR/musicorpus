@@ -9,10 +9,10 @@ def read_page_names(file_path: Path) -> list[str]:
     name contain no duplicates.
     """
     # read page names
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         page_names = [
-            l.strip() for l in f.readlines()
-            if l.strip() != "" and not l.startswith("#")
+            line.strip() for line in f.readlines()
+            if line.strip() != "" and not line.startswith("#")
         ]
 
     # check for duplicates

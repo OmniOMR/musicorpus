@@ -1,5 +1,7 @@
-import tqdm
 from pathlib import Path
+
+import tqdm
+
 from ...error_bag import ErrorBag
 from .input_dpi_file import InputDpiFile
 
@@ -29,17 +31,17 @@ def distribute_page_mung_files(
             continue
 
         # copy the file over line-by-line
-        with open(source_path, "r", encoding="utf-8") as source:
-            with open(target_path, "w", encoding="utf-8") as target:
-                for line in source:
+        with open(source_path, encoding="utf-8") as source, \
+                open(target_path, "w", encoding="utf-8") as target:
+            for line in source:
 
-                    # adjust the root node attributes
-                    if line.startswith("<Nodes "):
-                        line = '<Nodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' + \
-                            f'dataset="{mung_dataset_name}" ' + \
-                            f'document="{page_name}" ' + \
-                            f'dpi="{dpi_file.dpis[page_name]}" ' + \
-                            'xsi:noNamespaceSchemaLocation="CVC-MUSCIMA_Schema.xsd">'
+                # adjust the root node attributes
+                if line.startswith("<Nodes "):
+                    line = '<Nodes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' + \
+                        f'dataset="{mung_dataset_name}" ' + \
+                        f'document="{page_name}" ' + \
+                        f'dpi="{dpi_file.dpis[page_name]}" ' + \
+                        'xsi:noNamespaceSchemaLocation="CVC-MUSCIMA_Schema.xsd">'
 
-                    # otherwise just copy the line as-is
-                    target.write(line)
+                # otherwise just copy the line as-is
+                target.write(line)

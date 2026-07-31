@@ -1,8 +1,10 @@
-from mung.node import Node
 from mung.graph import NotationGraph
+from mung.node import Node
 
 
-SORT_KEY = lambda node: node.top + node.left * 0.1
+def staff_sort_key(node: Node) -> float:
+    """Orders staves top-down, breaking ties slightly left-to-right."""
+    return node.top + node.left * 0.1
 
 
 def get_ordered_mung_staves(mung_graph: NotationGraph) -> list[Node]:
@@ -13,5 +15,5 @@ def get_ordered_mung_staves(mung_graph: NotationGraph) -> list[Node]:
         node for node in mung_graph.vertices
         if node.class_name == "staff"
     ]
-    mung_staves.sort(key=SORT_KEY)
+    mung_staves.sort(key=staff_sort_key)
     return mung_staves

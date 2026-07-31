@@ -1,6 +1,6 @@
 import argparse
 import sys
-from typing import Callable
+from collections.abc import Callable
 
 from . import (
     export_grandstaff_command,

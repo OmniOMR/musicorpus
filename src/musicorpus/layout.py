@@ -1,9 +1,9 @@
-from dataclasses import dataclass
-from .coco_bbox import CocoBbox
-from .mung_to_coco import CocoDatasetMetadata, CocoImageMetadata, \
-    CocoLicense, CocoCategoriesMap
 import json
+from dataclasses import dataclass
 from pathlib import Path
+
+from .coco_bbox import CocoBbox
+from .mung_to_coco import CocoCategoriesMap, CocoDatasetMetadata, CocoImageMetadata, CocoLicense
 
 
 @dataclass

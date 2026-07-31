@@ -1,14 +1,20 @@
-from pathlib import Path
-from ...splits import Splits
-from ...page_metadata import PageMetadata, \
-    NotationType, NotationComplexity, ProductionType, \
-        NotationClarity, SystemsComposition
-from collections import Counter, OrderedDict
-from typing import get_args
-import random
-import tqdm
 import math
+import random
+from collections import Counter, OrderedDict
+from pathlib import Path
+from typing import get_args
 
+import tqdm
+
+from ...page_metadata import (
+    NotationClarity,
+    NotationComplexity,
+    NotationType,
+    PageMetadata,
+    ProductionType,
+    SystemsComposition,
+)
+from ...splits import Splits
 
 # Hardcoded size ratios.
 # This is what the resulting split fractions should be.
@@ -141,7 +147,7 @@ def total_elementwise_eucleidian_distance(
     assert len(a) == len(b)
     return sum(
         math.sqrt((i-j) * (i-j))
-        for i, j in zip(a, b)
+        for i, j in zip(a, b, strict=True)
     )
 
 
@@ -160,7 +166,7 @@ def calculate_metadata_distribution_for_split(
         page_metadata = page_metadatas[page_name]
         
         # go over all tracked metadata fields
-        for field_name in BALANCED_METADATA.keys():
+        for field_name in BALANCED_METADATA:
             field_value: str = getattr(page_metadata, field_name)
             metadata_frequencies.update({
                 f"{field_name}::{field_value}": 1
@@ -256,9 +262,9 @@ def make_random_book_consistent_splits(
 
 def assert_splits_are_book_consistent(splits: Splits):
     """Makes sure that books do not overlap between splits"""
-    train = list(set(page_name.split("_")[0] for page_name in splits.train))
-    validation = list(set(page_name.split("_")[0] for page_name in splits.validation))
-    test = list(set(page_name.split("_")[0] for page_name in splits.test))
+    train = list({page_name.split("_")[0] for page_name in splits.train})
+    validation = list({page_name.split("_")[0] for page_name in splits.validation})
+    test = list({page_name.split("_")[0] for page_name in splits.test})
     book_splits = Splits(
         train=train,
         validation=validation,

@@ -80,3 +80,47 @@ Issues = "https://github.com/OmniOMR/musicorpus/issues"
 # nowhere at all.
 [project.scripts]
 musicorpus = "musicorpus.cli.run:run"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+# The rule set is named rather than left to ruff's default, because that
+# default is not stable across ruff versions: 0.16 enables some 415 rules where
+# earlier releases enabled a few dozen, so an unpinned selection means two
+# developers on two ruff versions see two different code bases. `dev` allows
+# `ruff>=0.6`, so this has to be said out loud.
+[tool.ruff.lint]
+select = [
+    "E",       # pycodestyle — including bare `except:`
+    "F",       # pyflakes — unused imports and names, real mistakes
+    "I",       # import sorting
+    "UP",      # constructs made obsolete by the python version we require
+    "B",       # bugbear — likely bugs rather than style
+    "SIM",     # simplifications that remove a branch or a temporary
+    "C4",      # comprehensions written the long way
+    "PLR1722", # `exit()` instead of `sys.exit()`; `exit` is installed by the
+               # `site` module and is simply absent under `python -S`, which
+               # would turn a clean CLI exit into a NameError
+]
+
+# Deliberately not `strict = true`. mung, pycocotools, music21, converter21 and
+# cv2 ship no type information, and this code was written without annotations
+# in places, so strict mode would report hundreds of errors that say nothing
+# about correctness. These settings catch real mistakes inside the functions we
+# have; the screws can be tightened as annotations arrive — and they should be
+# tightened here further than in Zeus, because this package is meant to be
+# imported by other people.
+#
+# No `python_version` here, unlike Zeus, which is pinned to exactly one. This
+# package supports a range, so mypy should check against whichever interpreter
+# it runs on — that is what makes the CI matrix worth having. Pinning it to
+# 3.10 also makes mypy choke on the 3.12 numpy stubs, which use `type`
+# statements it then refuses to parse.
+[tool.mypy]
+files = ["src/musicorpus", "tests"]
+mypy_path = "src"
+ignore_missing_imports = true
+check_untyped_defs = true

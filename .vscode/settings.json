@@ -1,0 +1,23 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+
+    // Run mypy and ruff from the environment rather than the versions bundled
+    // with the extensions, so that the editor reports exactly what
+    // `.venv/bin/python -m mypy` and `-m ruff` report on the command line.
+    "mypy-type-checker.importStrategy": "fromEnvironment",
+    "ruff.importStrategy": "fromEnvironment",
+
+    "python.testing.pytestEnabled": true,
+
+    // Deliberately no format-on-save: `ruff format` is not part of this
+    // repository's toolchain, and turning it on here would rewrite the
+    // hand-maintained wrapping style of whatever file you happen to open.
+    // See CLAUDE.md.
+
+    "search.exclude": {
+        "**/.venv": true,
+        "**/__pycache__": true,
+        "**/*.egg-info": true,
+        "musescore": true
+    }
+}

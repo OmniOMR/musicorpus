@@ -47,7 +47,7 @@ class CocoBbox:
     @staticmethod
     def from_json(json) -> "CocoBbox":
         """Parses the COCO bbox from a JSON list, e.g. [1,2,3,4]"""
-        assert type(json) == list
+        assert isinstance(json, list)
         assert len(json) == 4
         return CocoBbox(*[
             int(i) for i in json

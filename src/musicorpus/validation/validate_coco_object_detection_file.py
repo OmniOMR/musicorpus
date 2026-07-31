@@ -1,12 +1,14 @@
-from pathlib import Path, PosixPath
-from ..error_bag import ErrorBag
-import traceback
-from ..get_image_size import get_image_size
-from ..coco_bbox import CocoBbox
-from ..manifest import MusicorpusManifest
 import json
+import traceback
 from datetime import datetime
+from pathlib import Path, PosixPath
+
 from pycocotools.mask import frPyObjects
+
+from ..coco_bbox import CocoBbox
+from ..error_bag import ErrorBag
+from ..get_image_size import get_image_size
+from ..manifest import MusicorpusManifest
 
 
 def validate_coco_object_detection_file(
@@ -19,7 +21,7 @@ def validate_coco_object_detection_file(
     page_name = relative_path.parts[0]
 
     # load the raw JSON data
-    with open(coco_file, "r") as f:
+    with open(coco_file) as f:
         data: dict = json.load(f)
 
     # get data parts
@@ -92,7 +94,7 @@ def validate_info_block(
         errors.add_error(
             page_name=page_name,
             message=f"The COCO file's 'info.version' ({data_version}) " +
-            f"field must match the 'musicorpus.json/dataset_version' " +
+            "field must match the 'musicorpus.json/dataset_version' " +
             f"({manifest.dataset_version}) field. In: {coco_file}"
         )
     
@@ -101,7 +103,7 @@ def validate_info_block(
         errors.add_error(
             page_name=page_name,
             message=f"The COCO file's 'info.description' ({data_description}) " +
-            f"field must match the 'musicorpus.json/short_institution_name' " +
+            "field must match the 'musicorpus.json/short_institution_name' " +
             "and 'musicorpus.json/short_dataset_name' " +
             f"({dataset_folder_name}) combined fields. In: {coco_file}"
         )
@@ -110,7 +112,7 @@ def validate_info_block(
         errors.add_error(
             page_name=page_name,
             message=f"The COCO file's 'info.contributor' ({data_contributor}) " +
-            f"field must match the 'musicorpus.json/full_institution_name' " +
+            "field must match the 'musicorpus.json/full_institution_name' " +
             f"({manifest.full_institution_name}) field. In: {coco_file}"
         )
     
@@ -118,18 +120,18 @@ def validate_info_block(
         errors.add_error(
             page_name=page_name,
             message=f"The COCO file's 'info.url' ({data_url}) " +
-            f"field must match the 'musicorpus.json/dataset_url' " +
+            "field must match the 'musicorpus.json/dataset_url' " +
             f"({manifest.dataset_url}) field. In: {coco_file}"
         )
     
     try:
         date_created = datetime.strptime(data_date_created, "%Y/%m/%d")
-    except:
+    except Exception:
         errors.add_error(
             page_name=page_name,
             message=f"The COCO file's 'info.date_created' ({data_date_created}) " +
-            f"field must be formatted as 'YYYY/MM/DD'. You can use the " +
-            f"following code in python: `d = datetime.now(); " +
+            "field must be formatted as 'YYYY/MM/DD'. You can use the " +
+            "following code in python: `d = datetime.now(); " +
             f"d.strftime(\"%Y/%m/%d\")` In: {coco_file}" +
             traceback.format_exc()
         )
@@ -139,7 +141,7 @@ def validate_info_block(
         errors.add_error(
             page_name=page_name,
             message=f"The COCO file's 'info.year' ({data_year}) " +
-            f"field must match the 'info.date_created' " +
+            "field must match the 'info.date_created' " +
             f"({data_date_created}) field's year value. In: {coco_file}"
         )
 
@@ -183,8 +185,6 @@ def validate_licenses(
                 f"field is missing. In: {coco_file}"
             )
             continue
-        data_name = str(data_license["name"])
-
         # parse url
         if "url" not in data_license:
             errors.add_error(
@@ -206,7 +206,7 @@ def validate_licenses(
                     message=f"The COCO file's 'licenses[{i}].url' " +
                     f"field is {data_url} which references the " +
                     f"file {full_path}. However this file does not " +
-                    f"exist. Make sure the referenced license is part " +
+                    "exist. Make sure the referenced license is part " +
                     f"of the dataset. In: {coco_file}"
                 )
 
@@ -313,7 +313,7 @@ def validate_images(
                 page_name=page_name,
                 message=f"The COCO file's 'images[{i}].license' " +
                 f"field references ID {data_license}, but this " +
-                f"license ID is not defined in the licenses block. " +
+                "license ID is not defined in the licenses block. " +
                 f"In: {coco_file}"
             )
 
@@ -356,7 +356,8 @@ def validate_categories(
                 page_name=page_name,
                 message=f"The COCO file's 'categories[{i}].id' " +
                 f"field is using a category ID ({data_id}) that was already " +
-                f"defined by some other category ({categories[data_id]}) in this COCO file. In: {coco_file}"
+                f"defined by some other category ({categories[data_id]}) "
+                f"in this COCO file. In: {coco_file}"
             )
         categories[data_id] = data_name
 
@@ -411,7 +412,7 @@ def validate_annotations(
                 page_name=page_name,
                 message=f"The COCO file's 'annotations[{i}].image_id' " +
                 f"field references ID {data_image_id}, but this " +
-                f"image ID is not defined in the images block. " +
+                "image ID is not defined in the images block. " +
                 f"In: {coco_file}"
             )
         
@@ -431,7 +432,7 @@ def validate_annotations(
                 page_name=page_name,
                 message=f"The COCO file's 'annotations[{i}].category_id' " +
                 f"field references ID {data_category_id}, but this " +
-                f"category ID is not defined in the categories block. " +
+                "category ID is not defined in the categories block. " +
                 f"In: {coco_file}"
             )
         
@@ -450,7 +451,7 @@ def validate_annotations(
             errors.add_error(
                 page_name=page_name,
                 message=f"The COCO file's 'annotations[{i}].iscrowd' " +
-                f"field must be 0, since we are annotating music " +
+                "field must be 0, since we are annotating music " +
                 f"notation glyph instances. In: {coco_file}"
             )
 
@@ -466,7 +467,7 @@ def validate_annotations(
         # verify bbox is parsable
         try:
             data_bbox = CocoBbox.from_json(data_annotation["bbox"])
-        except:
+        except Exception:
             errors.add_error(
                 page_name=page_name,
                 message=f"The COCO file's 'annotations[{i}].bbox' " +
@@ -497,7 +498,7 @@ def validate_annotations(
                     "Segmentation must be a list (polygons) or dict (RLE). " +
                     "See the MusiCorpus specification for more."
                 )
-        except:
+        except Exception:
             errors.add_error(
                 page_name=page_name,
                 message=f"The COCO file's 'annotations[{i}].segmentation' " +

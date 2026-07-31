@@ -1,17 +1,19 @@
+from functools import reduce
 from pathlib import Path
-from ...error_bag import ErrorBag
-from mung.node import Node
+
+import tqdm
 from mung.graph import NotationGraph
 from mung.io import read_nodes_from_file
-from .input_layout_file import InputLayoutFile
+from mung.node import Node
+
+from ...coco_bbox import CocoBbox
+from ...error_bag import ErrorBag
+from ...get_image_size import get_image_size
 from ...get_ordered_mung_staves import get_ordered_mung_staves
 from ...get_ordered_mung_systems import get_ordered_mung_systems
-import tqdm
 from ...layout import Layout
-from ...coco_bbox import CocoBbox
-from ...mung_to_coco import CocoLicense, CocoDatasetMetadata, CocoImageMetadata
-from functools import reduce
-from ...get_image_size import get_image_size
+from ...mung_to_coco import CocoDatasetMetadata, CocoImageMetadata, CocoLicense
+from .input_layout_file import InputLayoutFile
 
 
 def create_layout_files(

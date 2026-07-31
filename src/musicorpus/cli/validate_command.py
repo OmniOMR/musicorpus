@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+
 from ..error_bag import ErrorBag
 from ..validation.validate_dataset import validate_dataset
 

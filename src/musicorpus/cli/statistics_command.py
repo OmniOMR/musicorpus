@@ -1,8 +1,10 @@
 import argparse
-from pathlib import Path
-from ..statistics.compute_statistics import compute_statistics
-import yaml
 import sys
+from pathlib import Path
+
+import yaml
+
+from ..statistics.compute_statistics import compute_statistics
 
 
 def define_parser(parser: argparse.ArgumentParser):

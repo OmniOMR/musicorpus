@@ -1,11 +1,17 @@
-from pathlib import Path
-from ..error_bag import ErrorBag
-from ..page_metadata import PageMetadata, NotationType, \
-    NotationComplexity, NotationClarity, SystemsComposition, \
-    ProductionType
-import traceback
 import json
-from typing import get_args, Any
+import traceback
+from pathlib import Path
+from typing import Any, get_args
+
+from ..error_bag import ErrorBag
+from ..page_metadata import (
+    NotationClarity,
+    NotationComplexity,
+    NotationType,
+    PageMetadata,
+    ProductionType,
+    SystemsComposition,
+)
 
 
 def validate_metadata_file(
@@ -15,10 +21,9 @@ def validate_metadata_file(
 ):
     relative_path = metadata_file.relative_to(dataset_path)
     page_name = relative_path.parts[0]
-    is_subdivision = len(relative_path.parts) > 2
     
     # load the raw JSON
-    with open(metadata_file, "r") as f:
+    with open(metadata_file) as f:
         data: dict = json.load(f)
     
     # === check field types ===
@@ -95,8 +100,8 @@ def validate_metadata_file(
     # === try parsing the file ===
 
     try:
-        metadata = PageMetadata.load_from_file(metadata_file)
-    except:
+        PageMetadata.load_from_file(metadata_file)
+    except Exception:
         errors.add_error(
             page_name=page_name,
             message=f"The file {metadata_file} cannot be loaded:\n" +

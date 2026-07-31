@@ -1,17 +1,18 @@
-import tqdm
-from pathlib import Path
-from ...error_bag import ErrorBag
-from ...coco_bbox import CocoBbox
-from ...image_subdivisions import ImageSubdivisions
-from ...get_image_size import get_image_size
-from ...hidden_prints import HiddenPrints
-from .input_layout_file import InputLayoutFile
-from mung.graph import NotationGraph
-from mung.io import read_nodes_from_file
 from functools import reduce
 from itertools import chain
+from pathlib import Path
+
+import tqdm
+from mung.graph import NotationGraph
+from mung.io import read_nodes_from_file
+
+from ...coco_bbox import CocoBbox
+from ...error_bag import ErrorBag
+from ...get_image_size import get_image_size
 from ...get_ordered_mung_staves import get_ordered_mung_staves
 from ...get_ordered_mung_systems import get_ordered_mung_systems
+from ...image_subdivisions import ImageSubdivisions
+from .input_layout_file import InputLayoutFile
 
 
 def compute_image_subdivisions_from_mung(
@@ -59,10 +60,10 @@ def compute_image_subdivisions_from_mung(
         mung_systems = get_ordered_mung_systems(mung_graph)
 
         # verify all systems are of the same size
-        if len(set(len(system) for system in mung_systems)) != 1:
+        if len({len(system) for system in mung_systems}) != 1:
             errors.add_error(
                 page_name,
-                f"MuNG-detected systems do not have equal number of staves."
+                "MuNG-detected systems do not have equal number of staves."
             )
             continue
 

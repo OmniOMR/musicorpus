@@ -1,6 +1,7 @@
+from pathlib import Path
+
 from mung.graph import NotationGraph
 from mung.io import write_nodes_to_string
-from pathlib import Path
 
 
 def write_mung(

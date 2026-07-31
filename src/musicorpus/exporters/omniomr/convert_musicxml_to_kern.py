@@ -1,9 +1,11 @@
-from pathlib import Path
-from ...error_bag import ErrorBag
-import tqdm
-import music21
-import converter21
 import traceback
+from pathlib import Path
+
+import converter21
+import music21
+import tqdm
+
+from ...error_bag import ErrorBag
 
 
 def convert_musicxml_to_kern(
@@ -28,6 +30,6 @@ def convert_musicxml_to_kern(
         except Exception:
             errors.add_error(
                 page_name=page_name,
-                message=f"Failed to convert MusicXML to Kern. " +
+                message="Failed to convert MusicXML to Kern. " +
                 f"In: {musicxml_path}\n" + traceback.format_exc()
             )

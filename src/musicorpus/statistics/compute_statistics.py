@@ -1,7 +1,9 @@
 from pathlib import Path
-from .dataset_statistics import DatasetStatistics
-from ..splits import Splits
+
 import tqdm
+
+from ..splits import Splits
+from .dataset_statistics import DatasetStatistics
 
 
 def compute_statistics(

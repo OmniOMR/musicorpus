@@ -1,7 +1,9 @@
+from collections.abc import Callable
 from pathlib import Path
-from ..error_bag import ErrorBag
-from typing import Callable
+
 import tqdm
+
+from ..error_bag import ErrorBag
 
 
 def check_folders_contain_files(

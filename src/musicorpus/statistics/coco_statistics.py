@@ -1,6 +1,6 @@
+import json
 from dataclasses import dataclass
 from pathlib import Path
-import json
 
 
 @dataclass
@@ -25,7 +25,7 @@ class CocoStatistics:
             return
         
         # load the JSON file
-        with open(coco_path, "r") as f:
+        with open(coco_path) as f:
             data = json.load(f)
 
         # update statistics

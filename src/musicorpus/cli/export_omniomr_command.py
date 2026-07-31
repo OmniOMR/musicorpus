@@ -1,11 +1,13 @@
 import argparse
-from pathlib import Path
 import shutil
-from ..read_page_names import read_page_names
+import sys
+from pathlib import Path
+
 from ..exporters.omniomr.export_omniomr import export_omniomr
-from ..exporters.omniomr.input_layout_file import InputLayoutFile
 from ..exporters.omniomr.input_dpi_file import InputDpiFile
+from ..exporters.omniomr.input_layout_file import InputLayoutFile
 from ..exporters.omniomr.load_page_metadatas import load_page_metadatas
+from ..read_page_names import read_page_names
 
 
 def define_parser(parser: argparse.ArgumentParser):
@@ -82,12 +84,12 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
     # check output folder name
     if output_folder.name != "UFAL.OmniOMR":
         print("The output folder must be called 'UFAL.OmniOMR'.")
-        exit()
+        sys.exit(1)
 
     # clear the output folder
     if output_folder.exists() and not force:
         print("The output folder already exists. Use --force to overwrite it.")
-        exit()
+        sys.exit(1)
     if output_folder.exists() and force:
         shutil.rmtree(output_folder)
 

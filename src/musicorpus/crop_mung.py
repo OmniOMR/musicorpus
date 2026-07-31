@@ -1,6 +1,8 @@
-from .coco_bbox import CocoBbox
-from mung.graph import NotationGraph, Node
 from copy import deepcopy
+
+from mung.graph import Node, NotationGraph
+
+from .coco_bbox import CocoBbox
 
 
 def crop_mung(mung_graph: NotationGraph, bbox: CocoBbox):
@@ -15,8 +17,9 @@ def crop_mung(mung_graph: NotationGraph, bbox: CocoBbox):
 
     # remove nodes outside the bbox
     for node in list(mung_graph.vertices):
-        t, l = node.middle
-        if t < bbox.top or t > bbox.bottom or l < bbox.left or l > bbox.right:
+        top, left = node.middle
+        if top < bbox.top or top > bbox.bottom \
+                or left < bbox.left or left > bbox.right:
             remove_precedence_edges_for_node(mung_graph, node)
             mung_graph.remove_vertex(node.id)
     

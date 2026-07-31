@@ -1,7 +1,7 @@
+import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-import json
 
 
 @dataclass
@@ -48,7 +48,7 @@ class MusicorpusManifest:
 
     @staticmethod
     def load_from_file(file_path: Path) -> "MusicorpusManifest":
-        with open(file_path, "r") as f:
+        with open(file_path) as f:
             data = json.load(f)
         return MusicorpusManifest(
             musicorpus_version=str(data["musicorpus_version"]),

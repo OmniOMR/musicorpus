@@ -1,6 +1,7 @@
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
-from collections import Counter
+
 from ..page_metadata import PageMetadata
 
 

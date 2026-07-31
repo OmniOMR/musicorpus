@@ -1,11 +1,13 @@
-import tqdm
 from pathlib import Path
-from ...image_subdivisions import ImageSubdivisions
-from ...error_bag import ErrorBag
-from ...crop_mung import crop_mung
-from ...write_mung import write_mung
+
+import tqdm
 from mung.graph import NotationGraph
 from mung.io import read_nodes_from_file
+
+from ...crop_mung import crop_mung
+from ...error_bag import ErrorBag
+from ...image_subdivisions import ImageSubdivisions
+from ...write_mung import write_mung
 
 
 def subdivide_mung_files(

@@ -1,9 +1,9 @@
-from ...page_metadata import PageMetadata
-from .input_dpi_file import InputDpiFile
-from pathlib import Path
 import csv
 import logging
+from pathlib import Path
 
+from ...page_metadata import PageMetadata
+from .input_dpi_file import InputDpiFile
 
 # (so far there are no changes, but may be added in the future)
 CSV_TO_MUSICORPUS_FIELD_MAP: dict[str, str] = {
@@ -43,7 +43,7 @@ def load_page_metadatas(
     """
     
     # read the CSV
-    with open(metadata_file_path, "r") as f:
+    with open(metadata_file_path) as f:
         reader = csv.DictReader(f)
         rows = list(reader)
 
@@ -117,10 +117,11 @@ def load_page_metadatas(
 
 
 def process_page_size(page_size_string):
-    """Converts the string representation of page size (e.g. "[200, 240]") into an actual tuple of integers.
-    Note that there are many variations of uncertainty. While the strings should always look like "[200, 400]",
-    often there are question marks where the dimension cannot be determined. In that case, we mark question
-    marks as None.
+    """Converts the string representation of page size (e.g. "[200, 240]")
+    into an actual tuple of integers. Note that there are many variations of
+    uncertainty. While the strings should always look like "[200, 400]", often
+    there are question marks where the dimension cannot be determined. In that
+    case, we mark question marks as None.
     """
     result = None
     try:
@@ -137,30 +138,48 @@ def process_page_size(page_size_string):
             return result
 
     except SyntaxError:
-        logging.debug(f"Could not parse page size string '{page_size_string}' as a list of two integers.")
+        logging.debug(
+            f"Could not parse page size string "
+            f"'{page_size_string}' as a list of two integers."
+        )
         pass
     except TypeError:
-        logging.debug(f"Could not parse page size string '{page_size_string}' as a list of two integers.")
+        logging.debug(
+            f"Could not parse page size string "
+            f"'{page_size_string}' as a list of two integers."
+        )
         pass
     except NameError:
-        logging.debug(f"Could not parse page size string '{page_size_string}' as a list of two integers.")
+        logging.debug(
+            f"Could not parse page size string "
+            f"'{page_size_string}' as a list of two integers."
+        )
         pass
 
     # Situations where we couldn't just eval to a tuple or list.
     if not page_size_string.startswith("[") or not page_size_string.endswith("]"):
-        logging.debug(f"Page size string '{page_size_string}' does not start with '[' and end with ']'."
-                        f" Cannot make parsing attempt.")
+        logging.debug(
+            f"Page size string '{page_size_string}' does not start with '['"
+            f" and end with ']'. Cannot make parsing attempt."
+        )
         return None
 
     if "," not in page_size_string:
-        logging.debug(f"Page size string '{page_size_string}' does not contain a comma separating the dimensions.")
+        logging.debug(
+            f"Page size string '{page_size_string}' does not contain"
+            f" a comma separating the dimensions."
+        )
         return None
 
-    # Try to split the string and parse the dimensions separately, marking any question marks as None.
+    # Try to split the string and parse the dimensions separately,
+    # marking any question marks as None.
     try:
         dimensions = page_size_string[1:-1].split(",")  # Account for [ and ]
         if len(dimensions) != 2:
-            logging.debug(f"Page size string '{page_size_string}' does not contain exactly two dimensions separated by a comma.")
+            logging.debug(
+                f"Page size string '{page_size_string}' does not contain"
+                f" exactly two dimensions separated by a comma."
+            )
             return None
 
         width_str, height_str = dimensions

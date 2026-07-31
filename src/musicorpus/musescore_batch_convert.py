@@ -1,14 +1,27 @@
-from pathlib import Path
-import tempfile
 import json
 import os
+import tempfile
+from pathlib import Path
+
 import requests
 
+MSCORE_APPIMAGE = "MuseScore-Studio-4.6.5.253511702-x86_64.AppImage"
+"File name of the MuseScore linux AppImage executable"
 
-MSCORE_DOWNLOAD_URL = "https://github.com/musescore/MuseScore/releases/download/v4.6.5/MuseScore-Studio-4.6.5.253511702-x86_64.AppImage"
+MSCORE_DOWNLOAD_URL = (
+    "https://github.com/musescore/MuseScore/releases/download/v4.6.5/" + MSCORE_APPIMAGE
+)
 "URL from which MuseScore can be downloaded"
 
-MSCORE: str = str((Path(__file__).parent.parent / "musescore" / "MuseScore-Studio-4.6.5.253511702-x86_64.AppImage").absolute())
+# Relative to the working directory, not to this file. It used to be
+# `__file__.parent.parent`, which pointed at the repository root only because
+# the code lived in `app/`; from `src/musicorpus/` it would point at `src/`,
+# and from an installed package at site-packages. The CLI is documented as
+# being run from the repository root, and `musescore/` there is gitignored,
+# which is where this already downloaded to.
+# TODO: lmx ships a `MuseScore` helper that does this properly, and lmx is
+# already a dependency — this module should defer to it.
+MSCORE: str = str((Path.cwd() / "musescore" / MSCORE_APPIMAGE).absolute())
 "Absolute path to the MuseScore linux AppImage executable"
 
 
@@ -46,7 +59,9 @@ def musescore_batch_convert(
         return
     
     # run musescore conversion
-    tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
+    # not a context manager on purpose: the file has to be closed and still
+    # exist on disk while MuseScore reads it, and is unlinked in the `finally`
+    tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)  # noqa: SIM115
     try:
         json.dump(conversion, tmp)
         tmp.close()
@@ -54,10 +69,10 @@ def musescore_batch_convert(
         # clear musescore settings, since it may remember not to print
         # page and system breaks, but we do want those to be printed
         assert os.system(
-            f"rm -f ~/.config/MuseScore/MuseScore3.ini"
+            "rm -f ~/.config/MuseScore/MuseScore3.ini"
         ) == 0
         assert os.system(
-            f"rm -f ~/.config/MuseScore/MuseScore4.ini"
+            "rm -f ~/.config/MuseScore/MuseScore4.ini"
         ) == 0
 
         print("Running MusicXML conversion...")
@@ -76,6 +91,7 @@ def download_musescore_if_missing():
     
     # download musescore
     print("Downloading MuseScore...")
+    Path(MSCORE).parent.mkdir(parents=True, exist_ok=True)
     response = requests.get(MSCORE_DOWNLOAD_URL)
     with open(MSCORE, "wb") as f:
         f.write(response.content)

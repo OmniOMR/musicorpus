@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from ...error_bag import ErrorBag
 from ...musescore_batch_convert import musescore_batch_convert
 

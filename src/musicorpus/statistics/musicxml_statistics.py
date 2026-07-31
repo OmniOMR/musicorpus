@@ -1,6 +1,6 @@
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
-import xml.etree.ElementTree as ET
 
 
 @dataclass
@@ -32,7 +32,9 @@ class MusicXmlStatistics:
         musicxml_tree: ET.ElementTree = ET.ElementTree(ET.fromstring(
             musicxml_path.read_text("utf-8")
         ))
-        assert musicxml_tree.getroot().tag == "score-partwise"
+        musicxml_root = musicxml_tree.getroot()
+        assert musicxml_root is not None
+        assert musicxml_root.tag == "score-partwise"
         
         self.count += 1
         self._add_measures(musicxml_tree)
@@ -50,5 +52,4 @@ class MusicXmlStatistics:
     def _add_notes(self, musicxml_tree: ET.ElementTree):
         for part_element in musicxml_tree.findall("part"):
             for measure_element in part_element.findall("measure"):
-                for note_element in measure_element.findall("note"):
-                    self.notes += 1
+                self.notes += len(measure_element.findall("note"))

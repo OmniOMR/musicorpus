@@ -1,11 +1,13 @@
-from mung.graph import NotationGraph
-from .coco_bbox import CocoBbox
+import json
 from dataclasses import dataclass
-from pycocotools.mask import area, frPyObjects
-import numpy as np
 from datetime import datetime
 from pathlib import Path
-import json
+
+import numpy as np
+from mung.graph import NotationGraph
+from pycocotools.mask import area, frPyObjects
+
+from .coco_bbox import CocoBbox
 
 
 def encode_coco_rle_mask(mask: np.ndarray) -> dict:
@@ -15,7 +17,7 @@ def encode_coco_rle_mask(mask: np.ndarray) -> dict:
     last_element: int = 0
     running_length: int = 0
 
-    for i, element in enumerate(mask.ravel(order="F")):
+    for element in mask.ravel(order="F"):
         if element != 0:
             element = 1
         if element != last_element:

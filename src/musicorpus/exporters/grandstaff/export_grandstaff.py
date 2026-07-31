@@ -1,5 +1,5 @@
-from pathlib import Path
 import tarfile
+from pathlib import Path
 
 
 def export_grandstaff(

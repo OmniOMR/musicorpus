@@ -1,6 +1,6 @@
-import requests
 from pathlib import Path
 
+import requests
 
 DOWNLOAD_URL = "https://github.com/OmniOMR/musicorpus/releases/download/specification/musicorpus-specification_1.0_2026-03-31.pdf"
 
