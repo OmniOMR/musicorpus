@@ -11,7 +11,7 @@ class MungStatistics:
 
     nodes: int = 0
     """Total number of MuNG nodes"""
-    
+
     def to_yaml(self) -> dict:
         return {
             "count": self.count,
@@ -22,7 +22,7 @@ class MungStatistics:
         mung_path = subdivision_folder / "transcription.mung"
         if not mung_path.exists():
             return
-        
+
         # instead of parsing the file, simply process it as a string
         # since it's way faster as it doesn't need to decode RLE masks
         mung_string = mung_path.read_text("utf-8")

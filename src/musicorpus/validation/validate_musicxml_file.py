@@ -7,29 +7,24 @@ from lmx.musicxml.layout.MusicXmlLayoutMap import MusicXmlLayoutMap
 from ..error_bag import ErrorBag
 
 
-def validate_musicxml_file(
-        dataset_path: Path,
-        musicxml_file: Path,
-        errors: ErrorBag
-):
+def validate_musicxml_file(dataset_path: Path, musicxml_file: Path, errors: ErrorBag):
     relative_path = musicxml_file.relative_to(dataset_path)
     page_name = relative_path.parts[0]
     is_subdivision = len(relative_path.parts) > 2
-    
+
     # load the MusicXML file
     try:
-        musicxml_tree: ET.ElementTree = ET.ElementTree(ET.fromstring(
-            musicxml_file.read_text("utf-8")
-        ))
+        musicxml_tree: ET.ElementTree = ET.ElementTree(
+            ET.fromstring(musicxml_file.read_text("utf-8"))
+        )
         musicxml_root = musicxml_tree.getroot()
-        assert musicxml_root is not None and \
-            musicxml_root.tag == "score-partwise", \
+        assert musicxml_root is not None and musicxml_root.tag == "score-partwise", (
             "The MusicXML file must have <score-partwise> in the root."
+        )
     except Exception:
         errors.add_error(
             page_name=page_name,
-            message=f"The file {musicxml_file} cannot be loaded:\n" +
-                traceback.format_exc()
+            message=f"The file {musicxml_file} cannot be loaded:\n" + traceback.format_exc(),
         )
         return
 
@@ -41,22 +36,21 @@ def validate_musicxml_file(
     except Exception:
         errors.add_error(
             page_name=page_name,
-            message=f"Failed to load MusicXML layout for file {musicxml_file}:\n" +
-                traceback.format_exc()
+            message=f"Failed to load MusicXML layout for file {musicxml_file}:\n"
+            + traceback.format_exc(),
         )
         return
 
     if layout_map.page_count != 1:
         errors.add_error(
             page_name=page_name,
-            message="MusicXML files must be single-page. " +
-            f"File: {musicxml_file}"
+            message="MusicXML files must be single-page. " + f"File: {musicxml_file}",
         )
-    
+
     if is_subdivision and layout_map.system_count != 1:
         errors.add_error(
             page_name=page_name,
-            message="MusicXML files for page subdivisions " +
-            "must be single-system. The file has " +
-            f"{layout_map.system_count} systems. File: {musicxml_file}"
+            message="MusicXML files for page subdivisions "
+            + "must be single-system. The file has "
+            + f"{layout_map.system_count} systems. File: {musicxml_file}",
         )

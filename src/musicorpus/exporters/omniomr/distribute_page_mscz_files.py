@@ -7,10 +7,7 @@ from ...error_bag import ErrorBag
 
 
 def distribute_page_mscz_files(
-        page_names: list[str],
-        editions_folder: Path,
-        output_folder: Path,
-        errors: ErrorBag
+    page_names: list[str], editions_folder: Path, output_folder: Path, errors: ErrorBag
 ):
     """
     Distributes MuseScore files from the MuseScore Editions folder
@@ -21,11 +18,7 @@ def distribute_page_mscz_files(
         target_path = output_folder / page_name / "transcription.mscz"
 
         if not source_path.exists():
-            errors.add_error(
-                page_name,
-                "Source MuseScore file not found at: " \
-                    + str(source_path)
-            )
+            errors.add_error(page_name, "Source MuseScore file not found at: " + str(source_path))
             continue
 
         shutil.copy(source_path, target_path)

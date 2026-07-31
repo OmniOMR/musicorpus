@@ -1,57 +1,60 @@
 class CocoBbox:
     """Class that represents a COCO-style bounding box.
-    
+
     COCO bounding box is a quadruplet of integers [l, t, w, h]
     with values being left, top, width, height in pixels.
     """
+
     def __init__(self, left: int, top: int, width: int, height: int):
         self.left = int(left)
         self.top = int(top)
         self.width = int(width)
         self.height = int(height)
-    
+
     @property
     def right(self) -> int:
         return self.left + self.width
-    
+
     @property
     def bottom(self) -> int:
         return self.top + self.height
-    
+
     @property
     def area(self) -> int:
         """Rectangular area of the bbox"""
         return self.width * self.height
-    
+
     def coco_quadrangle(self) -> list[int]:
         """
         Returns a polygon that encapsulated this bbox
         (as a naive segmentation mask)
         """
         return [
-            self.left, self.top,
-            self.left, self.top + self.height,
-            self.left + self.width, self.top + self.height,
-            self.left + self.width, self.top,
+            self.left,
+            self.top,
+            self.left,
+            self.top + self.height,
+            self.left + self.width,
+            self.top + self.height,
+            self.left + self.width,
+            self.top,
         ]
-    
+
     def __iter__(self):
         yield self.left
         yield self.top
         yield self.width
         yield self.height
-    
+
     def __repr__(self):
         return f"CocoBbox({self.left}, {self.top}, {self.width}, {self.height})"
-    
+
     @staticmethod
     def from_json(json) -> "CocoBbox":
         """Parses the COCO bbox from a JSON list, e.g. [1,2,3,4]"""
         assert isinstance(json, list)
         assert len(json) == 4
-        return CocoBbox(*[
-            int(i) for i in json
-        ])
+        return CocoBbox(*[int(i) for i in json])
 
     def dilate(self, amount: int) -> "CocoBbox":
         """Enlarges the bbox in all directions by the given amount"""
@@ -59,9 +62,9 @@ class CocoBbox:
             left=self.left - amount,
             top=self.top - amount,
             width=self.width + 2 * amount,
-            height=self.height + 2 * amount
+            height=self.height + 2 * amount,
         )
-    
+
     def intersect_with(self, other: "CocoBbox") -> "CocoBbox":
         """Intersects the bbox with another one and returns the result.
         Returns a 0-sized bbox if the two bboxes do not overlap."""
@@ -73,12 +76,7 @@ class CocoBbox:
         bottom = min(self.bottom, other.bottom)
         height = max(0, bottom - top)
 
-        return CocoBbox(
-            left=left,
-            top=top,
-            width=width,
-            height=height
-        )
+        return CocoBbox(left=left, top=top, width=width, height=height)
 
     def union_with(self, other: "CocoBbox") -> "CocoBbox":
         """Unions the bbox with another one and returns the result."""
@@ -88,9 +86,4 @@ class CocoBbox:
         top = min(self.top, other.top)
         bottom = max(self.bottom, other.bottom)
 
-        return CocoBbox(
-            left=left,
-            top=top,
-            width=right - left,
-            height=bottom - top
-        )
+        return CocoBbox(left=left, top=top, width=right - left, height=bottom - top)

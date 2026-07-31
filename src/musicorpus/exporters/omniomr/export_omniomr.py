@@ -26,14 +26,14 @@ from .subdivide_musicxml_files import subdivide_musicxml_files
 
 
 def export_omniomr(
-        page_names: list[str],
-        mung_studio_folder: Path,
-        editions_folder: Path,
-        page_metadatas: dict[str, PageMetadata],
-        layout_file: InputLayoutFile,
-        dpi_file: InputDpiFile,
-        output_folder: Path,
-        ignore_splits_validation: bool
+    page_names: list[str],
+    mung_studio_folder: Path,
+    editions_folder: Path,
+    page_metadatas: dict[str, PageMetadata],
+    layout_file: InputLayoutFile,
+    dpi_file: InputDpiFile,
+    output_folder: Path,
+    ignore_splits_validation: bool,
 ):
     """Run the dataset export process (builds the dataset from our soruces)"""
 
@@ -47,28 +47,18 @@ def export_omniomr(
     output_folder.mkdir(parents=True)
 
     # musicorpus-specification.pdf
-    download_specification_pdf(
-        output_folder / "musicorpus-specification.pdf"
-    )
+    download_specification_pdf(output_folder / "musicorpus-specification.pdf")
 
     # musicorpus.json
-    manifest = MusicorpusManifest.load_from_file(
-        assets_folder / "musicorpus.json"
-    )
+    manifest = MusicorpusManifest.load_from_file(assets_folder / "musicorpus.json")
     manifest.created_at = now
     manifest.write_to_file(output_folder / "musicorpus.json")
 
     # README.md
-    shutil.copy(
-        assets_folder / "README.md",
-        output_folder / "README.md"
-    )
+    shutil.copy(assets_folder / "README.md", output_folder / "README.md")
 
     # LICENSE.txt
-    shutil.copy(
-        assets_folder / "LICENSE.txt",
-        output_folder / "LICENSE.txt"
-    )
+    shutil.copy(assets_folder / "LICENSE.txt", output_folder / "LICENSE.txt")
 
     # splits.json
     splits = Splits.read_from_file(assets_folder / "splits.json")
@@ -77,7 +67,7 @@ def export_omniomr(
     else:
         print("WARNING: IGNORING SPLITS VALIDATION!")
     splits.write_to_file(output_folder / "splits.json")
-    
+
     # splits.book-consistent.json
     splits_bc = Splits.read_from_file(assets_folder / "splits.book-consistent.json")
     if not ignore_splits_validation:
@@ -86,17 +76,14 @@ def export_omniomr(
 
     # === pages ===
 
-    create_page_folders(
-        page_names=page_names,
-        output_folder=output_folder
-    )
+    create_page_folders(page_names=page_names, output_folder=output_folder)
 
     # image.jpg
     distribute_page_images(
         page_names=page_names,
         mung_studio_folder=mung_studio_folder,
         output_folder=output_folder,
-        errors=errors
+        errors=errors,
     )
 
     # metadata.json
@@ -104,7 +91,7 @@ def export_omniomr(
         page_names=page_names,
         page_metadatas=page_metadatas,
         output_folder=output_folder,
-        errors=errors
+        errors=errors,
     )
 
     # transcription.mscz
@@ -112,14 +99,12 @@ def export_omniomr(
         page_names=page_names,
         editions_folder=editions_folder,
         output_folder=output_folder,
-        errors=errors
+        errors=errors,
     )
 
     # transcription.musicxml
     convert_page_mscz_files_to_musicxml(
-        page_names=page_names,
-        output_folder=output_folder,
-        errors=errors
+        page_names=page_names, output_folder=output_folder, errors=errors
     )
 
     # transcription.mung
@@ -129,15 +114,12 @@ def export_omniomr(
         dpi_file=dpi_file,
         output_folder=output_folder,
         errors=errors,
-        mung_dataset_name=manifest.full_dataset_name
+        mung_dataset_name=manifest.full_dataset_name,
     )
 
     # subdivisions.image.json
     compute_image_subdivisions_from_mung(
-        page_names=page_names,
-        layout_file=layout_file,
-        output_folder=output_folder,
-        errors=errors
+        page_names=page_names, layout_file=layout_file, output_folder=output_folder, errors=errors
     )
 
     # layout.json
@@ -148,47 +130,34 @@ def export_omniomr(
         errors=errors,
         dataset_metadata=CocoDatasetMetadata(
             version=manifest.dataset_version,
-            description=manifest.short_institution_name + \
-                "." + manifest.short_dataset_name,
+            description=manifest.short_institution_name + "." + manifest.short_dataset_name,
             contributor=manifest.full_institution_name,
             url=manifest.dataset_url,
-            date_created=now
+            date_created=now,
         ),
         image_license=CocoLicense(
-            name="UFAL.OmniOMR/LICENSE.txt",
-            url="musicorpus://UFAL.OmniOMR/LICENSE.txt"
-        )
+            name="UFAL.OmniOMR/LICENSE.txt", url="musicorpus://UFAL.OmniOMR/LICENSE.txt"
+        ),
     )
 
     # === all subdivisions at once ===
-    
-    create_subdivisions_folders(
-        page_names=page_names,
-        output_folder=output_folder,
-        errors=errors
-    )
+
+    create_subdivisions_folders(page_names=page_names, output_folder=output_folder, errors=errors)
 
     # image.jpg
-    subdivide_images(
-        page_names=page_names,
-        output_folder=output_folder,
-        errors=errors
-    )
+    subdivide_images(page_names=page_names, output_folder=output_folder, errors=errors)
 
     # transcription.mung
     subdivide_mung_files(
         page_names=page_names,
         output_folder=output_folder,
         errors=errors,
-        mung_dataset_name=manifest.full_dataset_name
+        mung_dataset_name=manifest.full_dataset_name,
     )
 
     # transcription.musicxml
     subdivide_musicxml_files(
-        page_names=page_names,
-        layout_file=layout_file,
-        output_folder=output_folder,
-        errors=errors
+        page_names=page_names, layout_file=layout_file, output_folder=output_folder, errors=errors
     )
 
     # === COCO universe ===
@@ -202,16 +171,14 @@ def export_omniomr(
         errors=errors,
         dataset_metadata=CocoDatasetMetadata(
             version=manifest.dataset_version,
-            description=manifest.short_institution_name + \
-                "." + manifest.short_dataset_name,
+            description=manifest.short_institution_name + "." + manifest.short_dataset_name,
             contributor=manifest.full_institution_name,
             url=manifest.dataset_url,
-            date_created=now
+            date_created=now,
         ),
         image_license=CocoLicense(
-            name="UFAL.OmniOMR/LICENSE.txt",
-            url="musicorpus://UFAL.OmniOMR/LICENSE.txt"
-        )
+            name="UFAL.OmniOMR/LICENSE.txt", url="musicorpus://UFAL.OmniOMR/LICENSE.txt"
+        ),
     )
 
     # === Alternatives to MusicXML ===
@@ -229,9 +196,7 @@ def export_omniomr(
     #     output_folder=output_folder,
     #     errors=errors
     # )
-    
+
     # === finalize ===
 
-    errors.write_report_if_any_errors(
-        file_path=output_folder / "ERRORS.txt"
-    )
+    errors.write_report_if_any_errors(file_path=output_folder / "ERRORS.txt")

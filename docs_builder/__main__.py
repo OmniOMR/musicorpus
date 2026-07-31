@@ -14,34 +14,33 @@ def markdown_to_html(markdown: str) -> str:
     """Converts markdown string to html string"""
     result = subprocess.run(
         # from github-flavored md to html, output to stdout
-        [
-            "pandoc",
-            "-f", "gfm", "-t", "html",
-            "-o", "-"
-        ],
+        ["pandoc", "-f", "gfm", "-t", "html", "-o", "-"],
         input=markdown.encode("utf-8"),
-        stdout=subprocess.PIPE
+        stdout=subprocess.PIPE,
     )
     return result.stdout.decode("utf-8")
 
 
-def build_html_file(
-    html_string: str,
-    html_file_path: Path,
-    title: str
-):
+def build_html_file(html_string: str, html_file_path: Path, title: str):
     """Writes html string to a file with proper title"""
     result = subprocess.run(
         [
-            "pandoc", "--standalone",
-            "-c", "github-markdown.css", # reference the CSS file
-            "-V", "pagetitle:" + title,
-            "-f", "html", "-t", "html",
-            "-o", "-"
+            "pandoc",
+            "--standalone",
+            "-c",
+            "github-markdown.css",  # reference the CSS file
+            "-V",
+            "pagetitle:" + title,
+            "-f",
+            "html",
+            "-t",
+            "html",
+            "-o",
+            "-",
         ],
         cwd=str(Path(__file__).parent),
         stdout=subprocess.PIPE,
-        input=html_string.encode("utf-8")
+        input=html_string.encode("utf-8"),
     )
     complete_html = result.stdout.decode("utf-8")
     html_file_path.write_text(complete_html)
@@ -49,39 +48,37 @@ def build_html_file(
 
 def build_pdf_file(path_html: Path, path_pdf: Path):
     """Converts the html file to a pdf file using chromium"""
-    CHROME_CMD = "chromium" # just "chrome" if you have chrome instead
+    CHROME_CMD = "chromium"  # just "chrome" if you have chrome instead
     subprocess.run(
         [
-            CHROME_CMD, "--headless",
+            CHROME_CMD,
+            "--headless",
             "--print-to-pdf=" + str(path_pdf.absolute()),
             "--no-pdf-header-footer",
-            "file://" + str(path_html.absolute())
+            "file://" + str(path_html.absolute()),
         ],
-        cwd=str(Path(__file__).parent)
+        cwd=str(Path(__file__).parent),
     )
 
 
 def main():
     markdown_file_path = (
         Path(__file__).parent.parent
-        / "docs" / "musicorpus-specification" / "musicorpus-specification.md"
+        / "docs"
+        / "musicorpus-specification"
+        / "musicorpus-specification.md"
     )
     html_file_path = Path(__file__).parent / "musicorpus-specification.html"
     pdf_file_path = Path(__file__).parent / "musicorpus-specification.pdf"
-    
+
     markdown_string = markdown_file_path.read_text("utf-8")
     print("Converting Markdown to HTML...")
     html_string = markdown_to_html(markdown_string)
     build_html_file(
-        html_string=html_string,
-        html_file_path=html_file_path,
-        title="MusiCorpus Specification"
+        html_string=html_string, html_file_path=html_file_path, title="MusiCorpus Specification"
     )
     print("Converting HTML to PDF...")
-    build_pdf_file(
-        path_html=html_file_path,
-        path_pdf=pdf_file_path
-    )
+    build_pdf_file(path_html=html_file_path, path_pdf=pdf_file_path)
     print("Done.")
 
 

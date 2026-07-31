@@ -8,9 +8,7 @@ from ..image_subdivisions import ImageSubdivisions
 
 
 def validate_image_subdivisions_file(
-        dataset_path: Path,
-        image_subdivisions_file: Path,
-        errors: ErrorBag
+    dataset_path: Path, image_subdivisions_file: Path, errors: ErrorBag
 ):
     relative_path = image_subdivisions_file.relative_to(dataset_path)
     page_name = relative_path.parts[0]
@@ -21,15 +19,13 @@ def validate_image_subdivisions_file(
     except Exception:
         errors.add_error(
             page_name=page_name,
-            message=f"The file {image_subdivisions_file} cannot be loaded:\n" +
-                traceback.format_exc()
+            message=f"The file {image_subdivisions_file} cannot be loaded:\n"
+            + traceback.format_exc(),
         )
         return
 
     # get the size of the page-level image
-    page_width, page_height = get_image_size(
-        image_subdivisions_file.parent / "image.jpg"
-    )
+    page_width, page_height = get_image_size(image_subdivisions_file.parent / "image.jpg")
     page_bbox = CocoBbox(0, 0, page_width, page_height)
 
     # === run assertions ===
@@ -40,16 +36,15 @@ def validate_image_subdivisions_file(
         ("system", subdivisions.systems, "Systems"),
     ]:
         for name, bbox in subdivision_dict.items():
-            
             # check that the subdivision bbox is contained in the page
             if bbox.area != bbox.intersect_with(page_bbox).area:
                 errors.add_error(
                     page_name=page_name,
-                    message="In subdivisions.image.json, the " +
-                    f"{subdivision_message} {name} {repr(bbox)} is not contained " +
-                    f"within the page boundaries {repr(page_bbox)}."
+                    message="In subdivisions.image.json, the "
+                    + f"{subdivision_message} {name} {repr(bbox)} is not contained "
+                    + f"within the page boundaries {repr(page_bbox)}.",
                 )
-            
+
             # check that the subdivision bbox size matches the subdivision image size
             sub_width, sub_height = get_image_size(
                 image_subdivisions_file.parent / subdivision_folder / name / "image.jpg"
@@ -57,7 +52,7 @@ def validate_image_subdivisions_file(
             if sub_width != bbox.width or sub_height != bbox.height:
                 errors.add_error(
                     page_name=page_name,
-                    message="In subdivisions.image.json, the " +
-                    f"{subdivision_message} {name} bbox size {repr(bbox)} does not match " +
-                    f"the subdivision image size ({sub_width}, {sub_height})."
+                    message="In subdivisions.image.json, the "
+                    + f"{subdivision_message} {name} bbox size {repr(bbox)} does not match "
+                    + f"the subdivision image size ({sub_width}, {sub_height}).",
                 )

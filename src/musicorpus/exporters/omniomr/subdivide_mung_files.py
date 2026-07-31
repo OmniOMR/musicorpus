@@ -11,20 +11,15 @@ from ...write_mung import write_mung
 
 
 def subdivide_mung_files(
-        page_names: list[str],
-        output_folder: Path,
-        errors: ErrorBag,
-        mung_dataset_name: str
+    page_names: list[str], output_folder: Path, errors: ErrorBag, mung_dataset_name: str
 ):
     """Crops page MuNG files into all of their subdivisions"""
     for page_name in tqdm.tqdm(page_names, "Subdividing MuNG files"):
-        
         # load subdivisions cropboxes
         subdivisions_path = output_folder / page_name / "subdivisions.image.json"
         if not subdivisions_path.exists():
             errors.add_error(
-                page_name,
-                "subdivisions.image.json not found in: " + str(subdivisions_path)
+                page_name, "subdivisions.image.json not found in: " + str(subdivisions_path)
             )
             continue
         subdivisions = ImageSubdivisions.load_from(subdivisions_path)
@@ -33,8 +28,7 @@ def subdivide_mung_files(
         mung_path = output_folder / page_name / "transcription.mung"
         if not mung_path.exists():
             errors.add_error(
-                page_name,
-                "Page-level transcription.mung not found in: " + str(mung_path)
+                page_name, "Page-level transcription.mung not found in: " + str(mung_path)
             )
             continue
         mung_graph = NotationGraph(read_nodes_from_file(mung_path))
@@ -45,16 +39,16 @@ def subdivide_mung_files(
                 crop_mung(mung_graph, bbox),
                 output_folder / page_name / "Staves" / staff_name / "transcription.mung",
                 document=f"{page_name}_Staves_{staff_name}",
-                dataset=mung_dataset_name
+                dataset=mung_dataset_name,
             )
-        
+
         # grandstaves
         for grandstaff_name, bbox in subdivisions.grandstaves.items():
             write_mung(
                 crop_mung(mung_graph, bbox),
                 output_folder / page_name / "Grandstaves" / grandstaff_name / "transcription.mung",
                 document=f"{page_name}_Grandstaves_{grandstaff_name}",
-                dataset=mung_dataset_name
+                dataset=mung_dataset_name,
             )
 
         # systems
@@ -63,5 +57,5 @@ def subdivide_mung_files(
                 crop_mung(mung_graph, bbox),
                 output_folder / page_name / "Systems" / system_name / "transcription.mung",
                 document=f"{page_name}_Systems_{system_name}",
-                dataset=mung_dataset_name
+                dataset=mung_dataset_name,
             )

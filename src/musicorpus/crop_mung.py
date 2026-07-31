@@ -18,18 +18,17 @@ def crop_mung(mung_graph: NotationGraph, bbox: CocoBbox):
     # remove nodes outside the bbox
     for node in list(mung_graph.vertices):
         top, left = node.middle
-        if top < bbox.top or top > bbox.bottom \
-                or left < bbox.left or left > bbox.right:
+        if top < bbox.top or top > bbox.bottom or left < bbox.left or left > bbox.right:
             remove_precedence_edges_for_node(mung_graph, node)
             mung_graph.remove_vertex(node.id)
-    
+
     # translate nodes into the crop coordinate system
     for node in mung_graph.vertices:
         node.translate(
             down=-bbox.top,
             right=-bbox.left,
         )
-    
+
     # return the new graph
     return mung_graph
 

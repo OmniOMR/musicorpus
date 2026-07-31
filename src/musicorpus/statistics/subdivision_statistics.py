@@ -29,7 +29,7 @@ class SubdivisionStatistics:
             "metadata": self.metadata.to_yaml(),
             "coco": self.coco.to_yaml(),
             "musicxml": self.musicxml.to_yaml(),
-            "mung": self.mung.to_yaml()
+            "mung": self.mung.to_yaml(),
         }
 
     def add_instance(self, subdivision_folder: Path):

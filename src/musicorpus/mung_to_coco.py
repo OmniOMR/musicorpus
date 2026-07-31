@@ -28,10 +28,7 @@ def encode_coco_rle_mask(mask: np.ndarray) -> dict:
 
     counts.append(running_length)
 
-    return {
-        "size": list(mask.shape),
-        "counts": counts
-    }
+    return {"size": list(mask.shape), "counts": counts}
 
 
 @dataclass(frozen=True)
@@ -80,18 +77,19 @@ class CocoImageMetadata:
 
 class CocoCategoriesMap:
     """Mapping from COCO category IDs to category names"""
+
     def __init__(self) -> None:
         self._id_to_name: dict[int, str] = {}
         self._name_to_id: dict[str, int] = {}
         self._next_id = 0
-    
+
     def get_id_of(self, name: str) -> int:
         """Returns ID of a category by name, if new, assigns new ID"""
         if name not in self._name_to_id:
             self._name_to_id[name] = self._next_id
             self._id_to_name[self._next_id] = name
             self._next_id += 1
-        
+
         return self._name_to_id[name]
 
     def get_name_of(self, id: int) -> str:
@@ -99,19 +97,16 @@ class CocoCategoriesMap:
         if id not in self._id_to_name:
             raise KeyError(f"Given category {id} does not exist in the map")
         return self._id_to_name[id]
-    
+
     def to_json(self) -> list[dict]:
         """Exports the map into the COCO file format"""
-        return [
-            { "id": id, "name": name }
-            for id, name in self._id_to_name.items()
-        ]
+        return [{"id": id, "name": name} for id, name in self._id_to_name.items()]
 
 
 @dataclass(frozen=True)
 class CocoFromMung:
     """COCO data created from MuNG notation graph"""
-    
+
     coco_json: dict
     """The COCO JSON data represented as python dictionaries"""
 
@@ -124,19 +119,17 @@ class CocoFromMung:
     def write_coco_to_file(self, file_path: Path):
         with open(file_path, "w") as f:
             json.dump(self.coco_json, f)
-    
+
     def write_mung_to_coco_map_to_file(self, file_path: Path):
         with open(file_path, "w") as f:
-            json.dump({
-                "mung_to_coco": self.mung_to_coco_ids_map
-            }, f)
+            json.dump({"mung_to_coco": self.mung_to_coco_ids_map}, f)
 
 
 def mung_to_coco(
-        mung_graph: NotationGraph,
-        dataset_metadata: CocoDatasetMetadata,
-        image_license: CocoLicense,
-        image_metadata: CocoImageMetadata
+    mung_graph: NotationGraph,
+    dataset_metadata: CocoDatasetMetadata,
+    image_license: CocoLicense,
+    image_metadata: CocoImageMetadata,
 ) -> CocoFromMung:
     """
     Converts a MuNG file into a COCO file JSON
@@ -155,19 +148,12 @@ def mung_to_coco(
         "description": dataset_metadata.description,
         "contributor": dataset_metadata.contributor,
         "url": dataset_metadata.url,
-        "date_created": dataset_metadata.date_created \
-            .strftime("%Y/%m/%d")
+        "date_created": dataset_metadata.date_created.strftime("%Y/%m/%d"),
     }
 
     # === licenses ===
 
-    coco_json["licenses"] = [
-        {
-            "id": 0,
-            "name": image_license.name,
-            "url": image_license.url
-        }
-    ]
+    coco_json["licenses"] = [{"id": 0, "name": image_license.name, "url": image_license.url}]
 
     # === images ===
 
@@ -178,8 +164,7 @@ def mung_to_coco(
             "height": image_metadata.height,
             "file_name": image_metadata.file_name,
             "license": 0,
-            "date_captured": image_metadata.date_captured \
-                .strftime("%Y-%m-%d %H:%M:%S")
+            "date_captured": image_metadata.date_captured.strftime("%Y-%m-%d %H:%M:%S"),
         }
     ]
 
@@ -190,20 +175,19 @@ def mung_to_coco(
     for coco_id, node in enumerate(mung_graph.vertices):
         seg = encode_coco_rle_mask(node.mask)
         seg_area = int(area(frPyObjects(seg, seg["size"][0], seg["size"][1])))
-        annotations.append({
-            "id": coco_id,
-            "image_id": 0,
-            "category_id": categories.get_id_of(node.class_name),
-            "segmentation": seg,
-            "area": seg_area,
-            "bbox": list(CocoBbox(
-                left=node.left,
-                top=node.top,
-                width=node.width,
-                height=node.height
-            )),
-            "iscrowd": 0
-        })
+        annotations.append(
+            {
+                "id": coco_id,
+                "image_id": 0,
+                "category_id": categories.get_id_of(node.class_name),
+                "segmentation": seg,
+                "area": seg_area,
+                "bbox": list(
+                    CocoBbox(left=node.left, top=node.top, width=node.width, height=node.height)
+                ),
+                "iscrowd": 0,
+            }
+        )
 
         # object ID mapping
         mung_to_coco_ids_map[node.id] = coco_id
@@ -218,5 +202,5 @@ def mung_to_coco(
     return CocoFromMung(
         coco_json=coco_json,
         mung_to_coco_ids_map=mung_to_coco_ids_map,
-        coco_to_mung_ids_map=coco_to_mung_ids_map
+        coco_to_mung_ids_map=coco_to_mung_ids_map,
     )

@@ -8,13 +8,13 @@ from ..get_image_size import get_image_size
 @dataclass
 class ImageStatistics:
     """Statistics for image.jpg files"""
-    
+
     widths: list[int] = field(default_factory=list)
     """Widths of all images"""
 
     heights: list[int] = field(default_factory=list)
     """Heights of all images"""
-    
+
     def to_yaml(self) -> dict:
         assert len(self.widths) == len(self.heights)
         return {
@@ -39,7 +39,7 @@ class ImageStatistics:
         image_path = subdivision_folder / "image.jpg"
         if not image_path.exists():
             return
-        
+
         width, height = get_image_size(image_path)
         self.widths.append(width)
         self.heights.append(height)

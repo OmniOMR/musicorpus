@@ -6,7 +6,7 @@ from pathlib import Path
 @dataclass
 class MusicXmlStatistics:
     """Statistics for transcription.musicxml files"""
-    
+
     count: int = 0
     """Number of musicxml files counted"""
 
@@ -15,37 +15,33 @@ class MusicXmlStatistics:
 
     notes: int = 0
     """Total number of found <note> elements, which includes rests"""
-    
+
     def to_yaml(self) -> dict:
-        return {
-            "count": self.count,
-            "measures": self.measures,
-            "notes": self.notes
-        }
+        return {"count": self.count, "measures": self.measures, "notes": self.notes}
 
     def add_instance(self, subdivision_folder: Path):
         musicxml_path = subdivision_folder / "transcription.musicxml"
         if not musicxml_path.exists():
             return
-        
+
         # load musicxml
-        musicxml_tree: ET.ElementTree = ET.ElementTree(ET.fromstring(
-            musicxml_path.read_text("utf-8")
-        ))
+        musicxml_tree: ET.ElementTree = ET.ElementTree(
+            ET.fromstring(musicxml_path.read_text("utf-8"))
+        )
         musicxml_root = musicxml_tree.getroot()
         assert musicxml_root is not None
         assert musicxml_root.tag == "score-partwise"
-        
+
         self.count += 1
         self._add_measures(musicxml_tree)
         self._add_notes(musicxml_tree)
-    
+
     def _add_measures(self, musicxml_tree: ET.ElementTree):
         # find any part element (all should have the same number of measures)
         part_element = musicxml_tree.find("part")
         if part_element is None:
             return
-        
+
         # count measures in that part
         self.measures += len(part_element.findall("measure"))
 

@@ -19,79 +19,68 @@ from ...mung_to_coco import (
 
 
 def convert_mung_to_coco_with_maps(
-        page_names: list[str],
-        output_folder: Path,
-        errors: ErrorBag,
-        dataset_metadata: CocoDatasetMetadata,
-        image_license: CocoLicense
+    page_names: list[str],
+    output_folder: Path,
+    errors: ErrorBag,
+    dataset_metadata: CocoDatasetMetadata,
+    image_license: CocoLicense,
 ):
     """Converts all MuNG files for each page in all subdivisions to COCO files
     and also generates maps between COCO subdivision ids and MuNG-COCO IDs"""
     for page_name in tqdm.tqdm(page_names, "MuNG to COCO with maps"):
-        
         # load subdivisions cropboxes
         subdivisions_path = output_folder / page_name / "subdivisions.image.json"
         if not subdivisions_path.exists():
             errors.add_error(
-                page_name,
-                "subdivisions.image.json not found in: " + str(subdivisions_path)
+                page_name, "subdivisions.image.json not found in: " + str(subdivisions_path)
             )
             continue
         subdivisions = ImageSubdivisions.load_from(subdivisions_path)
 
         # all folders to be processed (page & subdivisions)
         # (first MUST be the page-level folder)
-        folders_to_process: list[Path] = [
-            output_folder / page_name
-        ] + [
-            output_folder / page_name / "Staves" / staff_name
-            for staff_name in subdivisions.staves
-        ] + [
-            output_folder / page_name / "Grandstaves" / grandstaff_name
-            for grandstaff_name in subdivisions.grandstaves
-        ] + [
-            output_folder / page_name / "Systems" / system_name
-            for system_name in subdivisions.systems
-        ]
+        folders_to_process: list[Path] = (
+            [output_folder / page_name]
+            + [
+                output_folder / page_name / "Staves" / staff_name
+                for staff_name in subdivisions.staves
+            ]
+            + [
+                output_folder / page_name / "Grandstaves" / grandstaff_name
+                for grandstaff_name in subdivisions.grandstaves
+            ]
+            + [
+                output_folder / page_name / "Systems" / system_name
+                for system_name in subdivisions.systems
+            ]
+        )
 
         page_coco: CocoFromMung | None = None
         """COCO file at the page-level"""
 
-        coco_subdivisions_map: dict = {
-            "Staves": {},
-            "Grandstaves": {},
-            "Systems": {}
-        }
+        coco_subdivisions_map: dict = {"Staves": {}, "Grandstaves": {}, "Systems": {}}
         """Contents of the subdivisions.coco-object-detection.json file"""
 
         # === process each folder ===
 
         for folder in folders_to_process:
-
             # load image
             image_path = folder / "image.jpg"
             if not image_path.exists():
-                errors.add_error(
-                    page_name,
-                    "image.jpg not found in: " + str(image_path)
-                )
+                errors.add_error(page_name, "image.jpg not found in: " + str(image_path))
                 continue
             image_width, image_height = get_image_size(image_path)
 
             # load mung
             mung_path = folder / "transcription.mung"
             if not mung_path.exists():
-                errors.add_error(
-                    page_name,
-                    "transcription.mung not found in: " + str(mung_path)
-                )
+                errors.add_error(page_name, "transcription.mung not found in: " + str(mung_path))
                 continue
             try:
                 mung_graph = NotationGraph(read_nodes_from_file(mung_path))
             except Exception:
                 errors.add_error(
-                    page_name,
-                    "transcription.mung filed to load: " + traceback.format_exc()
+                    page_name, "transcription.mung filed to load: " + traceback.format_exc()
                 )
                 continue
 
@@ -104,15 +93,11 @@ def convert_mung_to_coco_with_maps(
                     width=image_width,
                     height=image_height,
                     file_name=image_path.relative_to(output_folder).as_posix(),
-                    date_captured=dataset_metadata.date_created
-                )
+                    date_captured=dataset_metadata.date_created,
+                ),
             )
-            coco.write_coco_to_file(
-                folder / "coco-object-detection.json"
-            )
-            coco.write_mung_to_coco_map_to_file(
-                folder / "mung-to-coco-ids-map.json"
-            )
+            coco.write_coco_to_file(folder / "coco-object-detection.json")
+            coco.write_mung_to_coco_map_to_file(folder / "mung-to-coco-ids-map.json")
 
             # =================
 
@@ -124,9 +109,7 @@ def convert_mung_to_coco_with_maps(
             # now we are within some subdivision,
             # let's figure out in which by getting the path parts,
             # e.g. "Grandstaff" / "1-2"
-            subdivision_type, subdivision_name = folder \
-                .relative_to(output_folder / page_name) \
-                .parts
+            subdivision_type, subdivision_name = folder.relative_to(output_folder / page_name).parts
 
             # compute the COCO2COCO map
             page_to_local_map: dict[int, int] = {
@@ -138,8 +121,7 @@ def convert_mung_to_coco_with_maps(
             coco_subdivisions_map[subdivision_type][subdivision_name] = {
                 "page_to_local": page_to_local_map
             }
-        
+
         # finally, write subdivisions.coco-object-detection.json
-        with open(output_folder / page_name \
-            / "subdivisions.coco-object-detection.json", "w") as f:
+        with open(output_folder / page_name / "subdivisions.coco-object-detection.json", "w") as f:
             json.dump(coco_subdivisions_map, f, indent=2)

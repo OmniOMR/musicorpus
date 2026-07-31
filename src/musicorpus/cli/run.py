@@ -15,25 +15,18 @@ def run() -> None:
     """Entry point of the `musicorpus` command line tool."""
 
     parser = argparse.ArgumentParser(
-        prog="musicorpus",
-        description="CLI for working with the MusiCorpus format"
+        prog="musicorpus", description="CLI for working with the MusiCorpus format"
     )
 
-    subparsers = parser.add_subparsers(
-        title="available commands",
-        dest="root_command_name"
-    )
+    subparsers = parser.add_subparsers(title="available commands", dest="root_command_name")
 
     root_command_handlers: dict[
-        str,
-        Callable[[argparse.ArgumentParser, argparse.Namespace], None]
+        str, Callable[[argparse.ArgumentParser, argparse.Namespace], None]
     ] = {}
-
 
     ############################
     # Define all root commands #
     ############################
-
 
     # === validate ===
 
@@ -41,8 +34,7 @@ def run() -> None:
         subparsers.add_parser(
             "validate",
             aliases=[],
-            description=
-                "Validates a MusiCorpus dataset, checks that it has proper structure"
+            description="Validates a MusiCorpus dataset, checks that it has proper structure",
         )
     )
     root_command_handlers["validate"] = validate_command.execute
@@ -51,14 +43,10 @@ def run() -> None:
 
     statistics_command.define_parser(
         subparsers.add_parser(
-            "statistics",
-            aliases=[],
-            description=
-                "Computes statistics for a MusiCorpus dataset"
+            "statistics", aliases=[], description="Computes statistics for a MusiCorpus dataset"
         )
     )
     root_command_handlers["statistics"] = statistics_command.execute
-
 
     # === export GrandStaff ===
 
@@ -66,12 +54,10 @@ def run() -> None:
         subparsers.add_parser(
             "export-grandstaff",
             aliases=[],
-            description=
-                "Exports GrandStaff dataset to the MusiCorpus format"
+            description="Exports GrandStaff dataset to the MusiCorpus format",
         )
     )
     root_command_handlers["export-grandstaff"] = export_grandstaff_command.execute
-
 
     # === export OmniOMR ===
 
@@ -79,25 +65,19 @@ def run() -> None:
         subparsers.add_parser(
             "export-omniomr",
             aliases=[],
-            description=
-                "Exports OmniOMR data to the MusiCorpus format"
+            description="Exports OmniOMR data to the MusiCorpus format",
         )
     )
     root_command_handlers["export-omniomr"] = export_omniomr_command.execute
-
 
     # === define OmniOMR splits ===
 
     omniomr_splits_command.define_parser(
         subparsers.add_parser(
-            "omniomr-splits",
-            aliases=[],
-            description=
-                "Utility for computing OmniOMR splits files."
+            "omniomr-splits", aliases=[], description="Utility for computing OmniOMR splits files."
         )
     )
     root_command_handlers["omniomr-splits"] = omniomr_splits_command.execute
-
 
     ######################
     # Execute the parser #

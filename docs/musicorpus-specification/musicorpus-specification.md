@@ -736,6 +736,7 @@ The `pycocotools` library unfortunately does not have a method to encode a mask 
 ```py
 import numpy as np
 
+
 def encode_coco_rle_mask(mask: np.ndarray) -> dict:
     """Converts a 2D uint8 bitmap to COCO uncompressed RLE mask"""
     assert len(mask.shape) == 2
@@ -754,10 +755,7 @@ def encode_coco_rle_mask(mask: np.ndarray) -> dict:
 
     counts.append(running_length)
 
-    return {
-        "size": list(mask.shape),
-        "counts": counts
-    }
+    return {"size": list(mask.shape), "counts": counts}
 ```
 
 The `pycocotools` package also has a **compressed RLE representation**, but that is used only in-memory since it uses Python's `bytes` data type which cannot be JSON-serialized.
@@ -779,7 +777,7 @@ seg = [
 image_height = 100
 image_width = 200
 seg_area = sum(area(frPyObjects(seg, image_height, image_width)))
-print(seg_area) # 10
+print(seg_area)  # 10
 ```
 
 For **uncompressed RLE masks**, the function returns just a single number which is just the count of filled pixels:
@@ -789,7 +787,7 @@ from pycocotools.mask import area, frPyObjects
 
 seg = {"size": [5, 12], "counts": [10, 10, 10, 10, 10, 10]}
 seg_area = area(frPyObjects(seg, seg["size"][0], seg["size"][1]))
-print(seg_area) # 30
+print(seg_area)  # 30
 ```
 
 

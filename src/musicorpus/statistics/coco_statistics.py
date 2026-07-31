@@ -12,7 +12,7 @@ class CocoStatistics:
 
     annotations: int = 0
     """Total number of COCO annotations (object instances)"""
-    
+
     def to_yaml(self) -> dict:
         return {
             "count": self.count,
@@ -23,7 +23,7 @@ class CocoStatistics:
         coco_path = subdivision_folder / "coco-object-detection.json"
         if not coco_path.exists():
             return
-        
+
         # load the JSON file
         with open(coco_path) as f:
             data = json.load(f)

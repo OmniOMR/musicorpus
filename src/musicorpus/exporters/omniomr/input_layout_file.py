@@ -6,7 +6,7 @@ from pathlib import Path
 @dataclass
 class LayoutRecord:
     """One record from the input page-layout CSV file"""
-    
+
     page_name: str
     """The UUID_UUID name of a page"""
 
@@ -69,29 +69,28 @@ class LayoutRecord:
             assert r[1] - r[0] == 1, "Not a 2-staff range"
             _assert_staff_index(r[0])
             _assert_staff_index(r[1])
-        
+
         for r in self.true_pianoform_staves:
             assert r[1] - r[0] == 1, "Not a 2-staff range"
             _assert_staff_index(r[0])
             _assert_staff_index(r[1])
             assert r in self.grandstaves, "Missing from grandstaves"
-        
+
         for i in self.empty_staves:
             _assert_staff_index(i)
-            assert i not in [b for r in self.grandstaves for b in r], \
+            assert i not in [b for r in self.grandstaves for b in r], (
                 "Empty staves may not be present in grandstaves"
+            )
 
 
 class InputLayoutFile:
     """
     Parsed representation of the input page-layout CSV file,
     which specifies which staves are grandstaves, empty, etc."""
+
     def __init__(self, records: list[LayoutRecord]):
-        self.records: dict[str, LayoutRecord] = {
-            record.page_name: record
-            for record in records
-        }
-    
+        self.records: dict[str, LayoutRecord] = {record.page_name: record for record in records}
+
     @staticmethod
     def load(file_path: Path):
         records: list[LayoutRecord] = []
@@ -104,27 +103,26 @@ class InputLayoutFile:
 
                 page_name = str(row["UUID"])
                 staff_count = int(row["Staff Count"])
-                records.append(LayoutRecord(
-                    page_name=page_name,
-                    staff_count=staff_count,
-                    grandstaves=InputLayoutFile.parse_staff_range_list(
-                        row["Grandstaves"]
-                    ),
-                    true_pianoform_staves=InputLayoutFile.parse_staff_range_list(
-                        row["True Pianoform Staves"]
-                    ),
-                    empty_staves=InputLayoutFile.parse_staff_list(
-                        row["Empty Staves"],
-                        staff_count
+                records.append(
+                    LayoutRecord(
+                        page_name=page_name,
+                        staff_count=staff_count,
+                        grandstaves=InputLayoutFile.parse_staff_range_list(row["Grandstaves"]),
+                        true_pianoform_staves=InputLayoutFile.parse_staff_range_list(
+                            row["True Pianoform Staves"]
+                        ),
+                        empty_staves=InputLayoutFile.parse_staff_list(
+                            row["Empty Staves"], staff_count
+                        ),
                     )
-                ))
+                )
         return InputLayoutFile(records)
 
     @staticmethod
     def parse_staff_list(text: str | None, staff_count: int) -> list[int]:
         if text is None or text.upper() == "NONE":
             return []
-        
+
         if text == "ALL":
             return list(range(1, staff_count + 1))
 
@@ -134,14 +132,10 @@ class InputLayoutFile:
     def parse_staff_range_list(text: str | None) -> list[tuple[int, int]]:
         if text is None or text.upper() == "NONE":
             return []
-        
+
         def _parse_range(range_text: str) -> tuple[int, int]:
             bounds = range_text.split("-")
-            assert len(bounds) == 2, \
-                "Invalid range text: " + range_text
+            assert len(bounds) == 2, "Invalid range text: " + range_text
             return (int(bounds[0].strip()), int(bounds[1].strip()))
-        
-        return [
-            _parse_range(part)
-            for part in text.split(",")
-        ]
+
+        return [_parse_range(part) for part in text.split(",")]

@@ -7,10 +7,7 @@ from ...error_bag import ErrorBag
 
 
 def distribute_page_images(
-        page_names: list[str],
-        mung_studio_folder: Path,
-        output_folder: Path,
-        errors: ErrorBag
+    page_names: list[str], mung_studio_folder: Path, output_folder: Path, errors: ErrorBag
 ):
     """
     Distributes page images from MungStudio documents
@@ -22,9 +19,7 @@ def distribute_page_images(
 
         if not source_path.exists():
             errors.add_error(
-                page_name,
-                "Source image not found in MungStudio documents at: " \
-                    + str(source_path)
+                page_name, "Source image not found in MungStudio documents at: " + str(source_path)
             )
             continue
 

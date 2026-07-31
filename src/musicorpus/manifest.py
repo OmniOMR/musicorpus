@@ -62,7 +62,7 @@ class MusicorpusManifest:
             created_at=datetime.fromisoformat(str(data["created_at"])),
             author_emails=[str(e) for e in data["author_emails"]],
         )
-    
+
     def write_to_file(self, file_path: Path):
         data = {
             "musicorpus_version": self.musicorpus_version,
@@ -74,7 +74,7 @@ class MusicorpusManifest:
             "dataset_url": self.dataset_url,
             "dataset_version": self.dataset_version,
             "created_at": self.created_at.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "author_emails": self.author_emails
+            "author_emails": self.author_emails,
         }
         with open(file_path, "w") as f:
             json.dump(data, f, indent=4)

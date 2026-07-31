@@ -11,7 +11,8 @@ def read_page_names(file_path: Path) -> list[str]:
     # read page names
     with open(file_path) as f:
         page_names = [
-            line.strip() for line in f.readlines()
+            line.strip()
+            for line in f.readlines()
             if line.strip() != "" and not line.startswith("#")
         ]
 
@@ -20,8 +21,8 @@ def read_page_names(file_path: Path) -> list[str]:
     page_names_copy = list(page_names)
     for page_name in page_names_set:
         page_names_copy.remove(page_name)
-    assert len(page_names_copy) == 0, \
-        "Page names contain these duplicates: " \
-            + repr(page_names_copy)
-    
+    assert len(page_names_copy) == 0, "Page names contain these duplicates: " + repr(
+        page_names_copy
+    )
+
     return page_names

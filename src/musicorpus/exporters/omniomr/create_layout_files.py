@@ -17,23 +17,20 @@ from .input_layout_file import InputLayoutFile
 
 
 def create_layout_files(
-        page_names: list[str],
-        omniomr_layout_file: InputLayoutFile, # different "layout" file
-        output_folder: Path,
-        errors: ErrorBag,
-        dataset_metadata: CocoDatasetMetadata,
-        image_license: CocoLicense
+    page_names: list[str],
+    omniomr_layout_file: InputLayoutFile,  # different "layout" file
+    output_folder: Path,
+    errors: ErrorBag,
+    dataset_metadata: CocoDatasetMetadata,
+    image_license: CocoLicense,
 ):
     """Creates the layout.json file in each page folder"""
     for page_name in tqdm.tqdm(page_names, "Creating layout files"):
-        
         # load MuNG file
         mung_path = output_folder / page_name / "transcription.mung"
         if not mung_path.exists():
             errors.add_error(
-                page_name,
-                "Computing layout.json - MuNG file missing at: " \
-                    + str(mung_path)
+                page_name, "Computing layout.json - MuNG file missing at: " + str(mung_path)
             )
             continue
         mung_graph = NotationGraph(read_nodes_from_file(mung_path))
@@ -41,8 +38,7 @@ def create_layout_files(
         # get omniomr layout record
         if page_name not in omniomr_layout_file.records:
             errors.add_error(
-                page_name,
-                "Computing layout.json - OmniOMR Layout record missing for the page."
+                page_name, "Computing layout.json - OmniOMR Layout record missing for the page."
             )
             continue
         omniomr_layout_record = omniomr_layout_file.records[page_name]
@@ -50,10 +46,7 @@ def create_layout_files(
         # load image
         image_path = output_folder / page_name / "image.jpg"
         if not image_path.exists():
-            errors.add_error(
-                page_name,
-                "image.jpg not found in: " + str(image_path)
-            )
+            errors.add_error(page_name, "image.jpg not found in: " + str(image_path))
             continue
         image_width, image_height = get_image_size(image_path)
 
@@ -64,12 +57,7 @@ def create_layout_files(
         mung_systems = get_ordered_mung_systems(mung_graph)
 
         def mung_node_to_coco_bbox(node: Node) -> CocoBbox:
-            return CocoBbox(
-                left=node.left,
-                top=node.top,
-                width=node.width,
-                height=node.height
-            )
+            return CocoBbox(left=node.left, top=node.top, width=node.width, height=node.height)
 
         # prepare the layout file contents
         staves: list[CocoBbox] = []
@@ -84,7 +72,7 @@ def create_layout_files(
                 empty_staves.append(staff)
             else:
                 staves.append(staff)
-        
+
         # build all grandstaves
         for i, j in omniomr_layout_record.grandstaves:
             staff_i = mung_node_to_coco_bbox(mung_staves[i - 1])
@@ -96,10 +84,7 @@ def create_layout_files(
         for mung_system in mung_systems:
             system: CocoBbox = reduce(
                 lambda x, y: x.union_with(y),
-                [
-                    mung_node_to_coco_bbox(mung_staff)
-                    for mung_staff in mung_system
-                ]
+                [mung_node_to_coco_bbox(mung_staff) for mung_staff in mung_system],
             )
             systems.append(system)
 
@@ -110,15 +95,15 @@ def create_layout_files(
                 width=image_width,
                 height=image_height,
                 file_name=image_path.relative_to(output_folder).as_posix(),
-                date_captured=dataset_metadata.date_created
+                date_captured=dataset_metadata.date_created,
             ),
             image_license=image_license,
             staves=staves,
             empty_staves=empty_staves,
             grandstaves=grandstaves,
             systems=systems,
-            staff_measures=[], # TODO: measures not implemented
+            staff_measures=[],  # TODO: measures not implemented
             grandstaff_measures=[],
-            system_measures=[]
+            system_measures=[],
         )
         layout.write_to_file(output_folder / page_name / "layout.json")

@@ -15,55 +15,41 @@ def define_parser(parser: argparse.ArgumentParser):
         "--ms_documents",
         type=Path,
         required=True,
-        help="Path to the input folder width MuNG Studio documents"
+        help="Path to the input folder width MuNG Studio documents",
     )
     parser.add_argument(
         "--ms_editions",
         type=Path,
         required=True,
-        help="Path to the input folder with .mscz MuseScore files"
+        help="Path to the input folder with .mscz MuseScore files",
     )
     parser.add_argument(
-        "--metadata",
-        type=Path,
-        required=True,
-        help="Path to the input metadata .csv file"
+        "--metadata", type=Path, required=True, help="Path to the input metadata .csv file"
     )
     parser.add_argument(
-        "--layout",
-        type=Path,
-        required=True,
-        help="Path to the input page-layout data .csv file"
+        "--layout", type=Path, required=True, help="Path to the input page-layout data .csv file"
     )
     parser.add_argument(
-        "--dpi",
-        type=Path,
-        required=True,
-        help="Path to the input page-DPI data .csv file"
+        "--dpi", type=Path, required=True, help="Path to the input page-DPI data .csv file"
     )
     parser.add_argument(
         "--page_names",
         type=Path,
         required=True,
-        help="Path to the file with page names " +
-            "(book-uuid_page-uuid), one per line." +
-            "Can include line-comments with hash # symbol"
+        help="Path to the file with page names "
+        + "(book-uuid_page-uuid), one per line."
+        + "Can include line-comments with hash # symbol",
     )
     parser.add_argument(
-        "--output",
-        type=Path,
-        required=True,
-        help="Path to the output 'UFAL.OmniOMR' folder"
+        "--output", type=Path, required=True, help="Path to the output 'UFAL.OmniOMR' folder"
     )
     parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Forces an overwrite of the output folder"
+        "--force", action="store_true", help="Forces an overwrite of the output folder"
     )
     parser.add_argument(
         "--ignore_splits_validation",
         action="store_true",
-        help="Ignores validation of splits page names covering exported pages"
+        help="Ignores validation of splits page names covering exported pages",
     )
 
 
@@ -97,11 +83,8 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
     dpi_file = InputDpiFile.load(dpi_file_path)
 
     # read metadata
-    page_metadatas = load_page_metadatas(
-        metadata_file_path=metadata_file_path,
-        dpi_file=dpi_file
-    )
-    
+    page_metadatas = load_page_metadatas(metadata_file_path=metadata_file_path, dpi_file=dpi_file)
+
     # read layout
     layout_file = InputLayoutFile.load(layout_file_path)
 

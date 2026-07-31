@@ -9,7 +9,7 @@ from .input_dpi_file import InputDpiFile
 CSV_TO_MUSICORPUS_FIELD_MAP: dict[str, str] = {
     "institution_name": "institution_name",
     "institution_rism_siglum": "institution_rism_siglum",
-    "instituion_local_siglum": "institution_local_siglum", # typo in the sheet
+    "instituion_local_siglum": "institution_local_siglum",  # typo in the sheet
     "shelfmark": "shelfmark",
     "rism_id_number": "rism_id_number",
     "date": "date",
@@ -27,21 +27,20 @@ CSV_TO_MUSICORPUS_FIELD_MAP: dict[str, str] = {
     "production": "production",
     "production_detailed": "production_detailed",
     "clarity": "clarity",
-    "systems": "systems"
+    "systems": "systems",
 }
 
 
 def load_page_metadatas(
-        metadata_file_path: Path,
-        dpi_file: InputDpiFile | None
+    metadata_file_path: Path, dpi_file: InputDpiFile | None
 ) -> dict[str, PageMetadata]:
     """
     Loads page metadatas for OmniOMR from its CSV file.
-    
+
     Returns a dictionary, where keys are page names
     and values are PageMetadata objects.
     """
-    
+
     # read the CSV
     with open(metadata_file_path) as f:
         reader = csv.DictReader(f)
@@ -52,16 +51,10 @@ def load_page_metadatas(
 
     for row in rows:
         # map the row field names to musicorpus json names
-        json_data = {
-            CSV_TO_MUSICORPUS_FIELD_MAP.get(key, key): value
-            for key, value in row.items()
-        }
-        
+        json_data = {CSV_TO_MUSICORPUS_FIELD_MAP.get(key, key): value for key, value in row.items()}
+
         # empty string becomes null
-        json_data = {
-            key: "null" if value == "" else value
-            for key, value in json_data.items()
-        }
+        json_data = {key: "null" if value == "" else value for key, value in json_data.items()}
 
         # "null" becomes None
         json_data = {
@@ -82,7 +75,7 @@ def load_page_metadatas(
         # prepare page name and file name
         page_name = json_data["file_name"].removesuffix(".jpg")
         json_data["file_name"] = "UFAL.OmniOMR/" + page_name + "/image.jpg"
-        
+
         # fix up messy page sizes
         if json_data["page_size"] is not None:
             json_data["page_size"] = process_page_size(json_data["page_size"])
@@ -98,20 +91,22 @@ def load_page_metadatas(
             json_data["dpi"] = dpi_file.dpis.get(page_name, None)
         else:
             json_data["dpi"] = None
-        
+
         # set link
         # (and verify its value in the metadata CSV table)
         book_uuid, page_uuid = page_name.split("_")
-        computed_link = f"https://www.digitalniknihovna.cz/mzk/view/uuid:{book_uuid}?page=uuid:{page_uuid}"
+        computed_link = (
+            f"https://www.digitalniknihovna.cz/mzk/view/uuid:{book_uuid}?page=uuid:{page_uuid}"
+        )
         computed_permalink = f"https://www.digitalniknihovna.cz/mzk/uuid/uuid:{page_uuid}"
         if json_data["link"] is not None:
-            assert json_data["link"] in [computed_link, computed_permalink], \
+            assert json_data["link"] in [computed_link, computed_permalink], (
                 f"Metadata row {page_name} has incorrect URL link"
+            )
         json_data["link"] = computed_permalink
 
         # parse the JSON
-        page_metadatas[page_name] = PageMetadata \
-            .parse_from_json(json_data)
+        page_metadatas[page_name] = PageMetadata.parse_from_json(json_data)
 
     return page_metadatas
 
@@ -139,20 +134,17 @@ def process_page_size(page_size_string):
 
     except SyntaxError:
         logging.debug(
-            f"Could not parse page size string "
-            f"'{page_size_string}' as a list of two integers."
+            f"Could not parse page size string '{page_size_string}' as a list of two integers."
         )
         pass
     except TypeError:
         logging.debug(
-            f"Could not parse page size string "
-            f"'{page_size_string}' as a list of two integers."
+            f"Could not parse page size string '{page_size_string}' as a list of two integers."
         )
         pass
     except NameError:
         logging.debug(
-            f"Could not parse page size string "
-            f"'{page_size_string}' as a list of two integers."
+            f"Could not parse page size string '{page_size_string}' as a list of two integers."
         )
         pass
 

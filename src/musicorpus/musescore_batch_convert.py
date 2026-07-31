@@ -26,38 +26,34 @@ MSCORE: str = str((Path.cwd() / "musescore" / MSCORE_APPIMAGE).absolute())
 
 
 def musescore_batch_convert(
-        conversion_map: dict[Path, Path],
-        force_replace_existing_files=True,
+    conversion_map: dict[Path, Path],
+    force_replace_existing_files=True,
 ):
     """Executes MuseScore 4.6.5 to perform batch conversion
     of files from one format to another depending on file suffixes."""
 
     download_musescore_if_missing()
-    
+
     # create the conversion json file
     conversion = []
     for source_path, target_path in conversion_map.items():
-        assert source_path.exists(), \
-            f"Input file {source_path} does not exist."
+        assert source_path.exists(), f"Input file {source_path} does not exist."
 
         # delete files to be replaced
         if target_path.exists() and force_replace_existing_files:
             target_path.unlink()
-        
+
         # skip files that are already converted
         if target_path.exists():
             continue
 
         # make a record in the batch instruction for the file
-        conversion.append({
-            "in": str(source_path),
-            "out": str(target_path)
-        })
-    
+        conversion.append({"in": str(source_path), "out": str(target_path)})
+
     # no conversions to be run, do nothing
     if len(conversion) == 0:
         return
-    
+
     # run musescore conversion
     # not a context manager on purpose: the file has to be closed and still
     # exist on disk while MuseScore reads it, and is unlinked in the `finally`
@@ -68,17 +64,11 @@ def musescore_batch_convert(
 
         # clear musescore settings, since it may remember not to print
         # page and system breaks, but we do want those to be printed
-        assert os.system(
-            "rm -f ~/.config/MuseScore/MuseScore3.ini"
-        ) == 0
-        assert os.system(
-            "rm -f ~/.config/MuseScore/MuseScore4.ini"
-        ) == 0
+        assert os.system("rm -f ~/.config/MuseScore/MuseScore3.ini") == 0
+        assert os.system("rm -f ~/.config/MuseScore/MuseScore4.ini") == 0
 
         print("Running MusicXML conversion...")
-        assert os.system(
-            f"\"{MSCORE}\" -j \"{tmp.name}\""
-        ) == 0
+        assert os.system(f'"{MSCORE}" -j "{tmp.name}"') == 0
         print("Done.")
     finally:
         tmp.close()
@@ -88,7 +78,7 @@ def musescore_batch_convert(
 def download_musescore_if_missing():
     if os.path.exists(MSCORE):
         return
-    
+
     # download musescore
     print("Downloading MuseScore...")
     Path(MSCORE).parent.mkdir(parents=True, exist_ok=True)
@@ -98,4 +88,4 @@ def download_musescore_if_missing():
     print("Done.")
 
     # make it executable
-    os.system(f"chmod +x \"{MSCORE}\"")
+    os.system(f'chmod +x "{MSCORE}"')

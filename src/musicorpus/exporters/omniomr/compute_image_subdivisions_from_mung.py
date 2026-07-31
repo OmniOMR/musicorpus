@@ -16,30 +16,23 @@ from .input_layout_file import InputLayoutFile
 
 
 def compute_image_subdivisions_from_mung(
-        page_names: list[str],
-        layout_file: InputLayoutFile,
-        output_folder: Path,
-        errors: ErrorBag
+    page_names: list[str], layout_file: InputLayoutFile, output_folder: Path, errors: ErrorBag
 ):
     """For each page, inspects its MuNG file and computes subdivision bboxes"""
     for page_name in tqdm.tqdm(page_names, "Computing image subdivisions"):
-        
         # load MuNG file
         mung_path = output_folder / page_name / "transcription.mung"
         if not mung_path.exists():
             errors.add_error(
-                page_name,
-                "Computing subdivisions - MuNG file missing at: " \
-                    + str(mung_path)
+                page_name, "Computing subdivisions - MuNG file missing at: " + str(mung_path)
             )
             continue
         mung_graph = NotationGraph(read_nodes_from_file(mung_path))
-        
+
         # get layout record
         if page_name not in layout_file.records:
             errors.add_error(
-                page_name,
-                "Computing subdivisions - Layout record missing for the page."
+                page_name, "Computing subdivisions - Layout record missing for the page."
             )
             continue
         layout_record = layout_file.records[page_name]
@@ -51,8 +44,8 @@ def compute_image_subdivisions_from_mung(
         if len(mung_staves) != layout_record.staff_count:
             errors.add_error(
                 page_name,
-                f"Mung staff count ({len(mung_staves)}) does not match " + \
-                f"layout data staff count ({layout_record.staff_count})."
+                f"Mung staff count ({len(mung_staves)}) does not match "
+                + f"layout data staff count ({layout_record.staff_count}).",
             )
             continue
 
@@ -61,27 +54,19 @@ def compute_image_subdivisions_from_mung(
 
         # verify all systems are of the same size
         if len({len(system) for system in mung_systems}) != 1:
-            errors.add_error(
-                page_name,
-                "MuNG-detected systems do not have equal number of staves."
-            )
+            errors.add_error(page_name, "MuNG-detected systems do not have equal number of staves.")
             continue
 
         # get average staff height (from the mask, not bbox)
-        staff_height: int = int(sum(
-            staff.mask.sum(axis=0).mean()
-            for staff in mung_staves
-        ) / len(mung_staves))
+        staff_height: int = int(
+            sum(staff.mask.sum(axis=0).mean() for staff in mung_staves) / len(mung_staves)
+        )
 
         # get staff numbers that contain true pianoform music
         pianoform_staves = list(chain(*layout_record.true_pianoform_staves))
 
         # get the size of the page
-        page_bbox = CocoBbox(
-            0,
-            0,
-            *get_image_size(output_folder / page_name / "image.jpg")
-        )
+        page_bbox = CocoBbox(0, 0, *get_image_size(output_folder / page_name / "image.jpg"))
 
         # prepare the subdivisions file
         subdivisions = ImageSubdivisions()
@@ -98,7 +83,7 @@ def compute_image_subdivisions_from_mung(
             bbox = CocoBbox(staff.left, staff.top, staff.width, staff.height)
             cropbox = bbox.dilate(staff_height).intersect_with(page_bbox)
             subdivisions.staves[str(i)] = cropbox
-        
+
         # build all grandstaves
         for i, j in layout_record.grandstaves:
             staff_i = mung_staves[i - 1]
@@ -111,23 +96,15 @@ def compute_image_subdivisions_from_mung(
 
         # build all systems
         for system in mung_systems:
-            staff_numbers = [
-                mung_staves.index(staff) + 1
-                for staff in system
-            ]
+            staff_numbers = [mung_staves.index(staff) + 1 for staff in system]
             i = min(staff_numbers)
             j = max(staff_numbers)
             bbox = reduce(
                 lambda x, y: x.union_with(y),
-                [
-                    CocoBbox(staff.left, staff.top, staff.width, staff.height)
-                    for staff in system
-                ]
+                [CocoBbox(staff.left, staff.top, staff.width, staff.height) for staff in system],
             )
             cropbox = bbox.dilate(staff_height).intersect_with(page_bbox)
             subdivisions.systems[str(i) + "-" + str(j)] = cropbox
 
         # write the subdivisions file
-        subdivisions.write_to(
-            output_folder / page_name / "subdivisions.image.json"
-        )
+        subdivisions.write_to(output_folder / page_name / "subdivisions.image.json")

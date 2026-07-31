@@ -2,10 +2,7 @@ import tarfile
 from pathlib import Path
 
 
-def export_grandstaff(
-        grandstaff_tgz_path: Path,
-        output_folder: Path
-):
+def export_grandstaff(grandstaff_tgz_path: Path, output_folder: Path):
     """
     Reads the `grandstaff.tgz` file and converts
     it into the MusiCorpus format with each sample
@@ -94,7 +91,7 @@ def export_grandstaff(
             if member.isfile():
                 stream = archive.extractfile(member)
                 contents = b"" if stream is None else stream.read()
-                print(str(len(contents)).zfill(10), "bytes of",member.name)
+                print(str(len(contents)).zfill(10), "bytes of", member.name)
                 taken += 1
 
                 if taken >= TAKE:

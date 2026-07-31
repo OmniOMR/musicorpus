@@ -18,20 +18,22 @@ from ...splits import Splits
 
 # Hardcoded size ratios.
 # This is what the resulting split fractions should be.
-# 
+#
 # Currently rather big, since the dataset is mostly for validation
 # and has only 100 pages. But later can be dropped to 15% or even 10%.
 VALIDATION_FRACTION = 0.2
 TEST_FRACTION = 0.2
 
 
-BALANCED_METADATA: dict[str, list[str]] = OrderedDict([
-    ("notation", [str(v) for v in get_args(NotationType)]),
-    ("notation_complexity", [str(v) for v in get_args(NotationComplexity)]),
-    ("production", [str(v) for v in get_args(ProductionType)]),
-    ("clarity", [str(v) for v in get_args(NotationClarity)]),
-    ("systems", [str(v) for v in get_args(SystemsComposition)]),
-])
+BALANCED_METADATA: dict[str, list[str]] = OrderedDict(
+    [
+        ("notation", [str(v) for v in get_args(NotationType)]),
+        ("notation_complexity", [str(v) for v in get_args(NotationComplexity)]),
+        ("production", [str(v) for v in get_args(ProductionType)]),
+        ("clarity", [str(v) for v in get_args(NotationClarity)]),
+        ("systems", [str(v) for v in get_args(SystemsComposition)]),
+    ]
+)
 """Which PageMetadata fields are being balanced when generating
 the splits. This is an ordered dictionary mapping field names
 to their tracked set of values. The order is flattened into
@@ -40,12 +42,12 @@ distance between two splits."""
 
 
 def calculate_splits(
-        page_names: list[str],
-        page_metadatas: dict[str, PageMetadata],
-        existing_splits: Splits,
-        output_file: Path,
-        n_attempts: int,
-        book_consistent: bool,
+    page_names: list[str],
+    page_metadatas: dict[str, PageMetadata],
+    existing_splits: Splits,
+    output_file: Path,
+    n_attempts: int,
+    book_consistent: bool,
 ):
     """
     The implementation behind the ./musicorpus omniomr-splits command
@@ -59,35 +61,31 @@ def calculate_splits(
 
     # get the old and newly added page names
     old_page_names = existing_splits.get_all_page_names()
-    new_page_names = [
-        p for p in page_names
-        if p not in old_page_names
-    ]
+    new_page_names = [p for p in page_names if p not in old_page_names]
 
     # compute fractions for splits on the new pages
     # so that the total matches the desired fractions
     new_validation_fraction = (
         VALIDATION_FRACTION * len(page_names) - len(existing_splits.validation)
     ) / len(new_page_names)
-    new_test_fraction = (
-        TEST_FRACTION * len(page_names) - len(existing_splits.test)
-    ) / len(new_page_names)
+    new_test_fraction = (TEST_FRACTION * len(page_names) - len(existing_splits.test)) / len(
+        new_page_names
+    )
     assert new_validation_fraction > 0, "Not enough new pages to hit desired fractions"
     assert new_test_fraction > 0, "Not enough new pages to hit desired fractions"
 
     # run the main loop of generating the best split
     best_splits: Splits | None = None
-    best_splits_internal_distance = float("inf") # lower the better
-    
+    best_splits_internal_distance = float("inf")  # lower the better
+
     for seed in tqdm.tqdm(range(n_attempts), "Generating splits..."):
-        
         # generate random splits
         if book_consistent:
             splits = make_random_book_consistent_splits(
                 page_names=new_page_names,
                 validation_fraction=new_validation_fraction,
                 test_fraction=new_test_fraction,
-                seed=seed
+                seed=seed,
             )
             assert_splits_are_book_consistent(splits)
         else:
@@ -95,17 +93,15 @@ def calculate_splits(
                 page_names=new_page_names,
                 validation_fraction=new_validation_fraction,
                 test_fraction=new_test_fraction,
-                seed=seed
+                seed=seed,
             )
-        
+
         splits_internal_distance = calculate_internal_distance_for_splits(
-            splits=splits,
-            page_metadatas=page_metadatas
+            splits=splits, page_metadatas=page_metadatas
         )
 
         # remember the first or best splits
-        if best_splits is None or \
-        splits_internal_distance < best_splits_internal_distance:
+        if best_splits is None or splits_internal_distance < best_splits_internal_distance:
             best_splits = splits
             best_splits_internal_distance = splits_internal_distance
             print("New distance:", best_splits_internal_distance)
@@ -115,22 +111,18 @@ def calculate_splits(
 
 
 def calculate_internal_distance_for_splits(
-        splits: Splits,
-        page_metadatas: dict[str, PageMetadata]
+    splits: Splits, page_metadatas: dict[str, PageMetadata]
 ) -> float:
     """Calculates the total distance between all pairs of splits
     metadata distributions."""
     train_dist = calculate_metadata_distribution_for_split(
-        page_names=splits.train,
-        page_metadatas=page_metadatas
+        page_names=splits.train, page_metadatas=page_metadatas
     )
     val_dist = calculate_metadata_distribution_for_split(
-        page_names=splits.validation,
-        page_metadatas=page_metadatas
+        page_names=splits.validation, page_metadatas=page_metadatas
     )
     test_dist = calculate_metadata_distribution_for_split(
-        page_names=splits.test,
-        page_metadatas=page_metadatas
+        page_names=splits.test, page_metadatas=page_metadatas
     )
     return (
         total_elementwise_eucleidian_distance(train_dist, val_dist)
@@ -139,21 +131,14 @@ def calculate_internal_distance_for_splits(
     )
 
 
-def total_elementwise_eucleidian_distance(
-        a: list[float],
-        b: list[float]
-) -> float:
+def total_elementwise_eucleidian_distance(a: list[float], b: list[float]) -> float:
     """Elementwise-eucleidian distance between two vectors, then summed"""
     assert len(a) == len(b)
-    return sum(
-        math.sqrt((i-j) * (i-j))
-        for i, j in zip(a, b, strict=True)
-    )
+    return sum(math.sqrt((i - j) * (i - j)) for i, j in zip(a, b, strict=True))
 
 
 def calculate_metadata_distribution_for_split(
-        page_names: list[str],
-        page_metadatas: dict[str, PageMetadata]
+    page_names: list[str], page_metadatas: dict[str, PageMetadata]
 ) -> list[float]:
     """Computes a list of floats as relative frequencies of various
     metadata values respective to the size of the split."""
@@ -164,14 +149,12 @@ def calculate_metadata_distribution_for_split(
         if page_name not in page_metadatas:
             continue
         page_metadata = page_metadatas[page_name]
-        
+
         # go over all tracked metadata fields
         for field_name in BALANCED_METADATA:
             field_value: str = getattr(page_metadata, field_name)
-            metadata_frequencies.update({
-                f"{field_name}::{field_value}": 1
-            })
-    
+            metadata_frequencies.update({f"{field_name}::{field_value}": 1})
+
     # convert frequencies to relative frequencies and flatten
     metadata_distribution = [
         metadata_frequencies.get(f"{field_name}::{field_value}", 0) / len(page_names)
@@ -183,10 +166,7 @@ def calculate_metadata_distribution_for_split(
 
 
 def make_random_book_consistent_splits(
-        page_names: list[str],
-        validation_fraction=0.1,
-        test_fraction=0.1,
-        seed=42
+    page_names: list[str], validation_fraction=0.1, test_fraction=0.1, seed=42
 ) -> Splits:
     """Creates new random splits that are book-consistent"""
     # first, shuffle pages to randomize the following algorithm
@@ -200,16 +180,13 @@ def make_random_book_consistent_splits(
         def __init__(self, book_id: str):
             self.book_id = book_id
             self.page_ids: list[str] = []
-        
+
         def __len__(self) -> int:
             return len(self.page_ids)
 
         @property
         def page_names(self) -> list[str]:
-            return [
-                self.book_id + "_" + page_id
-                for page_id in self.page_ids
-            ]
+            return [self.book_id + "_" + page_id for page_id in self.page_ids]
 
     books: dict[str, Book] = {}
     for page_name in shuffled_page_names:
@@ -233,7 +210,7 @@ def make_random_book_consistent_splits(
     test_pages: list[str] = []
 
     distributed_pages = 0
-    for group in reversed(groups): # largest books to smallest
+    for group in reversed(groups):  # largest books to smallest
         for book in group:
             if len(validation_pages) + len(book) - 1 < distributed_pages * validation_fraction:
                 validation_pages.extend(book.page_names)
@@ -250,11 +227,7 @@ def make_random_book_consistent_splits(
     rng.shuffle(test_pages)
 
     # build the splits object
-    splits = Splits(
-        train=train_pages,
-        validation=validation_pages,
-        test=test_pages
-    )
+    splits = Splits(train=train_pages, validation=validation_pages, test=test_pages)
     splits.check_that_it_covers_page_names_exactly(page_names)
     splits.run_assertions()
     return splits
@@ -265,9 +238,5 @@ def assert_splits_are_book_consistent(splits: Splits):
     train = list({page_name.split("_")[0] for page_name in splits.train})
     validation = list({page_name.split("_")[0] for page_name in splits.validation})
     test = list({page_name.split("_")[0] for page_name in splits.test})
-    book_splits = Splits(
-        train=train,
-        validation=validation,
-        test=test
-    )
+    book_splits = Splits(train=train, validation=validation, test=test)
     book_splits.run_assertions()

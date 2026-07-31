@@ -3,26 +3,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal, get_args
 
-NotationType = Literal[
-    "CWMN", "mensural", "square",
-    "adiastematic", "instrument-specific", "other"
-]
+NotationType = Literal["CWMN", "mensural", "square", "adiastematic", "instrument-specific", "other"]
 
-NotationComplexity = Literal[
-    "monophonic", "homophonic", "polyphonic", "pianoform"
-]
+NotationComplexity = Literal["monophonic", "homophonic", "polyphonic", "pianoform"]
 
-ProductionType = Literal[
-    "printed", "handwritten", "born-digital"
-]
+ProductionType = Literal["printed", "handwritten", "born-digital"]
 
-NotationClarity = Literal[
-    "perfect", "sufficient", "problematic", "unreadable"
-]
+NotationClarity = Literal["perfect", "sufficient", "problematic", "unreadable"]
 
-SystemsComposition = Literal[
-    "single-staff", "grand-staff", "multi-instrument", "variable"
-]
+SystemsComposition = Literal["single-staff", "grand-staff", "multi-instrument", "variable"]
 
 
 @dataclass
@@ -196,46 +185,43 @@ class PageMetadata:
             if v is None:
                 return None
             return str(v)
-        
+
         def str_f(v) -> str | Literal[False]:
             if v is False:
                 return False
             return str(v)
-        
+
         def str_nf(v) -> str | None | Literal[False]:
             if v is None:
                 return None
             if v is False:
                 return False
             return str(v)
-        
+
         def int_n(v) -> int | None:
             if v is None:
                 return None
             return int(v)
-        
+
         def int_str_n(v) -> int | str | None:
             if v is None:
                 return None
             if type(v) is int:
                 return v
             return str(v)
-        
+
         def lit(t, v) -> Any | None:
-            values: tuple[str] = get_args(t) # args to Literal[...]
+            values: tuple[str] = get_args(t)  # args to Literal[...]
             if v in values:
                 return v
             if v is None:
                 return None
             raise Exception(f"Value {repr(v)} must be one of {repr(values)}")
-        
+
         if data["page_size"] is not None:
             page_size = tuple(data["page_size"])
             assert len(page_size) == 2
-            page_size = tuple(
-                int(i) if i is not None else None
-                for i in page_size
-            )
+            page_size = tuple(int(i) if i is not None else None for i in page_size)
         else:
             page_size = None
 
@@ -262,7 +248,7 @@ class PageMetadata:
             production_detailed=str_n(data["production_detailed"]),
             notation_complexity=lit(NotationComplexity, data["notation_complexity"]),
             clarity=lit(NotationClarity, data["clarity"]),
-            systems=lit(SystemsComposition, data["systems"])
+            systems=lit(SystemsComposition, data["systems"]),
         )
 
     def serialize_to_json(self) -> dict:
@@ -289,7 +275,7 @@ class PageMetadata:
             "production_detailed": self.production_detailed,
             "notation_complexity": self.notation_complexity,
             "clarity": self.clarity,
-            "systems": self.systems
+            "systems": self.systems,
         }
 
     def write_to_file(self, file_path: Path):

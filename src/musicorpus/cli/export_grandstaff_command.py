@@ -11,19 +11,14 @@ def define_parser(parser: argparse.ArgumentParser):
         "--grandstaff",
         type=Path,
         required=True,
-        help="Path to the input grandstaff.tgz file, can be downloaded " +
-        "from https://grfia.dlsi.ua.es/sheet-music-transformer/"
+        help="Path to the input grandstaff.tgz file, can be downloaded "
+        + "from https://grfia.dlsi.ua.es/sheet-music-transformer/",
     )
     parser.add_argument(
-        "--output",
-        type=Path,
-        required=True,
-        help="Path to the output 'PRAIG.GrandStaff' folder"
+        "--output", type=Path, required=True, help="Path to the output 'PRAIG.GrandStaff' folder"
     )
     parser.add_argument(
-        "--force",
-        action="store_true",
-        help="Forces an overwrite of the output folder"
+        "--force", action="store_true", help="Forces an overwrite of the output folder"
     )
 
 
@@ -45,7 +40,4 @@ def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
         shutil.rmtree(output_folder)
 
     # run the extraction process
-    export_grandstaff(
-        grandstaff_tgz_path=grandstaff_tgz_path,
-        output_folder=output_folder
-    )
+    export_grandstaff(grandstaff_tgz_path=grandstaff_tgz_path, output_folder=output_folder)

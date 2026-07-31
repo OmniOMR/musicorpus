@@ -13,10 +13,7 @@ from .validate_coco_object_detection_file import (
 
 
 def validate_layout_file(
-        dataset_path: Path,
-        layout_file: Path,
-        manifest: MusicorpusManifest,
-        errors: ErrorBag
+    dataset_path: Path, layout_file: Path, manifest: MusicorpusManifest, errors: ErrorBag
 ):
     relative_path = layout_file.relative_to(dataset_path)
     page_name = relative_path.parts[0]
@@ -38,7 +35,7 @@ def validate_layout_file(
         coco_file=layout_file,
         data_info=data_info,
         manifest=manifest,
-        errors=errors
+        errors=errors,
     )
 
     license_ids: set[int] = validate_licenses(
@@ -46,7 +43,7 @@ def validate_layout_file(
         page_name=page_name,
         coco_file=layout_file,
         data_licenses=data_licenses,
-        errors=errors
+        errors=errors,
     )
 
     image_ids: set[int] = validate_images(
@@ -55,14 +52,11 @@ def validate_layout_file(
         coco_file=layout_file,
         data_images=data_images,
         license_ids=license_ids,
-        errors=errors
+        errors=errors,
     )
 
     categories: dict[int, str] = validate_categories(
-        page_name=page_name,
-        coco_file=layout_file,
-        data_categories=data_categories,
-        errors=errors
+        page_name=page_name, coco_file=layout_file, data_categories=data_categories, errors=errors
     )
 
     validate_annotations(
@@ -71,19 +65,24 @@ def validate_layout_file(
         data_annotations=data_annotations,
         image_ids=image_ids,
         categories=categories,
-        errors=errors
+        errors=errors,
     )
 
     # validate categories whitelst
     whitelist = [
-        "staff", "emptyStaff", "grandstaff", "system",
-        "staffMeasure", "grandstaffMeasure", "systemMeasure"
+        "staff",
+        "emptyStaff",
+        "grandstaff",
+        "system",
+        "staffMeasure",
+        "grandstaffMeasure",
+        "systemMeasure",
     ]
     for category in categories.values():
         if category not in whitelist:
             errors.add_error(
                 page_name=page_name,
-                message="The layout.json file contains the category " +
-                f"'{category}' which is not one of the allowed " +
-                f"categories in this file {whitelist}. In: {layout_file}"
+                message="The layout.json file contains the category "
+                + f"'{category}' which is not one of the allowed "
+                + f"categories in this file {whitelist}. In: {layout_file}",
             )
