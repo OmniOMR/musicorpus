@@ -27,7 +27,25 @@ The package requires **python 3.10 or newer** and is installed from this reposit
 pip install 'musicorpus @ git+https://github.com/OmniOMR/musicorpus.git'
 ```
 
-To work on it, clone the repository and install it in editable form:
+That base install has **no dependencies at all**. Reading a MusiCorpus dataset — its manifest, splits, layout, page metadata, subdivisions and COCO boxes — is pure standard library, so consuming a dataset cannot conflict with anything already in your environment.
+
+The heavier machinery lives in extras, so you install only what you use:
+
+| Extra | Installs | Needed for |
+| --- | --- | --- |
+| *(none)* | nothing | reading the format from python |
+| `validation` | mung, pycocotools, lmx, imagesize, tqdm | `musicorpus validate` |
+| `statistics` | pyyaml, imagesize, tqdm | `musicorpus statistics` |
+| `exporters` | the above plus music21, converter21, OpenCV, numpy, requests | `musicorpus export ...` |
+| `all` | everything | |
+
+```bash
+pip install 'musicorpus[validation] @ git+https://github.com/OmniOMR/musicorpus.git'
+```
+
+Running a command whose extra is missing tells you which one to install rather than raising an `ImportError`.
+
+To work on the package, clone the repository and install it in editable form:
 
 ```bash
 python3 -m venv .venv

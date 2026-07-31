@@ -47,6 +47,20 @@ class MusicorpusManifest:
     should be emailed first/second/etc."""
 
     @staticmethod
+    def parse_created_at(value: str) -> datetime:
+        """Parses the ISO 8601 timestamp that `created_at` is specified to hold.
+
+        The specification writes that timestamp with a `Z` designator, and so
+        does `write_to_file`. `datetime.fromisoformat` only learned to accept
+        `Z` in python 3.11, so on 3.10 — which this package supports — reading
+        back a conformant manifest raised `Invalid isoformat string`. Swapping
+        the designator for the offset it stands for parses on every version.
+        """
+        if value.endswith(("Z", "z")):
+            value = value[:-1] + "+00:00"
+        return datetime.fromisoformat(value)
+
+    @staticmethod
     def load_from_file(file_path: Path) -> "MusicorpusManifest":
         with open(file_path) as f:
             data = json.load(f)
@@ -59,7 +73,7 @@ class MusicorpusManifest:
             short_dataset_name=str(data["short_dataset_name"]),
             dataset_url=str(data["dataset_url"]),
             dataset_version=str(data["dataset_version"]),
-            created_at=datetime.fromisoformat(str(data["created_at"])),
+            created_at=MusicorpusManifest.parse_created_at(str(data["created_at"])),
             author_emails=[str(e) for e in data["author_emails"]],
         )
 

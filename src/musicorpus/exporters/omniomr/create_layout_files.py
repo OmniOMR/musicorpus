@@ -6,13 +6,12 @@ from mung.graph import NotationGraph
 from mung.io import read_nodes_from_file
 from mung.node import Node
 
-from ...coco_bbox import CocoBbox
+from ...coco import CocoBbox, CocoDatasetMetadata, CocoImageMetadata, CocoLicense
 from ...error_bag import ErrorBag
 from ...get_image_size import get_image_size
 from ...get_ordered_mung_staves import get_ordered_mung_staves
 from ...get_ordered_mung_systems import get_ordered_mung_systems
 from ...layout import Layout
-from ...mung_to_coco import CocoDatasetMetadata, CocoImageMetadata, CocoLicense
 from .input_layout_file import InputLayoutFile
 
 

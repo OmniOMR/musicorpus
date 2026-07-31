@@ -1,13 +1,15 @@
-import json
-from dataclasses import dataclass
-from datetime import datetime
-from pathlib import Path
-
 import numpy as np
 from mung.graph import NotationGraph
 from pycocotools.mask import area, frPyObjects
 
-from .coco_bbox import CocoBbox
+from .coco import (
+    CocoBbox,
+    CocoCategoriesMap,
+    CocoDatasetMetadata,
+    CocoFromMung,
+    CocoImageMetadata,
+    CocoLicense,
+)
 
 
 def encode_coco_rle_mask(mask: np.ndarray) -> dict:
@@ -29,100 +31,6 @@ def encode_coco_rle_mask(mask: np.ndarray) -> dict:
     counts.append(running_length)
 
     return {"size": list(mask.shape), "counts": counts}
-
-
-@dataclass(frozen=True)
-class CocoDatasetMetadata:
-    version: str
-    """Version of the dataset"""
-
-    description: str
-    """Name of the musicorpus dataset"""
-
-    contributor: str
-    """Name of the institution or individual behind the dataset"""
-
-    url: str
-    """URL link to a website about the dataset or project"""
-
-    date_created: datetime
-    """Date when the dataset was created"""
-
-
-@dataclass(frozen=True)
-class CocoLicense:
-    name: str
-    """Human-readable name of the license"""
-
-    url: str
-    """URL link to the license body"""
-
-
-@dataclass(frozen=True)
-class CocoImageMetadata:
-    width: int
-    """Width of the image in pixels"""
-
-    height: int
-    """Height of the image in pixels"""
-
-    file_name: str
-    """Posix path (forward slashes) from the root of 
-    the dataset to the image file"""
-
-    date_captured: datetime
-    """Timestamp when the image file was first created.
-    If unavailable, it can be set to the creation time of the dataset."""
-
-
-class CocoCategoriesMap:
-    """Mapping from COCO category IDs to category names"""
-
-    def __init__(self) -> None:
-        self._id_to_name: dict[int, str] = {}
-        self._name_to_id: dict[str, int] = {}
-        self._next_id = 0
-
-    def get_id_of(self, name: str) -> int:
-        """Returns ID of a category by name, if new, assigns new ID"""
-        if name not in self._name_to_id:
-            self._name_to_id[name] = self._next_id
-            self._id_to_name[self._next_id] = name
-            self._next_id += 1
-
-        return self._name_to_id[name]
-
-    def get_name_of(self, id: int) -> str:
-        """Returns name of the category by ID, the category must exist"""
-        if id not in self._id_to_name:
-            raise KeyError(f"Given category {id} does not exist in the map")
-        return self._id_to_name[id]
-
-    def to_json(self) -> list[dict]:
-        """Exports the map into the COCO file format"""
-        return [{"id": id, "name": name} for id, name in self._id_to_name.items()]
-
-
-@dataclass(frozen=True)
-class CocoFromMung:
-    """COCO data created from MuNG notation graph"""
-
-    coco_json: dict
-    """The COCO JSON data represented as python dictionaries"""
-
-    mung_to_coco_ids_map: dict[int, int]
-    """Mapping from MuNG node IDs to COCO annotation object IDs"""
-
-    coco_to_mung_ids_map: dict[int, int]
-    """Mapping from COCO annotation object IDs to MuNG node IDs"""
-
-    def write_coco_to_file(self, file_path: Path):
-        with open(file_path, "w") as f:
-            json.dump(self.coco_json, f)
-
-    def write_mung_to_coco_map_to_file(self, file_path: Path):
-        with open(file_path, "w") as f:
-            json.dump({"mung_to_coco": self.mung_to_coco_ids_map}, f)
 
 
 def mung_to_coco(

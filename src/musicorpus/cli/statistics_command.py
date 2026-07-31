@@ -2,6 +2,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from .extras import requires
+
 NAME = "statistics"
 
 DESCRIPTION = "Aggregate dataset statistics across splits, subdivisions and file formats"
@@ -29,7 +31,8 @@ def define_parser(parser: argparse.ArgumentParser):
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
-    import yaml
+    with requires("statistics"):
+        import yaml
 
     from ..statistics.compute_statistics import compute_statistics
 

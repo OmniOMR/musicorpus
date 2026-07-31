@@ -2,8 +2,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from .coco_bbox import CocoBbox
-from .mung_to_coco import CocoCategoriesMap, CocoDatasetMetadata, CocoImageMetadata, CocoLicense
+from .coco import CocoBbox, CocoCategoriesMap, CocoDatasetMetadata, CocoImageMetadata, CocoLicense
 
 
 @dataclass

@@ -1,7 +1,7 @@
 import traceback
 from pathlib import Path
 
-from ..coco_bbox import CocoBbox
+from ..coco import CocoBbox
 from ..error_bag import ErrorBag
 from ..get_image_size import get_image_size
 from ..image_subdivisions import ImageSubdivisions

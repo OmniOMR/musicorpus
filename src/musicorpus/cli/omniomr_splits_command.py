@@ -2,6 +2,8 @@ import argparse
 import sys
 from pathlib import Path
 
+from .extras import requires
+
 NAME = "omniomr-splits"
 
 DESCRIPTION = "Compute the splits.json files for the OmniOMR dataset"
@@ -49,10 +51,11 @@ def define_parser(parser: argparse.ArgumentParser):
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
-    from ..exporters.omniomr.calculate_splits import (
-        assert_splits_are_book_consistent,
-        calculate_splits,
-    )
+    with requires("exporters"):
+        from ..exporters.omniomr.calculate_splits import (
+            assert_splits_are_book_consistent,
+            calculate_splits,
+        )
     from ..exporters.omniomr.load_page_metadatas import load_page_metadatas
     from ..read_page_names import read_page_names
     from ..splits import Splits

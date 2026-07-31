@@ -30,23 +30,12 @@ dynamic = ["version"]
 authors = [
   { name="Jiří Mayer", email="mayer@ufal.mff.cuni.cz" },
 ]
-# TODO: these are the requirements.txt dependencies carried over verbatim. Most
-# of them belong to the validator or to the dataset exporters, not to reading a
-# dataset, and they are split into extras in a commit of their own.
-dependencies = [
-    "requests",
-    "opencv-python",
-    "tqdm",
-    "mung==1.2.1",
-    # "linearized-musicxml==1.0.0"
-    # Instead, we use the in-development 2.0.0 version:
-    "linearized-musicxml @ git+https://github.com/OMR-Research/lmx.git@8648514f5bfa08c594277b2d7821a156c75dd299",
-    "pycocotools",
-    "pyyaml",
-    "imagesize==2.0.0",
-    "music21",
-    "converter21",
-]
+# Deliberately empty. Reading a MusiCorpus dataset — the manifest, the splits,
+# the layout, the page metadata, the subdivisions, the COCO boxes — is pure
+# standard library, so `pip install musicorpus` cannot conflict with anything
+# a consumer already has. Everything heavier is an extra below, and a test
+# asserts that the format classes stay importable without any of them.
+dependencies = []
 description = "Tools for building and consuming datasets in the MusiCorpus format"
 readme = "README.md"
 license = "MIT"
@@ -65,7 +54,47 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+# What `musicorpus validate` needs.
+validation = [
+    "imagesize>=1.4",
+    "mung~=1.2",
+    "pycocotools",
+    "tqdm",
+    # "linearized-musicxml==1.0.0"
+    # Instead, we use the in-development 2.0.0 version. A git URL cannot be
+    # published to PyPI, so this has to become a released version before the
+    # package can go to an index — which is the reason lmx sits in an extra
+    # rather than in the base dependencies.
+    "linearized-musicxml @ git+https://github.com/OMR-Research/lmx.git@8648514f5bfa08c594277b2d7821a156c75dd299",
+]
+
+# What `musicorpus statistics` needs.
+statistics = [
+    "imagesize>=1.4",
+    "pyyaml",
+    "tqdm",
+]
+
+# What the bundled dataset exporters need, on top of the two above. These are
+# reference implementations rather than something a dataset consumer runs, and
+# they are the reason the base install used to drag in music21 and OpenCV.
+#
+# `opencv-python-headless` rather than `opencv-python`: the only calls are
+# `imread` and `imwrite`, and the GUI build pulls in X11 libraries that a
+# server or a CI runner has no use for.
+exporters = [
+    "musicorpus[statistics,validation]",
+    "converter21",
+    "music21",
+    "numpy",
+    "opencv-python-headless",
+    "requests",
+]
+
+all = ["musicorpus[exporters]"]
+
 dev = [
+    "musicorpus[all]",
     "pytest>=8.0",
     "ruff>=0.6",
     "mypy>=1.11",

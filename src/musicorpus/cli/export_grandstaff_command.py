@@ -3,6 +3,8 @@ import shutil
 import sys
 from pathlib import Path
 
+from .extras import requires
+
 NAME = "grandstaff"
 
 DESCRIPTION = "Export the PRAIG GrandStaff dataset into the MusiCorpus format"
@@ -25,7 +27,8 @@ def define_parser(parser: argparse.ArgumentParser):
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
-    from ..exporters.grandstaff.export_grandstaff import export_grandstaff
+    with requires("exporters"):
+        from ..exporters.grandstaff.export_grandstaff import export_grandstaff
 
     grandstaff_tgz_path = Path(args.grandstaff)
     output_folder = Path(args.output)

@@ -46,6 +46,10 @@ src/musicorpus/
   *.py               the file formats themselves: manifest, splits, layout, metadata
 ```
 
+**The base install has no dependencies, and that is a promise to keep.** The modules describing the format are standard library only, so `pip install musicorpus` cannot conflict with a consumer's environment; everything heavier sits behind the `validation`, `statistics` and `exporters` extras. `tests/test_dependencies.py` imports each format module in a fresh interpreter and fails if it reached one of those packages — so adding `import mung` to `layout.py` breaks the build rather than breaking an installation.
+
+Commands defer those imports into `execute` and wrap them in `cli/extras.py:requires`, which reports a missing extra as the command to install rather than as a traceback.
+
 **The exporters are reference implementations, not product.** They are coupled to input data nobody outside the project has, and they are what a new dataset author reads before writing their own. `exporters/grandstaff/` is the small legible example; `exporters/omniomr/` is the real one. They are not part of the public API and are not covered by whatever the package version promises.
 
 Anything an installed package reads must be found relative to `__file__` (package data) or to the working directory (generated files) — never relative to the repository root, which does not exist once the package is installed from a git URL.

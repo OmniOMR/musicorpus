@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from mung.graph import Node, NotationGraph
 
-from .coco_bbox import CocoBbox
+from .coco import CocoBbox
 
 
 def crop_mung(mung_graph: NotationGraph, bbox: CocoBbox):

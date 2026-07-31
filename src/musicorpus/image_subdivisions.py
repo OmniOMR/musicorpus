@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .coco_bbox import CocoBbox
+from .coco import CocoBbox
 
 
 @dataclass

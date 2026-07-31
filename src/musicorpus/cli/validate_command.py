@@ -1,6 +1,8 @@
 import argparse
 from pathlib import Path
 
+from .extras import requires
+
 NAME = "validate"
 
 DESCRIPTION = "Validate that a dataset conforms to the MusiCorpus structure"
@@ -19,8 +21,9 @@ def define_parser(parser: argparse.ArgumentParser):
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
-    from ..error_bag import ErrorBag
-    from ..validation.validate_dataset import validate_dataset
+    with requires("validation"):
+        from ..error_bag import ErrorBag
+        from ..validation.validate_dataset import validate_dataset
 
     dataset_path = Path(args.dataset)
     output_file = Path(args.output)

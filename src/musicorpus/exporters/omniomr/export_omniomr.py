@@ -2,9 +2,9 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+from ...coco import CocoDatasetMetadata, CocoLicense
 from ...error_bag import ErrorBag
 from ...manifest import MusicorpusManifest
-from ...mung_to_coco import CocoDatasetMetadata, CocoLicense
 from ...page_metadata import PageMetadata
 from ...splits import Splits
 from .compute_image_subdivisions_from_mung import compute_image_subdivisions_from_mung

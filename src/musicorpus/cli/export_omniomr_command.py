@@ -3,6 +3,8 @@ import shutil
 import sys
 from pathlib import Path
 
+from .extras import requires
+
 NAME = "omniomr"
 
 DESCRIPTION = "Export the UFAL OmniOMR dataset into the MusiCorpus format"
@@ -52,11 +54,12 @@ def define_parser(parser: argparse.ArgumentParser):
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
-    from ..exporters.omniomr.export_omniomr import export_omniomr
-    from ..exporters.omniomr.input_dpi_file import InputDpiFile
-    from ..exporters.omniomr.input_layout_file import InputLayoutFile
-    from ..exporters.omniomr.load_page_metadatas import load_page_metadatas
-    from ..read_page_names import read_page_names
+    with requires("exporters"):
+        from ..exporters.omniomr.export_omniomr import export_omniomr
+        from ..exporters.omniomr.input_dpi_file import InputDpiFile
+        from ..exporters.omniomr.input_layout_file import InputLayoutFile
+        from ..exporters.omniomr.load_page_metadatas import load_page_metadatas
+        from ..read_page_names import read_page_names
 
     mung_studio_folder = Path(args.ms_documents)
     editions_folder = Path(args.ms_editions)

@@ -5,7 +5,7 @@ from pathlib import Path, PosixPath
 
 from pycocotools.mask import frPyObjects
 
-from ..coco_bbox import CocoBbox
+from ..coco import CocoBbox
 from ..error_bag import ErrorBag
 from ..get_image_size import get_image_size
 from ..manifest import MusicorpusManifest

@@ -6,16 +6,11 @@ import tqdm
 from mung.graph import NotationGraph
 from mung.io import read_nodes_from_file
 
+from ...coco import CocoDatasetMetadata, CocoFromMung, CocoImageMetadata, CocoLicense
 from ...error_bag import ErrorBag
 from ...get_image_size import get_image_size
 from ...image_subdivisions import ImageSubdivisions
-from ...mung_to_coco import (
-    CocoDatasetMetadata,
-    CocoFromMung,
-    CocoImageMetadata,
-    CocoLicense,
-    mung_to_coco,
-)
+from ...mung_to_coco import mung_to_coco
 
 
 def convert_mung_to_coco_with_maps(
