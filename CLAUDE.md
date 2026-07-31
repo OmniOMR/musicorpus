@@ -2,21 +2,12 @@
 
 This repository holds two things that are released separately:
 
-- **The MusiCorpus specification** — [docs/musicorpus-specification/musicorpus-specification.md](docs/musicorpus-specification/musicorpus-specification.md), a set of guidelines for how an OMR dataset is laid out on disk. Version 1.0, released, tagged `specification`. This is the flagship artifact; the code exists to serve it.
-- **The `musicorpus` python package** — `src/musicorpus/`, a CLI and a python API for building and consuming datasets in that format. Not yet released, versioned separately from the specification.
+- **The MusiCorpus specification** — [spec/musicorpus-specification.md](spec/musicorpus-specification.md), a set of guidelines for how an OMR dataset is laid out on disk. Version 1.0, released. This is the flagship artifact; the code exists to serve it.
+- **The `musicorpus` python package** — `src/musicorpus/`, a CLI and a python API for building and consuming datasets in that format. Not yet released.
 
-Keeping them in one repository is deliberate: the validator and the clauses it enforces stay honest by sitting next to each other. What that costs is a shared tag namespace, which is why the version configuration in `pyproject.toml` says which tags belong to the code.
+Keeping them in one repository is deliberate: the validator and the clauses it enforces stay honest by sitting next to each other. What it costs is a shared tag namespace, which is why `pyproject.toml` says which tags belong to the code — see [docs/versioning-and-releases.md](docs/versioning-and-releases.md) for the three version numbers involved and how not to confuse them. **Do not remove the `git_describe_command` override**: without it, tagging a new version of the document silently becomes the version of the code.
 
-
-## Three version numbers, easily confused
-
-| Number | What it versions | Where it lives |
-| --- | --- | --- |
-| **The specification version** | The document. `1.0` today. | Its title, and the `specification` git tag. |
-| **The package version** | The code: the CLI and the python API. Derived from the git tags, never written down. | Nowhere — computed at build time from `git describe --match 'v[0-9]*'`. |
-| **`musicorpus_version`** | Which specification version a *dataset* claims to follow. | The `musicorpus.json` manifest inside each dataset. |
-
-A `specification-1.1` tag must never be read as the version of the code, which is what the `git_describe_command` override in `pyproject.toml` prevents. Do not remove it.
+The folder structure is documented in [docs/repository-layout.md](docs/repository-layout.md), the public API in [docs/python-api.md](docs/python-api.md).
 
 
 ## Toolchain
@@ -30,43 +21,23 @@ The development environment is `.venv`, created with **python 3.10** — the flo
 .venv/bin/python -m mypy
 ```
 
-The formatter owns the layout of the code — do not hand-wrap around it, and do not argue with it in review. Its one-time application across the codebase is commit `5d954e3`, listed in [.git-blame-ignore-revs](.git-blame-ignore-revs) so that `git blame` looks through it. That file matters more for the next such commit than for this one: `ruff format` mostly joined lines here, and git's own matching already traces most of them back on its own.
+The formatter owns the layout of the code — do not hand-wrap around it, and do not argue with it in review. Its one-time application across the codebase is commit `5d954e3`, listed in [.git-blame-ignore-revs](.git-blame-ignore-revs). Note that it also reformats python inside markdown fences and inside `tests/data/build_test_fixture.py`, whose templates generate the fixtures — regenerate those *after* formatting, not before.
 
-mypy is not `strict`. mung, pycocotools, music21, converter21 and cv2 ship no type information, so strict mode would report hundreds of errors that say nothing about correctness. The configuration in `pyproject.toml` is the contract; tighten it as annotations arrive rather than adding `# type: ignore`.
-
-
-## Layout
-
-```
-src/musicorpus/
-  cli/               one module per subcommand, plus run.py which registers them
-  validation/        checks a dataset against the specification
-  statistics/        aggregates dataset statistics
-  exporters/         one subpackage per dataset that gets exported into the format
-  *.py               the file formats themselves: manifest, splits, layout, metadata
-```
-
-**`__init__.py` is the public API.** It re-exports the names a library user needs — `Dataset`, `Page`, `Subdivision`, the format classes — and everything below it is internal arrangement free to move. `dataset.py` is the reader: it parses the JSON formats MusiCorpus itself defines and hands back a `Path` for everything else, because MusicXML, MuNG and images belong to libraries this package does not depend on. See [docs/python-api.md](docs/python-api.md).
-
-**The base install has no dependencies, and that is a promise to keep.** The modules describing the format are standard library only, so `pip install musicorpus` cannot conflict with a consumer's environment; everything heavier sits behind the `validation`, `statistics` and `exporters` extras. `tests/test_dependencies.py` imports each format module in a fresh interpreter and fails if it reached one of those packages — so adding `import mung` to `layout.py` breaks the build rather than breaking an installation.
-
-Commands defer those imports into `execute` and wrap them in `cli/extras.py:requires`, which reports a missing extra as the command to install rather than as a traceback.
+mypy is not `strict`, and has no pinned `python_version` so that it checks against whichever interpreter runs it. mung, pycocotools, music21, converter21 and cv2 ship no type information, so strict mode would report hundreds of errors that say nothing about correctness. The configuration in `pyproject.toml` is the contract; tighten it as annotations arrive rather than adding `# type: ignore`.
 
 
-## The two test fixtures
+## Three things that are easy to break
 
-`tests/data/` holds two synthetic datasets, both generated by `build_test_fixture.py` and committed rather than built during the test run, so they can be inspected and diffed:
+**The base install has no dependencies, and that is a promise.** The modules describing the format are standard library only, so `pip install musicorpus` cannot conflict with a consumer's environment; mung, pycocotools, lmx, music21 and OpenCV sit behind the `validation`, `statistics` and `exporters` extras. `tests/test_dependencies.py` imports each format module in a fresh interpreter and fails if it reached one of them — so adding `import mung` to `layout.py` breaks the build rather than breaking somebody's installation. Commands defer their imports into `execute` and wrap them in `cli/extras.py:requires`, which reports a missing extra as the command that installs it.
 
-- **`TEST.Valid`** conforms to the specification in every respect the validator checks, so `musicorpus validate` must report **zero** errors on it. It is the baseline: the validator tests copy it to a `tmp_path` and break exactly one thing, which keeps each assertion about the check under test rather than about the fixture.
-- **`TEST.Fixture`** bends the rules on purpose — a page with only an image and a transcription, a page in no split, a split naming a page that is not on disk, an image variant, a png-only page. It is what the reader tests need, and `test_validation.py` pins exactly which complaints the validator makes about it.
+**Anything an installed package reads must be found relative to `__file__`** (package data) **or to the working directory** (generated files) — never relative to the repository root, which does not exist once the package is installed from a git URL.
 
-Re-running the builder must leave the tree unchanged. It is sensitive to `ruff format`, which reflows the XML templates inside it — regenerate after formatting, not before.
+**Two `file_name` conventions.** The specification states them in sections far apart and they are easy to confuse: `metadata.json`'s `file_name` is relative to the **root** folder and so begins with the dataset folder name, while COCO's `images[].file_name` in `layout.json` and `coco-object-detection.json` is relative to the **dataset** folder and does not.
 
-Two conventions the fixtures encode, because the specification states them in different sections and they are easy to confuse: `metadata.json`'s `file_name` is relative to the **root** folder and so begins with the dataset folder name, while COCO's `images[].file_name` in `layout.json` and `coco-object-detection.json` is relative to the **dataset** folder and does not.
 
-**The exporters are reference implementations, not product.** They are coupled to input data nobody outside the project has, and they are what a new dataset author reads before writing their own. `exporters/grandstaff/` is the small legible example; `exporters/omniomr/` is the real one. They are not part of the public API and are not covered by whatever the package version promises.
+## The exporters
 
-Anything an installed package reads must be found relative to `__file__` (package data) or to the working directory (generated files) — never relative to the repository root, which does not exist once the package is installed from a git URL.
+`exporters/` holds **reference implementations, not product.** They are coupled to input data nobody outside the project has, and they are what a new dataset author reads before writing their own. `exporters/grandstaff/` is the small legible example; `exporters/omniomr/` is the real one. They are not part of the public API, are not covered by whatever the package version promises, and have no tests because there is nothing to run them against.
 
 
 ## Markdown conventions

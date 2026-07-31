@@ -13,8 +13,11 @@ This is a list of datasets that follow the MusiCorpus format:
 
 ## Documentation
 
-- [MusiCorpus Specification 1.0](docs/musicorpus-specification/musicorpus-specification.md)
+- [**MusiCorpus Specification 1.0**](spec/musicorpus-specification.md) — the format itself
 - [Python API](docs/python-api.md) — reading a dataset from python
+- [Repository layout](docs/repository-layout.md) — what is where, and why
+- [Versioning and releases](docs/versioning-and-releases.md) — the specification and the package are released separately
+- [Changelog](CHANGELOG.md)
 - CLI commands
     - [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md)
     - [Computing OmniOMR Splits](docs/computing-omniomr-splits.md)
