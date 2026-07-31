@@ -11,8 +11,18 @@ concern. See [docs/versioning-and-releases.md](docs/versioning-and-releases.md).
 
 ## Unreleased
 
-The package has not been released yet; everything below is its first version's
-worth of work. The specification is unchanged at 1.0 throughout.
+Nothing yet.
+
+
+## 0.1.0 — 2026-07-31
+
+The first release of the `musicorpus` package. The specification is unchanged
+at 1.0 and is released separately, under its own tags.
+
+Before this, the code was a folder of scripts run through a bash wrapper; it
+could not be installed, imported, or depended upon. It now installs from the
+repository URL, exposes a python API for reading a dataset, and carries a CLI
+as a console script.
 
 ### Added
 
