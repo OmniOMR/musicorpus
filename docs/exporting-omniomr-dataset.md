@@ -64,13 +64,13 @@ Now with all the data ready, you can run the export with this command:
 ```bash
 DATE="2026-03-02"
 
-musicorpus export-omniomr \
-  --ms_documents ~/datasets/MuNG-Studio-Backups/$DATE \
-  --ms_editions ~/datasets/OmniOMR-Editions/$DATE \
+musicorpus export omniomr \
+  --ms-documents ~/datasets/MuNG-Studio-Backups/$DATE \
+  --ms-editions ~/datasets/OmniOMR-Editions/$DATE \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \
   --layout ~/datasets/OmniOMR-Layout/$DATE.csv \
   --dpi ~/datasets/OmniOMR-DPI/$DATE.csv \
-  --page_names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
+  --page-names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
   --output ~/datasets/OmniOMR-MusiCorpus/$DATE/UFAL.OmniOMR
 ```
 

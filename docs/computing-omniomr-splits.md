@@ -10,11 +10,11 @@ musicorpus omniomr-splits --help
 
 It requires the same page metadata CSV file that is necessary for the OmniOMR export (see [Exporting OmniOMR Dataset to MusiCorpus](exporting-omniomr-dataset.md)).
 
-The generation of book-consistent splits (i.e. splits where all pages from one book always stay whithin one split only) is enabled by the `--book_consistent` flag.
+The generation of book-consistent splits (i.e. splits where all pages from one book always stay whithin one split only) is enabled by the `--book-consistent` flag.
 
-To only add new pages to an old splits file, use the option `--extend_splits SPLITS_FILE` with path to an existing splits file.
+To only add new pages to an old splits file, use the option `--extend-splits SPLITS_FILE` with path to an existing splits file.
 
-The computation works by repeatedly generating random splits and then seeing how evenly are controlled metadata values distributed among them. It picks the most even splits version. The option `--n_attempts` controlls the number of iterations. For a production run, set this to 1 million (`1_000_000`, underscores are ok).
+The computation works by repeatedly generating random splits and then seeing how evenly are controlled metadata values distributed among them. It picks the most even splits version. The option `--n-attempts` controlls the number of iterations. For a production run, set this to 1 million (`1_000_000`, underscores are ok).
 
 If the output file already exists, the `--force` flag forces its overwriting.
 
@@ -34,9 +34,9 @@ DATE="2026-03-02"
 
 musicorpus omniomr-splits \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \
-  --page_names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
-  --extend_splits src/musicorpus/exporters/omniomr/assets/splits.json \
-  --n_attempts 1_000_000 \
+  --page-names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
+  --extend-splits src/musicorpus/exporters/omniomr/assets/splits.json \
+  --n-attempts 1_000_000 \
   --output src/musicorpus/exporters/omniomr/assets/splits.json \
   --force
 ```
@@ -48,12 +48,12 @@ DATE="2026-03-02"
 
 musicorpus omniomr-splits \
   --metadata ~/datasets/OmniOMR-Metadata/$DATE.csv \
-  --page_names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
-  --extend_splits src/musicorpus/exporters/omniomr/assets/splits.book-consistent.json \
-  --n_attempts 1_000_000 \
+  --page-names ~/datasets/OmniOMR-MusiCorpus/$DATE/page-names.txt \
+  --extend-splits src/musicorpus/exporters/omniomr/assets/splits.book-consistent.json \
+  --n-attempts 1_000_000 \
   --output src/musicorpus/exporters/omniomr/assets/splits.book-consistent.json \
-  --book_consistent \
+  --book-consistent \
   --force
 ```
 
-To generate these splits from scratch, simply remove the `--extend_splits` option.
+To generate these splits from scratch, simply remove the `--extend-splits` option.

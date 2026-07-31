@@ -1,92 +1,95 @@
+"""The `musicorpus` command line tool.
+
+Each command lives in a module of its own that declares its own `NAME` and
+`DESCRIPTION` and provides `define_parser` and `execute`. This module only
+collects them; adding a command means writing that module and naming it in
+`COMMANDS` below.
+
+None of the command modules imports mung, music21, opencv or pycocotools at
+module level — each defers those into its `execute` — so building the whole
+parser stays cheap and `musicorpus --help` answers immediately. A test guards
+that.
+"""
+
 import argparse
 import sys
-from collections.abc import Callable
+from importlib.metadata import PackageNotFoundError, version
+from typing import Protocol
 
-from . import (
-    export_grandstaff_command,
-    export_omniomr_command,
-    omniomr_splits_command,
-    statistics_command,
+from . import export_command, omniomr_splits_command, statistics_command, validate_command
+
+
+class Command(Protocol):
+    """What a command module has to provide to appear in `COMMANDS`."""
+
+    NAME: str
+    """The subcommand as typed, e.g. `omniomr-splits`."""
+
+    DESCRIPTION: str
+    """One line, shown both in `musicorpus --help` and in the command's own help."""
+
+    def define_parser(self, parser: argparse.ArgumentParser) -> None:
+        """Add this command's arguments to its subparser."""
+        ...
+
+    def execute(self, parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
+        """Run the command."""
+        ...
+
+
+COMMANDS: list[Command] = [
     validate_command,
-)
+    statistics_command,
+    export_command,
+    omniomr_splits_command,
+]
+
+
+def package_version() -> str:
+    """The installed version, or a placeholder when running from a source tree."""
+    try:
+        return version("musicorpus")
+    except PackageNotFoundError:
+        return "unknown (not installed)"
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Assemble the whole CLI, one subparser per command."""
+    parser = argparse.ArgumentParser(
+        prog="musicorpus",
+        description="CLI for working with the MusiCorpus format",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {package_version()}",
+        help="Print the version of the musicorpus package and exit",
+    )
+    subparsers = parser.add_subparsers(title="available commands", dest="command")
+
+    for command in COMMANDS:
+        command.define_parser(
+            subparsers.add_parser(
+                command.NAME,
+                # `description` heads the command's own --help; `help` is the
+                # line beside its name in `musicorpus --help`, which listed
+                # bare command names and no explanation before.
+                description=command.DESCRIPTION,
+                help=command.DESCRIPTION,
+            )
+        )
+
+    return parser
 
 
 def run() -> None:
     """Entry point of the `musicorpus` command line tool."""
-
-    parser = argparse.ArgumentParser(
-        prog="musicorpus", description="CLI for working with the MusiCorpus format"
-    )
-
-    subparsers = parser.add_subparsers(title="available commands", dest="root_command_name")
-
-    root_command_handlers: dict[
-        str, Callable[[argparse.ArgumentParser, argparse.Namespace], None]
-    ] = {}
-
-    ############################
-    # Define all root commands #
-    ############################
-
-    # === validate ===
-
-    validate_command.define_parser(
-        subparsers.add_parser(
-            "validate",
-            aliases=[],
-            description="Validates a MusiCorpus dataset, checks that it has proper structure",
-        )
-    )
-    root_command_handlers["validate"] = validate_command.execute
-
-    # === statistics ===
-
-    statistics_command.define_parser(
-        subparsers.add_parser(
-            "statistics", aliases=[], description="Computes statistics for a MusiCorpus dataset"
-        )
-    )
-    root_command_handlers["statistics"] = statistics_command.execute
-
-    # === export GrandStaff ===
-
-    export_grandstaff_command.define_parser(
-        subparsers.add_parser(
-            "export-grandstaff",
-            aliases=[],
-            description="Exports GrandStaff dataset to the MusiCorpus format",
-        )
-    )
-    root_command_handlers["export-grandstaff"] = export_grandstaff_command.execute
-
-    # === export OmniOMR ===
-
-    export_omniomr_command.define_parser(
-        subparsers.add_parser(
-            "export-omniomr",
-            aliases=[],
-            description="Exports OmniOMR data to the MusiCorpus format",
-        )
-    )
-    root_command_handlers["export-omniomr"] = export_omniomr_command.execute
-
-    # === define OmniOMR splits ===
-
-    omniomr_splits_command.define_parser(
-        subparsers.add_parser(
-            "omniomr-splits", aliases=[], description="Utility for computing OmniOMR splits files."
-        )
-    )
-    root_command_handlers["omniomr-splits"] = omniomr_splits_command.execute
-
-    ######################
-    # Execute the parser #
-    ######################
-
+    parser = build_parser()
     args = parser.parse_args()
 
-    if args.root_command_name is None:
+    if args.command is None:
         parser.print_help()
         sys.exit(2)
 
-    root_command_handlers[str(args.root_command_name)](parser, args)
+    handlers = {command.NAME: command.execute for command in COMMANDS}
+    handlers[str(args.command)](parser, args)

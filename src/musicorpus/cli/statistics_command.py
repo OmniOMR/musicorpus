@@ -2,9 +2,9 @@ import argparse
 import sys
 from pathlib import Path
 
-import yaml
+NAME = "statistics"
 
-from ..statistics.compute_statistics import compute_statistics
+DESCRIPTION = "Aggregate dataset statistics across splits, subdivisions and file formats"
 
 
 def define_parser(parser: argparse.ArgumentParser):
@@ -12,7 +12,7 @@ def define_parser(parser: argparse.ArgumentParser):
         "--dataset",
         type=Path,
         required=True,
-        help="Path to the root folder of a MusiCorpus dataset " + "on which to compute statistics",
+        help="Path to the root folder of the MusiCorpus dataset to measure",
     )
     parser.add_argument(
         "--output",
@@ -29,6 +29,10 @@ def define_parser(parser: argparse.ArgumentParser):
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
+    import yaml
+
+    from ..statistics.compute_statistics import compute_statistics
+
     dataset_path = Path(args.dataset)
     output_file = None if args.output in [None, "-"] else Path(args.output)
     splits_file_name = str(args.splits)

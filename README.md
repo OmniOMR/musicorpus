@@ -48,6 +48,9 @@ These are the commands available in the CLI:
 - `musicorpus` **`validate`** `--help`: Validates that the given dataset conforms to the MusiCorpus structure and produces a list of errors if not.
 - `musicorpus` **`inspect`** `--help`: To be added...
 - `musicorpus` **`statistics`** `--help`: Aggregates dataset statistics across splits, subdivisions, and transcription file formats.
-- `musicorpus` **`export-grandstaff`** `--help`: To be added...
-- `musicorpus` **`export-omniomr`** `--help`: Used to build the OmniOMR dataset from its sources into the MusiCorpus structure. See [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md) for more.
+- `musicorpus` **`export`** `--help`: Builds a specific dataset from its own sources into the MusiCorpus structure. One exporter per dataset:
+    - `musicorpus export` **`grandstaff`** `--help`: To be added...
+    - `musicorpus export` **`omniomr`** `--help`: See [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md) for more.
 - `musicorpus` **`omniomr-splits`** `--help`: Utility for defining the `splits.json` files for the OmniOMR dataset. See [Computing OmniOMR Splits](docs/computing-omniomr-splits.md) for more.
+
+The exporters are reference implementations rather than tools most users need. If you are bringing a dataset of your own into the format, they are the worked examples to read — and a new one is welcome as a pull request.

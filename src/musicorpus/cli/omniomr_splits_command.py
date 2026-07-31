@@ -2,10 +2,9 @@ import argparse
 import sys
 from pathlib import Path
 
-from ..exporters.omniomr.calculate_splits import assert_splits_are_book_consistent, calculate_splits
-from ..exporters.omniomr.load_page_metadatas import load_page_metadatas
-from ..read_page_names import read_page_names
-from ..splits import Splits
+NAME = "omniomr-splits"
+
+DESCRIPTION = "Compute the splits.json files for the OmniOMR dataset"
 
 
 def define_parser(parser: argparse.ArgumentParser):
@@ -13,7 +12,7 @@ def define_parser(parser: argparse.ArgumentParser):
         "--metadata", type=Path, required=True, help="Path to the input metadata .csv file"
     )
     parser.add_argument(
-        "--page_names",
+        "--page-names",
         type=Path,
         required=True,
         help="Path to the file with page names "
@@ -21,7 +20,7 @@ def define_parser(parser: argparse.ArgumentParser):
         + "Can include line-comments with hash # symbol",
     )
     parser.add_argument(
-        "--extend_splits",
+        "--extend-splits",
         type=Path,
         required=False,
         default=None,
@@ -30,7 +29,7 @@ def define_parser(parser: argparse.ArgumentParser):
         + "new splits from scratch",
     )
     parser.add_argument(
-        "--n_attempts",
+        "--n-attempts",
         type=int,
         required=True,
         help="How many iterations to run when finding splits, "
@@ -40,7 +39,7 @@ def define_parser(parser: argparse.ArgumentParser):
         "--output", type=Path, required=True, help="Path to the output 'splits.json' file"
     )
     parser.add_argument(
-        "--book_consistent",
+        "--book-consistent",
         action="store_true",
         help="Enforces book consistency - all pages of one " + "book will land in one split only",
     )
@@ -50,6 +49,14 @@ def define_parser(parser: argparse.ArgumentParser):
 
 
 def execute(parser: argparse.ArgumentParser, args: argparse.Namespace):
+    from ..exporters.omniomr.calculate_splits import (
+        assert_splits_are_book_consistent,
+        calculate_splits,
+    )
+    from ..exporters.omniomr.load_page_metadatas import load_page_metadatas
+    from ..read_page_names import read_page_names
+    from ..splits import Splits
+
     metadata_file_path = Path(args.metadata)
     page_names_file_path = Path(args.page_names)
     extend_splits_path = None if args.extend_splits is None else Path(args.extend_splits)
