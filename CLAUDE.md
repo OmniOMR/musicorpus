@@ -46,6 +46,8 @@ src/musicorpus/
   *.py               the file formats themselves: manifest, splits, layout, metadata
 ```
 
+**`__init__.py` is the public API.** It re-exports the names a library user needs — `Dataset`, `Page`, `Subdivision`, the format classes — and everything below it is internal arrangement free to move. `dataset.py` is the reader: it parses the JSON formats MusiCorpus itself defines and hands back a `Path` for everything else, because MusicXML, MuNG and images belong to libraries this package does not depend on. See [docs/python-api.md](docs/python-api.md).
+
 **The base install has no dependencies, and that is a promise to keep.** The modules describing the format are standard library only, so `pip install musicorpus` cannot conflict with a consumer's environment; everything heavier sits behind the `validation`, `statistics` and `exporters` extras. `tests/test_dependencies.py` imports each format module in a fresh interpreter and fails if it reached one of those packages — so adding `import mung` to `layout.py` breaks the build rather than breaking an installation.
 
 Commands defer those imports into `execute` and wrap them in `cli/extras.py:requires`, which reports a missing extra as the command to install rather than as a traceback.

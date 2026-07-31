@@ -1,0 +1,28 @@
+{
+  "file_name": "TEST.Fixture/page-full/image.jpg",
+  "institution_name": "Test Library",
+  "institution_rism_siglum": "CZ-Tl",
+  "institution_local_siglum": "TL",
+  "shelfmark": "TL 1234",
+  "rism_id_number": null,
+  "date": "1780",
+  "page_number": 1,
+  "page_size": [
+    210,
+    297
+  ],
+  "dpi": 300,
+  "scribal_data": null,
+  "link": "https://example.org/source",
+  "title_description": "A test page",
+  "author": "Anonymous",
+  "author_date": null,
+  "genre_form": "sonata",
+  "notation": "CWMN",
+  "notation_detailed": null,
+  "production": "printed",
+  "production_detailed": null,
+  "notation_complexity": "polyphonic",
+  "clarity": "perfect",
+  "systems": "grand-staff"
+}

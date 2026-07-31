@@ -1,0 +1,2 @@
+This fixture contains no real data and is released under the same terms
+as the repository that holds it.

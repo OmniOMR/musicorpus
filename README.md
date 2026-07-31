@@ -14,9 +14,30 @@ This is a list of datasets that follow the MusiCorpus format:
 ## Documentation
 
 - [MusiCorpus Specification 1.0](docs/musicorpus-specification/musicorpus-specification.md)
+- [Python API](docs/python-api.md) — reading a dataset from python
 - CLI commands
     - [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md)
     - [Computing OmniOMR Splits](docs/computing-omniomr-splits.md)
+
+
+## Python API
+
+Reading a dataset needs no dependencies and no CLI:
+
+```python
+from pathlib import Path
+
+from musicorpus import Dataset
+
+dataset = Dataset.load(Path("datasets/UFAL.OmniOMR"))
+
+for page in dataset.split("train"):
+    for staff in page.staves:
+        musicxml = staff.transcription_path("musicxml")
+        image = staff.image_path()
+```
+
+See [Python API](docs/python-api.md) for the whole surface.
 
 
 ## Installation

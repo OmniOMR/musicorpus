@@ -1,0 +1,15 @@
+{
+    "musicorpus_version": "1.0",
+    "full_institution_name": "Test Institution",
+    "short_institution_name": "TEST",
+    "institution_url": "https://example.org",
+    "full_dataset_name": "MusiCorpus Test Fixture",
+    "short_dataset_name": "Fixture",
+    "dataset_url": "https://example.org/fixture",
+    "dataset_version": "1.0",
+    "created_at": "2026-03-05T10:16:37Z",
+    "author_emails": [
+        "someone@example.org",
+        "someone-else@example.org"
+    ]
+}

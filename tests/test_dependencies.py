@@ -16,6 +16,7 @@ import pytest
 FORMAT_MODULES = [
     "musicorpus",
     "musicorpus.coco",
+    "musicorpus.dataset",
     "musicorpus.error_bag",
     "musicorpus.hidden_prints",
     "musicorpus.image_subdivisions",

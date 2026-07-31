@@ -1,0 +1,12 @@
+{
+    "train": [
+        "page-full",
+        "page-minimal"
+    ],
+    "validation": [
+        "page-images-only"
+    ],
+    "test": [
+        "page-missing-from-disk"
+    ]
+}

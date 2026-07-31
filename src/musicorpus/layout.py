@@ -1,6 +1,8 @@
 import json
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
+from typing import ClassVar
 
 from .coco import CocoBbox, CocoCategoriesMap, CocoDatasetMetadata, CocoImageMetadata, CocoLicense
 
@@ -22,6 +24,68 @@ class Layout:
     staff_measures: list[CocoBbox]
     grandstaff_measures: list[CocoBbox]
     system_measures: list[CocoBbox]
+
+    # Which annotation category each of the bbox lists above is stored under
+    # in the COCO JSON. Reading and writing both go through this, so the two
+    # cannot drift apart.
+    CATEGORY_NAMES: ClassVar[dict[str, str]] = {
+        "staves": "staff",
+        "empty_staves": "emptyStaff",
+        "grandstaves": "grandstaff",
+        "systems": "system",
+        "staff_measures": "staffMeasure",
+        "grandstaff_measures": "grandstaffMeasure",
+        "system_measures": "systemMeasure",
+    }
+
+    @staticmethod
+    def load_from_file(file_path: Path) -> "Layout":
+        with open(file_path) as f:
+            data = json.load(f)
+        return Layout.parse_from_json(data)
+
+    @staticmethod
+    def parse_from_json(data: dict) -> "Layout":
+        """Parses the COCO JSON object that `serialize_to_json` produces."""
+        info = data["info"]
+        image = data["images"][0]
+        license_data = data["licenses"][0]
+
+        category_name_by_id: dict[int, str] = {
+            int(category["id"]): str(category["name"]) for category in data["categories"]
+        }
+
+        bboxes_by_category: dict[str, list[CocoBbox]] = {
+            name: [] for name in Layout.CATEGORY_NAMES.values()
+        }
+        for annotation in data["annotations"]:
+            category_name = category_name_by_id[int(annotation["category_id"])]
+            # a category this class does not model is skipped rather than
+            # rejected, so that a layout.json carrying extra annotations
+            # still reads
+            if category_name in bboxes_by_category:
+                bboxes_by_category[category_name].append(CocoBbox.from_json(annotation["bbox"]))
+
+        return Layout(
+            dataset_metadata=CocoDatasetMetadata(
+                version=str(info["version"]),
+                description=str(info["description"]),
+                contributor=str(info["contributor"]),
+                url=str(info["url"]),
+                date_created=datetime.strptime(str(info["date_created"]), "%Y/%m/%d"),
+            ),
+            image_metadata=CocoImageMetadata(
+                width=int(image["width"]),
+                height=int(image["height"]),
+                file_name=str(image["file_name"]),
+                date_captured=datetime.strptime(str(image["date_captured"]), "%Y-%m-%d %H:%M:%S"),
+            ),
+            image_license=CocoLicense(name=str(license_data["name"]), url=str(license_data["url"])),
+            **{
+                field: bboxes_by_category[category_name]
+                for field, category_name in Layout.CATEGORY_NAMES.items()
+            },
+        )
 
     def write_to_file(self, file_path: Path):
         data = self.serialize_to_json()
@@ -81,33 +145,10 @@ class Layout:
                 "iscrowd": 0,
             }
 
-        for staff in self.staves:
-            annotations.append(_bbox_to_annotation(staff, "staff"))
-            coco_id += 1
-
-        for empty_staff in self.empty_staves:
-            annotations.append(_bbox_to_annotation(empty_staff, "emptyStaff"))
-            coco_id += 1
-
-        for grandstaff in self.grandstaves:
-            annotations.append(_bbox_to_annotation(grandstaff, "grandstaff"))
-            coco_id += 1
-
-        for system in self.systems:
-            annotations.append(_bbox_to_annotation(system, "system"))
-            coco_id += 1
-
-        for staff_measure in self.staff_measures:
-            annotations.append(_bbox_to_annotation(staff_measure, "staffMeasure"))
-            coco_id += 1
-
-        for grandstaff_measure in self.grandstaff_measures:
-            annotations.append(_bbox_to_annotation(grandstaff_measure, "grandstaffMeasure"))
-            coco_id += 1
-
-        for system_measure in self.system_measures:
-            annotations.append(_bbox_to_annotation(system_measure, "systemMeasure"))
-            coco_id += 1
+        for field, category_name in Layout.CATEGORY_NAMES.items():
+            for bbox in getattr(self, field):
+                annotations.append(_bbox_to_annotation(bbox, category_name))
+                coco_id += 1
 
         coco_json["annotations"] = annotations
 

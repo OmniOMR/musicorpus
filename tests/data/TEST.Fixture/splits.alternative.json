@@ -1,0 +1,14 @@
+{
+    "train": [
+        "page-full"
+    ],
+    "validation": [
+        "page-minimal"
+    ],
+    "test": [
+        "page-images-only"
+    ],
+    "holdout": [
+        "page-outside-splits"
+    ]
+}

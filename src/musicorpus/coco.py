@@ -55,6 +55,18 @@ class CocoBbox:
     def __repr__(self):
         return f"CocoBbox({self.left}, {self.top}, {self.width}, {self.height})"
 
+    # A bounding box is a value, not an identity: two boxes over the same four
+    # pixels are the same box. Without this, reading a layout.json back and
+    # comparing it with what was written compares object identities and always
+    # differs, and bboxes cannot go into a set.
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, CocoBbox):
+            return NotImplemented
+        return tuple(self) == tuple(other)
+
+    def __hash__(self) -> int:
+        return hash(tuple(self))
+
     @staticmethod
     def from_json(json) -> "CocoBbox":
         """Parses the COCO bbox from a JSON list, e.g. [1,2,3,4]"""
