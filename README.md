@@ -8,7 +8,7 @@ MusiCorpus is a set of guidelines for structuring an OMR dataset. This repositor
 This is a list of datasets that follow the MusiCorpus format:
 
 - `pending` **MUSCIMA++ 3.0**
-- `2026-04-30` **MusiCorpus 1.0** ([download](http://hdl.handle.net/20.500.12800/1-6147)), contains [**Dolores 1.0**](https://pages.cvc.uab.es/musicscores/loladocs/index.html) and [**OmniOMR 1.0**](https://ufal.mff.cuni.cz/grants/omniomr) datasets.
+- `2026-04-30` **MusiCorpus 1.0** ([download](http://hdl.handle.net/20.500.12800/1-6147), [arxiv](https://arxiv.org/abs/2605.18436)), contains [**Dolores 1.0**](https://pages.cvc.uab.es/musicscores/loladocs/index.html) and [**OmniOMR 1.0**](https://ufal.mff.cuni.cz/grants/omniomr) datasets.
 
 
 ## Documentation
