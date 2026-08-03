@@ -11,7 +11,7 @@ maintainer script run by hand rather than part of the package or of CI:
 The output lands next to the markdown rather than in a folder of its own, so
 that the relative `<img src="musicorpus-layout-example.png">` references in
 the document resolve when chromium renders it. Both outputs are gitignored;
-the PDF is published as an asset on the `specification` release, and the
+the PDF is published as an asset on the `specification-*` release, and the
 export commands download it from there — see docs/versioning-and-releases.md.
 """
 

@@ -130,7 +130,7 @@ The document is released under a `specification-*` tag, and the rendered PDF is 
 
 5. Update `DOWNLOAD_URL` in `src/musicorpus/exporters/omniomr/download_specification_pdf.py` and `SPECIFICATION_VERSION` in `src/musicorpus/__init__.py`, then release the package too — a package that implements a specification version should say which one.
 
-The existing 1.0 release is tagged `specification`, without a version in the tag name. That was fine when there was one; the next one should be `specification-1.1` so the tags stay orderable and the 1.0 tag stays immutable.
+There is one tag that does not follow this: `specification`, without a version in its name. It was cut before this scheme existed, for the dataset publication pre-print, and it is best read as the **pre-release of 1.0** rather than as 1.0 itself. The document has gained one backwards-compatible addition since — image variants — so a dataset conformant to that pre-release is conformant to 1.0. The tag stays where it is, for the pre-print that cites it; versioned tag names start at `specification-1.0`.
 
 
 ## When the build needs git

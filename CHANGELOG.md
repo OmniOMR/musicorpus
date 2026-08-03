@@ -14,10 +14,32 @@ concern. See [docs/versioning-and-releases.md](docs/versioning-and-releases.md).
 Nothing yet.
 
 
-## 0.1.0 — 2026-07-31
+## Specification 1.0 — 2026-08-03
 
-The first release of the `musicorpus` package. The specification is unchanged
-at 1.0 and is released separately, under its own tags.
+The first release of the **MusiCorpus specification** under the tagging scheme
+in [docs/versioning-and-releases.md](docs/versioning-and-releases.md), tagged
+`specification-1.0`.
+
+The document is not new. It was published once before, for the dataset
+publication pre-print, under the unversioned `specification` tag; that tag is
+the pre-release of 1.0 and stays where it is. Only one addition has landed
+since, and it is backwards compatible — a dataset conformant to the pre-release
+is conformant to 1.0.
+
+### Added
+
+- **Image variants.** Alternative renderings of the same sample may be provided
+  as `image.{variant}.jpg` — `image.distorted.jpg`, `image.synthetic.jpg`,
+  `image.binarized.jpg` — beside the default `image.jpg`. Where a variant needs
+  its own subdivision mapping, it goes in
+  `subdivisions.image.{variant}.json`; the default `subdivisions.image.json`
+  keeps describing `image.jpg`.
+
+
+## 0.1.0 — 2026-08-03
+
+The first release of the `musicorpus` package. The specification is released
+separately, under its own tags, and is at 1.0.
 
 Before this, the code was a folder of scripts run through a bash wrapper; it
 could not be installed, imported, or depended upon. It now installs from the
@@ -62,7 +84,9 @@ as a console script.
   four tenths, because no command imports its dependencies until it runs.
 - Module names are snake_case, and `coco_bbox.py` became `coco.py`, which now
   also holds the COCO metadata classes that used to sit in `mung_to_coco.py`.
-- The specification moved to `spec/`, rendered by `spec/build.py`.
+- The specification moved to `spec/`, rendered by `spec/build.py`, and
+  `musicorpus export omniomr` now downloads the PDF attached to the
+  `specification-1.0` release rather than the one attached to the pre-release.
 
 ### Fixed
 

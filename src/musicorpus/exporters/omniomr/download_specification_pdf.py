@@ -2,7 +2,7 @@ from pathlib import Path
 
 import requests
 
-DOWNLOAD_URL = "https://github.com/OmniOMR/musicorpus/releases/download/specification/musicorpus-specification_1.0_2026-03-31.pdf"
+DOWNLOAD_URL = "https://github.com/OmniOMR/musicorpus/releases/download/specification-1.0/musicorpus-specification_1.0_2026-08-03.pdf"
 
 
 def download_specification_pdf(target_path: Path):
