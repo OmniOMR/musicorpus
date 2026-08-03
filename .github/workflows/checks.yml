@@ -92,6 +92,10 @@ jobs:
               "musicorpus/exporters/omniomr/assets/splits.book-consistent.json",
               "musicorpus/exporters/omniomr/assets/README.md",
               "musicorpus/exporters/omniomr/assets/LICENSE.txt",
+              "musicorpus/exporters/olimpic/assets/musicorpus.scanned.json",
+              "musicorpus/exporters/olimpic/assets/musicorpus.synthetic.json",
+              "musicorpus/exporters/olimpic/assets/README.scanned.md",
+              "musicorpus/exporters/olimpic/assets/README.synthetic.md",
           ]
           missing = [name for name in required if name not in names]
           if missing:

@@ -8,6 +8,7 @@ MusiCorpus is a set of guidelines for structuring an OMR dataset. This repositor
 This is a list of datasets that follow the MusiCorpus format:
 
 - `pending` **MUSCIMA++ 3.0**
+- `2026-08-03` **OLiMPiC 1.0** ([build yourself](docs/exporting-olimpic-dataset.md)), contains additional staff-level subdivisions.
 - `2026-04-30` **MusiCorpus 1.0** ([download](http://hdl.handle.net/20.500.12800/1-6147), [arxiv](https://arxiv.org/abs/2605.18436)), contains [**Dolores 1.0**](https://pages.cvc.uab.es/musicscores/loladocs/index.html) and [**OmniOMR 1.0**](https://ufal.mff.cuni.cz/grants/omniomr) datasets.
 
 
@@ -21,6 +22,7 @@ This is a list of datasets that follow the MusiCorpus format:
 - CLI commands
     - [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md)
     - [Computing OmniOMR Splits](docs/computing-omniomr-splits.md)
+    - [Exporting OLiMPiC Dataset to MusiCorpus](docs/exporting-olimpic-dataset.md)
 
 
 ## Python API
@@ -92,6 +94,7 @@ These are the commands available in the CLI:
 - `musicorpus` **`statistics`** `--help`: Aggregates dataset statistics across splits, subdivisions, and transcription file formats.
 - `musicorpus` **`export`** `--help`: Builds a specific dataset from its own sources into the MusiCorpus structure. One exporter per dataset:
     - `musicorpus export` **`grandstaff`** `--help`: To be added...
+    - `musicorpus export` **`olimpic`** `--help`: See [Exporting OLiMPiC Dataset to MusiCorpus](docs/exporting-olimpic-dataset.md) for more.
     - `musicorpus export` **`omniomr`** `--help`: See [Exporting OmniOMR Dataset to MusiCorpus](docs/exporting-omniomr-dataset.md) for more.
 - `musicorpus` **`omniomr-splits`** `--help`: Utility for defining the `splits.json` files for the OmniOMR dataset. See [Computing OmniOMR Splits](docs/computing-omniomr-splits.md) for more.
 

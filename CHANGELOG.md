@@ -7,7 +7,13 @@ Two things are versioned here and they move independently: the **MusiCorpus spec
 
 ## Unreleased
 
-Nothing yet.
+### Added
+
+- **An exporter for the OLiMPiC dataset**: `musicorpus export olimpic --variant scanned|synthetic`, which turns either distributed OLiMPiC archive into a MusiCorpus dataset. Each OLiMPiC sample becomes a grandstaff of a page, and where the notation allows it, the grandstaff is also separated into an upper and a lower staff — the transcription with `lmx`, the image by overlapping two-thirds crops. Grandstaves whose voices cross between the staves are left without staves rather than split by force. Images are written as JPEG at a deliberately low quality, so that the export stays near the size of the archive it was built from; `--jpeg-quality` raises it and `--png` keeps the lossless originals beside the JPEGs. See [docs/exporting-olimpic-dataset.md](docs/exporting-olimpic-dataset.md).
+
+### Changed
+
+- `download_specification_pdf` moved from `exporters/omniomr/` to `exporters/`, so that the URL of the published specification PDF is written down once rather than once per exporter.
 
 
 ## Specification 1.0 — 2026-08-03

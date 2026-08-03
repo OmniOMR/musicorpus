@@ -7,6 +7,7 @@ from ...error_bag import ErrorBag
 from ...manifest import MusicorpusManifest
 from ...page_metadata import PageMetadata
 from ...splits import Splits
+from ..download_specification_pdf import download_specification_pdf
 from .compute_image_subdivisions_from_mung import compute_image_subdivisions_from_mung
 from .convert_mung_to_coco_with_maps import convert_mung_to_coco_with_maps
 from .convert_page_mscz_files_to_musicxml import convert_page_mscz_files_to_musicxml
@@ -17,7 +18,6 @@ from .distribute_page_images import distribute_page_images
 from .distribute_page_metadata import distribute_page_metadata
 from .distribute_page_mscz_files import distribute_page_mscz_files
 from .distribute_page_mung_files import distribute_page_mung_files
-from .download_specification_pdf import download_specification_pdf
 from .input_dpi_file import InputDpiFile
 from .input_layout_file import InputLayoutFile
 from .subdivide_images import subdivide_images

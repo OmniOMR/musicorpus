@@ -14,7 +14,7 @@ import argparse
 import sys
 from typing import Protocol
 
-from . import export_grandstaff_command, export_omniomr_command
+from . import export_grandstaff_command, export_olimpic_command, export_omniomr_command
 
 NAME = "export"
 
@@ -37,6 +37,7 @@ class Exporter(Protocol):
 
 EXPORTERS: list[Exporter] = [
     export_grandstaff_command,
+    export_olimpic_command,
     export_omniomr_command,
 ]
 
