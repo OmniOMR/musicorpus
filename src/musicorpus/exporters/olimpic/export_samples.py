@@ -132,7 +132,7 @@ def _export_sample(
     grandstaff_folder.mkdir(parents=True, exist_ok=True)
 
     write_musicxml_tree_to_file(
-        grandstaff_folder / "transcription.musicxml", ET.ElementTree(musicxml_root)
+        grandstaff_folder / "transcription.musicxml", ET.ElementTree(musicxml_root), pretty=True
     )
     # the grandstaff image is the source image whole, so a `.png` asked for
     # here can be the source file itself rather than a re-encoding of it

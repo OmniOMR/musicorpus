@@ -65,7 +65,7 @@ validation = [
     # published to PyPI, so this has to become a released version before the
     # package can go to an index — which is the reason lmx sits in an extra
     # rather than in the base dependencies.
-    "linearized-musicxml @ git+https://github.com/OMR-Research/lmx.git@8648514f5bfa08c594277b2d7821a156c75dd299",
+    "linearized-musicxml @ git+https://github.com/OMR-Research/lmx.git@7147a5a2800d813fbef8a2f7fe8b0dceaf3e3c1a",
 ]
 
 # What `musicorpus statistics` needs.
