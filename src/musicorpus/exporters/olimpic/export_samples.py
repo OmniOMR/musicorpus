@@ -132,7 +132,9 @@ def _export_sample(
     grandstaff_folder.mkdir(parents=True, exist_ok=True)
 
     write_musicxml_tree_to_file(
-        grandstaff_folder / "transcription.musicxml", ET.ElementTree(musicxml_root), pretty=True
+        file_path=grandstaff_folder / "transcription.musicxml",
+        musicxml_tree=ET.ElementTree(musicxml_root),
+        pretty=True,
     )
     # the grandstaff image is the source image whole, so a `.png` asked for
     # here can be the source file itself rather than a re-encoding of it
@@ -170,7 +172,11 @@ def _export_sample(
             output_folder / sample.page_name / "Staves" / (sample.grandstaff_name + staff_suffix)
         )
         staff_folder.mkdir(parents=True, exist_ok=True)
-        write_musicxml_tree_to_file(staff_folder / "transcription.musicxml", staff_musicxml)
+        write_musicxml_tree_to_file(
+            file_path=staff_folder / "transcription.musicxml",
+            musicxml_tree=staff_musicxml,
+            pretty=True,
+        )
         image_output.write(staff_folder, staff_image)
 
     summary.staff_pairs += 1
